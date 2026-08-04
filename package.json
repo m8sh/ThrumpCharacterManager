@@ -1,14 +1,21 @@
 {
-  "name": "${PROJECT_NAME}",
+  "name": "thrumpcharactermanager",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc"
   },
-  "dependencies": {},
   "devDependencies": {
-    "typescript": "^5.5.3"
+    "@types/node": "^26.1.2",
+    "typescript": "^5.9.3"
   },
-  "private": true
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "pdf-lib": "^1.17.1"
+  }
 }
