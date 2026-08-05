@@ -182,3 +182,184 @@
     border-right-color: var(--border);
   }
 }
+/* ================= UESRPG character sheet ================= */
+
+*{box-sizing:border-box}
+
+body{background:#15171b}
+
+#center{
+  --tile:#1e2127;
+  --band:#181b20;
+  --line:#31363e;
+  --text:#e7e7e6;
+  --accent:#c96a5c;
+
+  max-width:620px;
+  margin:0 auto;
+  padding:26px 14px 40px;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:15px;
+  font-variant-numeric:tabular-nums;
+  line-height:1.3;
+  text-align:left;
+}
+
+#center h1{
+  text-align:center;
+  font-size:1.9rem;
+  font-weight:600;
+  margin:0 0 22px;
+}
+
+#center h2{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin:24px 0 10px;
+}
+#center h2::before,
+#center h2::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ---------------- tiles ---------------- */
+
+#center .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+#center .c2{grid-column:span 2}
+#center .c4{grid-column:1/-1}
+
+#center .tile{
+  display:flex;
+  flex-direction:column;
+  background:var(--tile);
+  border:1px solid var(--line);
+}
+
+#center .band{padding:7px 10px;border-bottom:1px solid var(--line)}
+#center .band:last-child{border-bottom:0}
+
+#center .band.head{
+  background:var(--band);
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+#center .band.val{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  font-weight:700;
+}
+
+#center .sep{opacity:.5;font-weight:400}
+
+/* --------- characteristics: one column each --------- */
+
+#center .charsWrap{overflow-x:auto;padding-bottom:2px}
+
+#center .cblock{
+  min-width:400px;
+  background:var(--tile);
+  border:1px solid var(--line);
+}
+#center .cblock + .cblock{margin-top:8px}
+
+#center .crow{
+  display:grid;
+  grid-template-columns:4.6rem repeat(4,1fr);
+  border-bottom:1px solid var(--line);
+}
+#center .crow:last-child{border-bottom:0}
+
+#center .crow > *{
+  padding:7px 6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border-left:1px solid var(--line);
+  min-width:0;
+  font-weight:700;
+}
+
+#center .crow > .rl{
+  justify-content:flex-start;
+  border-left:0;
+  background:var(--band);
+  font-weight:400;
+  padding-left:10px;
+  white-space:nowrap;
+}
+
+#center .crow.head > *{
+  background:var(--band);
+  font-weight:400;
+  white-space:nowrap;
+}
+
+/* --------- favored checkmark --------- */
+
+#center .check{cursor:pointer;position:relative}
+#center .check input{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  margin:0;
+  opacity:0;
+  cursor:pointer;
+}
+#center .check span{color:var(--accent);opacity:0}
+#center .check:hover span{opacity:.35}
+#center .check input:checked ~ span{opacity:1}
+#center .check input:focus-visible ~ span{
+  opacity:.6;
+  outline:1px solid var(--accent);
+  outline-offset:3px;
+}
+
+/* ---------------- inputs ---------------- */
+
+#center input[type=text]{
+  font:inherit;
+  color:inherit;
+  background:transparent;
+  border:0;
+  border-bottom:1px solid transparent;
+  border-radius:0;
+  text-align:center;
+  padding:1px 2px;
+  width:100%;
+  font-weight:700;
+}
+#center input[type=text]:hover{border-bottom-color:var(--line)}
+#center input[type=text]:focus{
+  outline:0;
+  border-bottom-color:var(--accent);
+  background:rgba(255,255,255,.06);
+}
+#center input.pair{width:3.2em}
+
+/* ---------------- narrow screens ---------------- */
+
+@media (max-width:600px){
+  #center .grid{grid-template-columns:repeat(2,1fr)}
+  #center .c2{grid-column:auto}
+}
+
+@media (max-width:470px){
+  #center{font-size:14px}
+  #center .cblock{font-size:13px;min-width:396px}
+  #center .crow{grid-template-columns:3.4rem repeat(4,1fr)}
+  #center .crow > *{padding:7px 3px}
+  #center .crow > .rl{padding-left:7px}
+}
