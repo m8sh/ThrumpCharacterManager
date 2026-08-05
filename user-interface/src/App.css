@@ -43,7 +43,7 @@
     top: 34px;
     height: 28px;
     transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
+    scale(1.4);
   }
 
   .vite {
@@ -52,7 +52,7 @@
     height: 26px;
     width: auto;
     transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
+    scale(0.8);
   }
 }
 
@@ -182,65 +182,85 @@
     border-right-color: var(--border);
   }
 }
-/* ================= UESRPG character sheet ================= */
+
+/* uesrpg character sheet */
 
 *{box-sizing:border-box}
 
 body{background:#15171b}
 
-#center{
+/* the vite starter caps the page width and centers it in the middle of the screen */
+/* only undo that on the sheet view so the upload screen still looks normal */
+body:has(#center > h1){display:block}
+#root:has(#center > h1){
+  max-width:none;
+  width:100%;
+  margin:0;
+  padding:0;
+  border:0;
+}
+
+/* the upload screen keeps its h1 inside a div so this only hits the sheet */
+#center:has(> h1){
   --tile:#1e2127;
   --band:#181b20;
   --line:#31363e;
   --text:#e7e7e6;
   --accent:#c96a5c;
+  --gap:.4em;
 
-  max-width:620px;
-  margin:0 auto;
-  padding:26px 14px 40px;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-start;
+  gap:0;
+  min-height:100dvh;
+  width:100%;
+  margin:0;
+  padding:.9em 1.1em 1.2em;
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  font-size:15px;
+  /* grows with the window but stops before it gets silly on a big monitor */
+  font-size:clamp(15px, 1vw, 22px);
   font-variant-numeric:tabular-nums;
-  line-height:1.3;
+  line-height:1.25;
   text-align:left;
 }
 
-#center h1{
+/* everything below is in em so it all scales with that one font size */
+
+#center:has(> h1) h1{
   text-align:center;
-  font-size:1.9rem;
+  font-size:1.6em;
   font-weight:600;
-  margin:0 0 22px;
+  margin:0 0 .45em;
 }
 
-#center h2{
+#center:has(> h1) h2{
   display:flex;
   align-items:center;
-  gap:12px;
-  font-size:.72rem;
+  gap:.7em;
+  font-size:.7em;
   font-weight:600;
-  letter-spacing:.18em;
+  letter-spacing:.16em;
   text-transform:uppercase;
   color:var(--accent);
-  margin:24px 0 10px;
+  margin:1.1em 0 .5em;
 }
-#center h2::before,
-#center h2::after{content:"";flex:1;height:1px;background:var(--line)}
+#center:has(> h1) h2::before,
+#center:has(> h1) h2::after{content:"";flex:1;height:1px;background:var(--line)}
 
-/* ---------------- tiles ---------------- */
-
-#center .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-#center .c2{grid-column:span 2}
-#center .c4{grid-column:1/-1}
+/* tiles */
 
 #center .tile{
   display:flex;
   flex-direction:column;
   background:var(--tile);
   border:1px solid var(--line);
+  min-width:0;
 }
 
-#center .band{padding:7px 10px;border-bottom:1px solid var(--line)}
+#center .band{padding:.28em .55em;border-bottom:1px solid var(--line)}
 #center .band:last-child{border-bottom:0}
 
 #center .band.head{
@@ -256,32 +276,45 @@ body{background:#15171b}
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:3px;
+  gap:.2em;
   font-weight:700;
 }
 
 #center .sep{opacity:.5;font-weight:400}
 
-/* --------- characteristics: one column each --------- */
+/* rows that size themselves to whatever is inside them */
+/* basis auto means the tile starts at its content width and grow shares the slack */
 
-#center .charsWrap{overflow-x:auto;padding-bottom:2px}
+#center .top,
+#center .attrs{display:flex;flex-wrap:wrap;gap:var(--gap)}
+
+#center .top > .tile,
+#center .attrs > .tile{flex:1 1 auto;min-width:auto}
+
+/* characteristics band with languages sitting beside it */
+
+#center .charsBand{display:flex;gap:var(--gap);align-items:stretch}
+#center .charsWrap{flex:1 1 auto;min-width:0;overflow-x:auto}
+#center .langs{flex:0 0 13em}
+#center .langs .band.val{justify-content:flex-start}
+#center .langs .band.val:last-child{flex:1;align-items:center}
 
 #center .cblock{
-  min-width:400px;
+  min-width:55em;
+  height:100%;
   background:var(--tile);
   border:1px solid var(--line);
 }
-#center .cblock + .cblock{margin-top:8px}
 
 #center .crow{
   display:grid;
-  grid-template-columns:4.6rem repeat(4,1fr);
+  grid-template-columns:5.5em repeat(8,minmax(0,1fr));
   border-bottom:1px solid var(--line);
 }
 #center .crow:last-child{border-bottom:0}
 
 #center .crow > *{
-  padding:7px 6px;
+  padding:.28em .4em;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -296,7 +329,7 @@ body{background:#15171b}
   border-left:0;
   background:var(--band);
   font-weight:400;
-  padding-left:10px;
+  padding-left:.6em;
   white-space:nowrap;
 }
 
@@ -306,7 +339,7 @@ body{background:#15171b}
   white-space:nowrap;
 }
 
-/* --------- favored checkmark --------- */
+/* favored checkmark */
 
 #center .check{cursor:pointer;position:relative}
 #center .check input{
@@ -327,7 +360,12 @@ body{background:#15171b}
   outline-offset:3px;
 }
 
-/* ---------------- inputs ---------------- */
+/* pool bars */
+
+#center .bar{height:.25em;background:#0f1114;border-top:1px solid var(--line)}
+#center .bar > span{display:block;height:100%;background:var(--accent)}
+
+/* inputs */
 
 #center input[type=text]{
   font:inherit;
@@ -347,19 +385,138 @@ body{background:#15171b}
   border-bottom-color:var(--accent);
   background:rgba(255,255,255,.06);
 }
-#center input.pair{width:3.2em}
 
-/* ---------------- narrow screens ---------------- */
-
-@media (max-width:600px){
-  #center .grid{grid-template-columns:repeat(2,1fr)}
-  #center .c2{grid-column:auto}
+/* field sizing makes the input measure its own text so the tile follows along */
+#center .top input[type=text],
+#center .attrs input[type=text]{
+  field-sizing:content;
+  width:auto;
+  min-width:2ch;
+  max-width:100%;
 }
 
-@media (max-width:470px){
-  #center{font-size:14px}
-  #center .cblock{font-size:13px;min-width:396px}
-  #center .crow{grid-template-columns:3.4rem repeat(4,1fr)}
-  #center .crow > *{padding:7px 3px}
-  #center .crow > .rl{padding-left:7px}
+#center .langs input[type=text]{text-align:left}
+
+/* mode buttons */
+/* the modes row eats whatever height is left under the sheet */
+/* container size lets the buttons measure that leftover box directly */
+
+#center .modes{
+  --modeGap:3em;
+
+  flex:1;
+  min-height:0;
+  container-type:size;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:var(--modeGap);
+  margin-top:1.1em;
+}
+
+#center .modes button{
+  aspect-ratio:1;
+  height:min(100cqh, calc(50cqw - var(--modeGap) / 2));
+  font:inherit;
+  font-size:1.5em;
+  font-weight:600;
+  color:var(--text);
+  background:var(--tile);
+  border:2px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+
+/* same warm accent the sheet already uses and its opposite on the wheel */
+#center .modes .combat{border-color:var(--accent)}
+#center .modes .narrative{border-color:#5c86c9}
+
+#center .modes .combat:hover{background:#241d1c}
+#center .modes .narrative:hover{background:#1c2029}
+
+#center .modes .combat:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+#center .modes .narrative:focus-visible{outline:2px solid #5c86c9;outline-offset:3px}
+
+/* the slim bar that replaces the big squares once a mode is picked */
+
+#center .modeBar{display:flex;gap:var(--gap);margin-top:1.1em}
+#center .modeBar button{
+  flex:1;
+  font:inherit;
+  font-weight:600;
+  padding:.35em;
+  color:var(--text);
+  background:var(--tile);
+  border:2px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .modeBar .narrative{border-color:#5c86c9}
+#center .modeBar .combat{border-color:var(--accent)}
+#center .modeBar .narrative.active{background:#1c2029}
+#center .modeBar .combat.active{background:#241d1c}
+
+/* bonds */
+
+#center .bonds{background:var(--tile);border:1px solid var(--line)}
+#center .bonds .band{border-bottom:1px solid var(--line);font-weight:700}
+#center .bonds .band:last-child{border-bottom:0}
+
+/* skills */
+
+#center .skills{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);align-items:start}
+
+/* the table owns the columns so every row lines up */
+/* max content means each column is as wide as its longest entry and no wider */
+#center .stable{
+  display:grid;
+  grid-template-columns:max-content max-content max-content minmax(0,1fr);
+  align-content:start;
+  background:var(--tile);
+  border:1px solid var(--line);
+}
+
+/* subgrid lets a row borrow the table columns instead of inventing its own */
+#center .srow{
+  display:grid;
+  grid-template-columns:subgrid;
+  grid-column:1 / -1;
+  border-bottom:1px solid var(--line);
+}
+#center .srow:last-child{border-bottom:0}
+
+#center .srow > *{
+  padding:.28em .55em;
+  border-left:1px solid var(--line);
+  min-width:0;
+  font-weight:700;
+  white-space:nowrap;
+}
+#center .srow > *:first-child{border-left:0}
+
+#center .srow .sname{background:var(--band);font-weight:400}
+
+#center .srow.head > *{background:var(--band);font-weight:400}
+
+#center .stests{display:flex;gap:.8em;font-weight:400;overflow:hidden;text-overflow:ellipsis}
+#center .stests b{font-weight:700}
+
+@media (max-width:1100px){
+  #center .skills{grid-template-columns:1fr}
+}
+
+/* narrow screens */
+
+@media (max-width:900px){
+  #center .charsBand{flex-wrap:wrap}
+  #center .langs{flex:1 1 100%}
+  #center .langs .band.val:last-child{flex:0 0 auto}
+}
+
+@media (max-width:760px){
+  #center:has(> h1){padding:.8em .7em 1em}
+  #center .cblock{min-width:48em;font-size:.9em}
+  #center .crow{grid-template-columns:4em repeat(8,minmax(0,1fr))}
+  #center .crow > *{padding:.28em .2em}
+  #center .crow > .rl{padding-left:.45em}
 }
