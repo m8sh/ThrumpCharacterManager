@@ -250,6 +250,16 @@ body:has(#center > h1){display:block}
 #center:has(> h1) h2::before,
 #center:has(> h1) h2::after{content:"";flex:1;height:1px;background:var(--line)}
 
+#center h3{
+  font-size:.66em;
+  font-weight:600;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--text);
+  opacity:.7;
+  margin:1.2em 0 .5em;
+}
+
 /* tiles */
 
 #center .tile{
@@ -295,8 +305,21 @@ body:has(#center > h1){display:block}
 
 #center .charsBand{display:flex;gap:var(--gap);align-items:stretch}
 #center .charsWrap{flex:1 1 auto;min-width:0;overflow-x:auto}
-#center .langs{flex:0 0 13em}
-#center .langs .band.val{justify-content:flex-start}
+
+/* the language tile is just a positioned shell now */
+/* the real tile inside is absolute so it cannot make the band taller */
+/* extra languages scroll inside instead of stretching the characteristics */
+#center .langs{flex:0 0 13em;position:relative}
+#center .langsInner{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+  background:var(--tile);
+  border:1px solid var(--line);
+}
+#center .langs .band.val{justify-content:flex-start;flex:none}
 #center .langs .band.val:last-child{flex:1;align-items:center}
 
 #center .cblock{
@@ -501,15 +524,224 @@ body:has(#center > h1){display:block}
 #center .stests{display:flex;gap:.8em;font-weight:400;overflow:hidden;text-overflow:ellipsis}
 #center .stests b{font-weight:700}
 
-@media (max-width:1100px){
-  #center .skills{grid-template-columns:1fr}
+/* narrative sub panels */
+
+#center .subBar{display:flex;gap:var(--gap);margin-top:1.1em}
+#center .subBar button{
+  flex:1;
+  font:inherit;
+  font-weight:600;
+  padding:.35em;
+  color:var(--text);
+  background:var(--tile);
+  border:2px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
 }
 
+/* each tab gets its own hue, all cousins of the sheet accent */
+#center .subBar .tInv{border-color:#5cc98a}
+#center .subBar .tTtp{border-color:#c9b45c}
+#center .subBar .tSpell{border-color:#8a5cc9}
+#center .subBar .tCraft{border-color:#5cb5c9}
+#center .subBar .tInv.active{background:#1a2420}
+#center .subBar .tTtp.active{background:#242219}
+#center .subBar .tSpell.active{background:#201a29}
+#center .subBar .tCraft.active{background:#192226}
+
+/* inventory */
+
+#center .invBand{display:flex;gap:var(--gap);align-items:start}
+
+#center .inv{
+  flex:1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) max-content;
+  background:var(--tile);
+  border:1px solid var(--line);
+}
+#center .invRow{
+  display:grid;
+  grid-template-columns:subgrid;
+  grid-column:1 / -1;
+  border-bottom:1px solid var(--line);
+}
+#center .invRow:last-child{border-bottom:0}
+#center .invRow > *{padding:.28em .55em;border-left:1px solid var(--line);min-width:0;font-weight:700}
+#center .invRow > *:first-child{border-left:0}
+#center .invRow.head > *{background:var(--band);font-weight:400}
+#center .invRow input[type=text]{text-align:left}
+#center .invRow input.pair{text-align:center;width:3.8em}
+
+#center .invSide{flex:0 0 11em;display:flex;flex-direction:column;gap:var(--gap)}
+
+/* traits talents and powers */
+
+/* fit content caps the name column so a long name wraps instead of eating the row */
+#center .ttp{
+  display:grid;
+  grid-template-columns:fit-content(16em) minmax(0,1fr);
+  background:var(--tile);
+  border:1px solid var(--line);
+}
+#center .ttpRow{
+  display:grid;
+  grid-template-columns:subgrid;
+  grid-column:1 / -1;
+  border-bottom:1px solid var(--line);
+}
+#center .ttpRow:last-child{border-bottom:0}
+#center .ttpRow > *{padding:.28em .55em;border-left:1px solid var(--line);min-width:0;font-weight:700}
+#center .ttpRow > *:first-child{border-left:0}
+#center .ttpRow .tname{background:var(--band);font-weight:400}
+#center .ttpRow .tnote{font-weight:400}
+#center .ttpRow.head > *{background:var(--band);font-weight:400}
+#center .ttpRow .tname input[type=text],
+#center .ttpRow .tnote input[type=text]{text-align:left}
+
+/* crafting */
+
+/* steps text, then quality with runed under it, then materials, all in one band */
+/* the runed box lives under the short quality table so no column has dead space */
+#center .craftBand{display:flex;gap:var(--gap);align-items:start}
+#center .craftBand .rules{flex:1.6;min-width:0}
+#center .craftMid{display:flex;flex-direction:column;gap:var(--gap);flex:1;min-width:13em}
+#center .craftTables{display:flex;flex-direction:column;gap:var(--gap);flex:0 0 auto}
+
+/* the quality table fills its column so no phantom empty strip beside it */
+#center .craftMid .dtable{grid-template-columns:1fr 1fr}
+
+#center .rules{
+  background:var(--tile);
+  border:1px solid var(--line);
+  padding:.55em .75em;
+  font-weight:400;
+}
+#center .rules p{margin:.35em 0}
+#center .rules b{font-weight:700}
+
+#center .dtable{
+  display:grid;
+  grid-template-columns:max-content max-content;
+  background:var(--tile);
+  border:1px solid var(--line);
+}
+#center .dtable.six{grid-template-columns:repeat(6,max-content)}
+#center .dtable > *{padding:.28em .55em;border-bottom:1px solid var(--line);border-left:1px solid var(--line);font-weight:700;min-width:0}
+#center .dtable > .dh{background:var(--band);font-weight:400}
+#center .dtable > *:nth-child(2n+1){border-left:0}
+#center .dtable.six > *{border-left:1px solid var(--line)}
+#center .dtable.six > *:nth-child(6n+1){border-left:0}
+/* a heavier line between each material pair so the groups of three read apart */
+#center .dtable.six > *:nth-child(6n+3),
+#center .dtable.six > *:nth-child(6n+5){border-left:2px solid #454c57}
+
+/* spell cards */
+
+#center .spellCard{
+  background:var(--tile);
+  border:1px solid var(--line);
+  margin-top:var(--gap);
+}
+#center .spellCard .sphead{
+  display:flex;
+  gap:1.2em;
+  align-items:baseline;
+  padding:.28em .55em;
+  background:var(--band);
+  border-bottom:1px solid var(--line);
+}
+#center .spellCard .sphead b{font-weight:700}
+#center .spellCard .sphead span{font-weight:400;opacity:.85}
+
+/* two spells side by side so the panel stops eating vertical space */
+#center .spellGrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);align-items:start;margin-top:var(--gap)}
+#center .spellGrid .spellCard{margin-top:0}
+
+/* the add level and delete controls live in the card corner */
+#center .spTools{margin-left:auto;display:flex;gap:.4em}
+#center .spTools button{
+  font:inherit;
+  font-size:.8em;
+  font-weight:400;
+  padding:0 .5em;
+  color:var(--text);
+  opacity:.6;
+  background:none;
+  border:1px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .spTools button:hover{opacity:1}
+#center .spTools .delSpell:hover{border-color:var(--accent);color:var(--accent)}
+#center .spTools .addLevel:hover,
+#center .spTools .subLevel:hover{border-color:#8a5cc9}
+
+#center .sphead input[type=text]{text-align:left;width:auto}
+#center .sphead b input[type=text]{font-weight:700}
+
+#center .lvlGrid{
+  display:grid;
+  overflow-x:auto;
+  border-bottom:1px solid var(--line);
+}
+#center .lvlGrid > *{
+  padding:.28em .55em;
+  border-left:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  text-align:center;
+  font-weight:700;
+  min-width:0;
+}
+#center .lvlGrid > .lh{
+  background:var(--band);
+  font-weight:400;
+  text-align:left;
+  border-left:0;
+  white-space:nowrap;
+}
+#center .spellCard .spdescRow{padding:.28em .55em;font-weight:400}
+#center .spellCard .spdescRow input[type=text]{text-align:left}
+
+#center .addSpell{
+  font:inherit;
+  font-weight:400;
+  width:100%;
+  margin-top:var(--gap);
+  padding:.35em;
+  color:var(--text);
+  opacity:.7;
+  background:none;
+  border:1px dashed var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .addSpell:hover{opacity:1;border-color:#8a5cc9}
+
+/* footer */
+
+#center .foot{
+  margin-top:auto;
+  padding-top:1.2em;
+  display:flex;
+  justify-content:center;
+  gap:.7em;
+  font-size:.7em;
+  opacity:.55;
+}
+#center .foot a{color:var(--text)}
+
 /* narrow screens */
+
+@media (max-width:1100px){
+  #center .spellGrid{grid-template-columns:1fr}
+  #center .skills{grid-template-columns:1fr}
+}
 
 @media (max-width:900px){
   #center .charsBand{flex-wrap:wrap}
   #center .langs{flex:1 1 100%}
+  #center .langsInner{position:static;overflow:visible}
   #center .langs .band.val:last-child{flex:0 0 auto}
 }
 

@@ -19,21 +19,86 @@ function App() {
     const [charInfo, setCharInfo] = useState<CharInfo | null>(null)
     const [languages, setLanguages] = useState<string[]>([])
     const [mode, setMode] = useState<string | null>(null)
+    const [panel, setPanel] = useState<string | null>(null)
+    const [inventory, setInventory] = useState<{name: string, enc: string}[]>([])
+    const [ttp, setTtp] = useState<{name: string, note: string}[]>([])
+    const [specializations, setSpecializations] = useState<string[]>([])
+    const [rituals, setRituals] = useState<string[]>([])
+    const [spells, setSpells] = useState<{name: string, attr: string, desc: string, levels: {lvl: string, cost: string, str: string}[]}[]>([])
 
     async function handleFile(event) {
         const file = event.target.files?.[0]
         if (!file) return
         const PDFInput : ArrayBuffer = await file.arrayBuffer()
         const parsed = await fileHandler(PDFInput)
+        console.log(parsed)
         setCharInfo(parsed)
         // the pdf gives all the languages as one string so split it into rows here
         setLanguages(String(parsed.get("Languages") ?? "").split(",").map(l => l.trim()))
+
+        // items 2 and up keep their enc under a weird key like Item 1 ENC 2
+        const items = []
+        for (let i = 1; i <= 28; i++) {
+            const name = parsed.get("Item " + i)
+            if (!name) continue
+            const encKey = i === 1 ? "Item 1 ENC" : "Item 1 ENC " + i
+            items.push({name: String(name), enc: String(parsed.get(encKey) ?? "")})
+        }
+        setInventory(items)
+
+        // a ttp slot with notes but no name is the rest of the previous ones note
+        const traits: {name: string, note: string}[] = []
+        for (let i = 1; i <= 29; i++) {
+            const name = parsed.get("TTP " + i)
+            const note = String(parsed.get("TTP Notes " + i) ?? "")
+            if (name) traits.push({name: String(name), note: note})
+            else if (note !== "" && traits.length > 0) traits[traits.length - 1].note += " " + note
+        }
+        setTtp(traits)
+
+        const specs = []
+        for (let i = 1; i <= 5; i++) {
+            if (parsed.get("Spell Specializations " + i)) specs.push(String(parsed.get("Spell Specializations " + i)))
+        }
+        setSpecializations(specs)
+
+        const rits = []
+        for (let i = 1; i <= 7; i++) {
+            if (parsed.get("Rituals " + i)) rits.push(String(parsed.get("Rituals " + i)))
+        }
+        setRituals(rits)
+
+        // port over everything from spell lsit
+        const spellList = []
+        for (let i = 1; i <= 21; i++) {
+            const name = parsed.get("Spell Name " + i)
+            if (!name) continue
+            const levels = []
+            for (let j = 1; j <= 7; j++) {
+                const lvl = String(parsed.get("Spell Level " + j + " " + i) ?? "")
+                const cost = String(parsed.get("Spell Cost " + j + " " + i) ?? "")
+                const str = String(parsed.get("Spell Strength " + j + " " + i) ?? "")
+                if (lvl !== "" || cost !== "" || str !== "") levels.push({lvl: lvl, cost: cost, str: str})
+            }
+            spellList.push({
+                name: String(name),
+                attr: String(parsed.get("Spell Attributes " + i) ?? ""),
+                desc: String(parsed.get("Spell Description 1 " + i) ?? "") + String(parsed.get("Spell Description 2 " + i) ?? ""),
+                levels: levels,
+            })
+        }
+        setSpells(spellList)
     }
 
     if (charInfo) {
+        // professions only say which characteristic they use inside their tn text
         const p1Char = String(charInfo.get("Profession 1 TN") ?? "").split("(")[1]?.replace(")", "").trim() ?? ""
         const p2Char = String(charInfo.get("Profession 2 TN") ?? "").split("(")[1]?.replace(")", "").trim() ?? ""
         const p3Char = String(charInfo.get("Profession 3 TN") ?? "").split("(")[1]?.replace(")", "").trim() ?? ""
+
+        // total enc is just the sum of whatever enc numbers are filled in
+        const totalEnc = inventory.reduce((sum, item) => sum + (Number(item.enc) || 0), 0)
+
         return (
             <section id='center'>
                 <h1>{charInfo.get("Name")}</h1>
@@ -120,40 +185,42 @@ function App() {
                         </div>
                     </div>
 
-                    <div className="tile langs">
-                        <div className="band head">Languages</div>
-                        {languages.map((lang, i) => (
-                            <div className="band val" key={i}>
-                                <input
-                                    type="text"
-                                    value={lang}
-                                    onChange={e => setLanguages(languages.map((old, j) => j === i ? e.target.value : old))}
-                                    onKeyDown={e => {
-                                        // enter puts a blank row underneath this one
-                                        if (e.key === "Enter") {
-                                            e.preventDefault()
-                                            const copy = [...languages]
-                                            copy.splice(i + 1, 0, "")
-                                            setLanguages(copy)
-                                            // the new row does not exist yet so wait a tick before focusing it
-                                            setTimeout(() => {
-                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .langs input")
-                                                rows[i + 1]?.focus()
-                                            }, 0)
-                                        }
-                                        // backspace on an empty row deletes it again
-                                        if (e.key === "Backspace" && lang === "" && languages.length > 1) {
-                                            e.preventDefault()
-                                            setLanguages(languages.filter((_old, j) => j !== i))
-                                            setTimeout(() => {
-                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .langs input")
-                                                rows[i - 1]?.focus()
-                                            }, 0)
-                                        }
-                                    }}
-                                />
-                            </div>
-                        ))}
+                    <div className="langs">
+                        <div className="langsInner">
+                            <div className="band head">Languages</div>
+                            {languages.map((lang, i) => (
+                                <div className="band val" key={i}>
+                                    <input
+                                        type="text"
+                                        value={lang}
+                                        onChange={e => setLanguages(languages.map((old, j) => j === i ? e.target.value : old))}
+                                        onKeyDown={e => {
+                                            // enter puts a blank row underneath this one
+                                            if (e.key === "Enter") {
+                                                e.preventDefault()
+                                                const copy = [...languages]
+                                                copy.splice(i + 1, 0, "")
+                                                setLanguages(copy)
+                                                // the new row does not exist yet so wait a tick before focusing it
+                                                setTimeout(() => {
+                                                    const rows = document.querySelectorAll<HTMLInputElement>("#center .langs input")
+                                                    rows[i + 1]?.focus()
+                                                }, 0)
+                                            }
+                                            // backspace on an empty row deletes it again
+                                            if (e.key === "Backspace" && lang === "" && languages.length > 1) {
+                                                e.preventDefault()
+                                                setLanguages(languages.filter((_old, j) => j !== i))
+                                                setTimeout(() => {
+                                                    const rows = document.querySelectorAll<HTMLInputElement>("#center .langs input")
+                                                    rows[i - 1]?.focus()
+                                                }, 0)
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                 </div>
@@ -494,6 +561,336 @@ function App() {
                             </div>
 
                         </div>
+
+                        <div className="subBar">
+                            <button type="button" className={panel === "inv" ? "tInv active" : "tInv"} onClick={() => setPanel(panel === "inv" ? null : "inv")}>Inventory</button>
+                            <button type="button" className={panel === "ttp" ? "tTtp active" : "tTtp"} onClick={() => setPanel(panel === "ttp" ? null : "ttp")}>Traits, Talents &amp; Powers</button>
+                            <button type="button" className={panel === "spell" ? "tSpell active" : "tSpell"} onClick={() => setPanel(panel === "spell" ? null : "spell")}>Spellcasting</button>
+                            <button type="button" className={panel === "craft" ? "tCraft active" : "tCraft"} onClick={() => setPanel(panel === "craft" ? null : "craft")}>Crafting</button>
+                        </div>
+
+                        {panel === "inv" && (
+                            <>
+                                <h2>Inventory</h2>
+
+                                <div className="invBand">
+                                    <div className="inv">
+                                        <div className="invRow head"><div>Item</div><div>ENC</div></div>
+                                        {inventory.map((item, i) => (
+                                            <div className="invRow" key={i}>
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        value={item.name}
+                                                        onChange={e => setInventory(inventory.map((old, j) => j === i ? {...old, name: e.target.value} : old))}
+                                                        onKeyDown={e => {
+                                                            if (e.key === "Enter") {
+                                                                e.preventDefault()
+                                                                const copy = [...inventory]
+                                                                copy.splice(i + 1, 0, {name: "", enc: ""})
+                                                                setInventory(copy)
+                                                                // each row has two inputs so the next name field is two over
+                                                                setTimeout(() => {
+                                                                    const rows = document.querySelectorAll<HTMLInputElement>("#center .inv input")
+                                                                    rows[(i + 1) * 2]?.focus()
+                                                                }, 0)
+                                                            }
+                                                            if (e.key === "Backspace" && item.name === "" && item.enc === "" && inventory.length > 1) {
+                                                                e.preventDefault()
+                                                                setInventory(inventory.filter((_old, j) => j !== i))
+                                                                setTimeout(() => {
+                                                                    const rows = document.querySelectorAll<HTMLInputElement>("#center .inv input")
+                                                                    rows[(i - 1) * 2]?.focus()
+                                                                }, 0)
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <input
+                                                        type="text"
+                                                        className="pair"
+                                                        value={item.enc}
+                                                        onChange={e => setInventory(inventory.map((old, j) => j === i ? {...old, enc: e.target.value} : old))}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="invSide">
+                                        <div className="tile">
+                                            <div className="band head">Drakes</div>
+                                            <div className="band val"><input type="text" defaultValue={String(charInfo.get("Drakes") ?? "")}/></div>
+                                        </div>
+                                        <div className="tile">
+                                            <div className="band head">Total ENC</div>
+                                            <div className="band val"><input type="text" value={totalEnc} readOnly/></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {panel === "ttp" && (
+                            <>
+                                <h2>Traits, Talents &amp; Powers</h2>
+
+                                <div className="ttp">
+                                    <div className="ttpRow head"><div>Name</div><div>Description</div></div>
+                                    {ttp.map((trait, i) => (
+                                        <div className="ttpRow" key={i}>
+                                            <div className="tname">
+                                                <input
+                                                    type="text"
+                                                    value={trait.name}
+                                                    onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, name: e.target.value} : old))}
+                                                    onKeyDown={e => {
+                                                        if (e.key === "Enter") {
+                                                            e.preventDefault()
+                                                            const copy = [...ttp]
+                                                            copy.splice(i + 1, 0, {name: "", note: ""})
+                                                            setTtp(copy)
+                                                            setTimeout(() => {
+                                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
+                                                                rows[(i + 1) * 2]?.focus()
+                                                            }, 0)
+                                                        }
+                                                        if (e.key === "Backspace" && trait.name === "" && trait.note === "" && ttp.length > 1) {
+                                                            e.preventDefault()
+                                                            setTtp(ttp.filter((_old, j) => j !== i))
+                                                            setTimeout(() => {
+                                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
+                                                                rows[(i - 1) * 2]?.focus()
+                                                            }, 0)
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="tnote">
+                                                <input
+                                                    type="text"
+                                                    value={trait.note}
+                                                    onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, note: e.target.value} : old))}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+
+                        {panel === "spell" && (
+                            <>
+                                <h2>Spellcasting</h2>
+
+                                <div className="stable">
+                                    <div className="srow head">
+                                        <div>Skill</div><div>Rank</div><div>Bonus</div><div>Target Numbers</div>
+                                    </div>
+                                    <div className="srow">
+                                        <div className="sname">Alteration</div>
+                                        <div>{rankNames[String(charInfo.get("Alteration Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div>{charInfo.get("Alteration Rank") ? String(charInfo.get("Alteration Bonus") ?? "0") : "-20"}</div>
+                                        <div className="stests">
+                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Alteration Rank") ? Number(charInfo.get("Alteration Bonus") ?? 0) : -20)}</b></span>
+                                        </div>
+                                    </div>
+                                    <div className="srow">
+                                        <div className="sname">Conjuration</div>
+                                        <div>{rankNames[String(charInfo.get("Conjuration Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div>{charInfo.get("Conjuration Rank") ? String(charInfo.get("Conjuration Bonus") ?? "0") : "-20"}</div>
+                                        <div className="stests">
+                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Conjuration Rank") ? Number(charInfo.get("Conjuration Bonus") ?? 0) : -20)}</b></span>
+                                        </div>
+                                    </div>
+                                    <div className="srow">
+                                        <div className="sname">Destruction</div>
+                                        <div>{rankNames[String(charInfo.get("Destruction Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div>{charInfo.get("Destruction Rank") ? String(charInfo.get("Destruction Bonus") ?? "0") : "-20"}</div>
+                                        <div className="stests">
+                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Destruction Rank") ? Number(charInfo.get("Destruction Bonus") ?? 0) : -20)}</b></span>
+                                        </div>
+                                    </div>
+                                    <div className="srow">
+                                        <div className="sname">Illusion</div>
+                                        <div>{rankNames[String(charInfo.get("Illusion Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div>{charInfo.get("Illusion Rank") ? String(charInfo.get("Illusion Bonus") ?? "0") : "-20"}</div>
+                                        <div className="stests">
+                                            <span>Intelligence <b>{Number(charInfo.get("Int")) + (charInfo.get("Illusion Rank") ? Number(charInfo.get("Illusion Bonus") ?? 0) : -20)}</b></span>
+                                        </div>
+                                    </div>
+                                    <div className="srow">
+                                        <div className="sname">Mysticism</div>
+                                        <div>{rankNames[String(charInfo.get("Mysticism Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div>{charInfo.get("Mysticism Rank") ? String(charInfo.get("Mysticism Bonus") ?? "0") : "-20"}</div>
+                                        <div className="stests">
+                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Mysticism Rank") ? Number(charInfo.get("Mysticism Bonus") ?? 0) : -20)}</b></span>
+                                        </div>
+                                    </div>
+                                    <div className="srow">
+                                        <div className="sname">Necromancy</div>
+                                        <div>{rankNames[String(charInfo.get("Necromancy Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div>{charInfo.get("Necromancy Rank") ? String(charInfo.get("Necromancy Bonus") ?? "0") : "-20"}</div>
+                                        <div className="stests">
+                                            <span>Intelligence <b>{Number(charInfo.get("Int")) + (charInfo.get("Necromancy Rank") ? Number(charInfo.get("Necromancy Bonus") ?? 0) : -20)}</b></span>
+                                        </div>
+                                    </div>
+                                    <div className="srow">
+                                        <div className="sname">Restoration</div>
+                                        <div>{rankNames[String(charInfo.get("Restoration Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div>{charInfo.get("Restoration Rank") ? String(charInfo.get("Restoration Bonus") ?? "0") : "-20"}</div>
+                                        <div className="stests">
+                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Restoration Rank") ? Number(charInfo.get("Restoration Bonus") ?? 0) : -20)}</b></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {specializations.length > 0 && (
+                                    <>
+                                        <h3>Specializations</h3>
+                                        <div className="bonds">
+                                            {specializations.map((spec, i) => (
+                                                <div className="band val" key={i}>
+                                                    <input
+                                                        type="text"
+                                                        value={spec}
+                                                        onChange={e => setSpecializations(specializations.map((old, j) => j === i ? e.target.value : old))}
+                                                        onKeyDown={e => {
+                                                            if (e.key === "Enter") {
+                                                                e.preventDefault()
+                                                                const copy = [...specializations]
+                                                                copy.splice(i + 1, 0, "")
+                                                                setSpecializations(copy)
+                                                            }
+                                                            if (e.key === "Backspace" && spec === "" && specializations.length > 1) {
+                                                                e.preventDefault()
+                                                                setSpecializations(specializations.filter((_old, j) => j !== i))
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+
+                                {rituals.length > 0 && (
+                                    <>
+                                        <h3>Rituals</h3>
+                                        <div className="bonds">
+                                            {rituals.map((rit, i) => (
+                                                <div className="band val" key={i}>
+                                                    <input
+                                                        type="text"
+                                                        value={rit}
+                                                        onChange={e => setRituals(rituals.map((old, j) => j === i ? e.target.value : old))}
+                                                        onKeyDown={e => {
+                                                            if (e.key === "Enter") {
+                                                                e.preventDefault()
+                                                                const copy = [...rituals]
+                                                                copy.splice(i + 1, 0, "")
+                                                                setRituals(copy)
+                                                            }
+                                                            if (e.key === "Backspace" && rit === "" && rituals.length > 1) {
+                                                                e.preventDefault()
+                                                                setRituals(rituals.filter((_old, j) => j !== i))
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+
+                                <h3>Spells</h3>
+                                <div className="spellGrid">
+                                {spells.map((spell, i) => (
+                                    <div className="spellCard" key={i}>
+                                        <div className="sphead">
+                                            <b><input type="text" size={12} value={spell.name} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, name: e.target.value} : old))}/></b>
+                                            <span><input type="text" size={20} value={spell.attr} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, attr: e.target.value} : old))}/></span>
+                                            <div className="spTools">
+                                                <button type="button" className="addLevel" onClick={() => setSpells(spells.map((old, j) => j === i ? {...old, levels: [...old.levels, {lvl: "", cost: "", str: ""}]} : old))}>+ level</button>
+                                                <button type="button" className="subLevel" onClick={() => setSpells(spells.map((old, j) => j === i && old.levels.length > 1 ? {...old, levels: old.levels.slice(0, -1)} : old))}>&#8722; level</button>
+                                                <button type="button" className="delSpell" onClick={() => setSpells(spells.filter((_old, j) => j !== i))}>&#215;</button>
+                                            </div>
+                                        </div>
+                                        <div className="lvlGrid" style={{gridTemplateColumns: "max-content repeat(" + spell.levels.length + ",minmax(3em,1fr))"}}>
+                                            <div className="lh">Level</div>
+                                            {spell.levels.map((level, k) => (
+                                                <div key={k}><input type="text" value={level.lvl} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, levels: old.levels.map((l, m) => m === k ? {...l, lvl: e.target.value} : l)} : old))}/></div>
+                                            ))}
+                                            <div className="lh">Cost</div>
+                                            {spell.levels.map((level, k) => (
+                                                <div key={k}><input type="text" value={level.cost} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, levels: old.levels.map((l, m) => m === k ? {...l, cost: e.target.value} : l)} : old))}/></div>
+                                            ))}
+                                            <div className="lh">Spell Str.</div>
+                                            {spell.levels.map((level, k) => (
+                                                <div key={k}><input type="text" value={level.str} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, levels: old.levels.map((l, m) => m === k ? {...l, str: e.target.value} : l)} : old))}/></div>
+                                            ))}
+                                        </div>
+                                        <div className="spdescRow">
+                                            <input type="text" value={spell.desc} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, desc: e.target.value} : old))}/>
+                                        </div>
+                                    </div>
+                                ))}
+                                </div>
+
+                                <button type="button" className="addSpell" onClick={() => setSpells([...spells, {name: "", attr: "", desc: "", levels: [{lvl: "", cost: "", str: ""}]}])}>+ add spell</button>
+                            </>
+                        )}
+
+                        {panel === "craft" && (
+                            <>
+                                <h2>Crafting</h2>
+
+                                <h3>Smithing</h3>
+
+                                <div className="craftBand">
+                                    <div className="rules">
+                                        <p><b>1. Determine item.</b> Pick the item and its quality. Some items only occur naturally and cannot be crafted, at GM discretion. Quality plus base price gives the market value.</p>
+                                        <p><b>2. Gather raw materials.</b> Buying all raw materials costs roughly one third of the item's standard price.</p>
+                                        <p><b>3. Determine test difficulty.</b> Difficulty comes from the item's quality, and for weapons and armor the material adds a further modifier. See the tables below.</p>
+                                        <p><b>4. Make the crafting test.</b> Weapons and armor use Profession [Smithing]. Requires craft tools and forge access. Failure produces no item. Critical success halves the time. Duration runs from hours to days at GM discretion.</p>
+                                        <p><b>Repairing.</b> A Profession [Smithing] test, about an hour, and raw materials worth 5% of the item's price. Success reduces the Damaged (X) quality by the degrees of success.</p>
+                                    </div>
+
+                                    <div className="craftMid">
+                                        <div className="dtable">
+                                            <div className="dh">Quality</div><div className="dh">Difficulty</div>
+                                            <div>Inferior</div><div>+30</div>
+                                            <div>Common</div><div>+0</div>
+                                            <div>Superior</div><div>-30</div>
+                                        </div>
+
+                                        <div className="rules">
+                                            <p><b>Runed Weapons &amp; Armor.</b> With Enchanting knowledge, magic runes can be worked into a weapon or armor during creation by passing an Enchant test. Success adds the Magic quality, and armor also gains 1 Magic AR. On failure the item is made without it, and the test cannot be retried for this item.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="craftTables">
+                                        <div className="dtable six">
+                                            <div className="dh">Material</div><div className="dh">Diff.</div><div className="dh">Material</div><div className="dh">Diff.</div><div className="dh">Material</div><div className="dh">Diff.</div>
+                                            <div>Adamantium</div><div>-20</div><div>Ebony</div><div>-30</div><div>Orichalcum</div><div>-10</div>
+                                            <div>Bonemold</div><div>-5</div><div>Fur</div><div>+10</div><div>Padded</div><div>+30</div>
+                                            <div>Bone</div><div>+0</div><div>Iron</div><div>+20</div><div>Silver</div><div>-5</div>
+                                            <div>Chitin</div><div>+0</div><div>Leather</div><div>+10</div><div>Stahlrim</div><div>-10</div>
+                                            <div>Dragonbone/scale</div><div>-40</div><div>Malachite</div><div>-20</div><div>Steel</div><div>+0</div>
+                                            <div>Dreugh Hide</div><div>-10</div><div>Mithril</div><div>-10</div><div>Wood</div><div>+20</div>
+                                            <div>Dwemer</div><div>-10</div><div>Moonstone</div><div>-10</div><div></div><div></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h3>Alchemy</h3>
+                                <div className="rules"><p>WIP</p></div>
+
+                                <h3>Enchanting</h3>
+                                <div className="rules"><p>WIP</p></div>
+                            </>
+                        )}
                     </>
                 )}
 
@@ -505,6 +902,12 @@ function App() {
                         </div>
                     </>
                 )}
+
+                <div className="foot">
+                    <a href="https://github.com/m8sh/ThrumpCharacterManager" target="_blank">github</a>
+                    <span>&#183;</span>
+                    <span>thrump's character manager</span>
+                </div>
             </section>
         )
     }
