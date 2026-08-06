@@ -1,4 +1,5 @@
 import {PDFDocument, degrees, rgb, StandardFonts, PDFTextField, PDFCheckBox} from 'pdf-lib';
+import {PDFField} from 'pdf-lib'
 import * as fs from 'node:fs/promises';
 
 const charInfo = new Map<string, any>();

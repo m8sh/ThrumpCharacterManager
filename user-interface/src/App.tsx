@@ -1,6 +1,6 @@
 import './App.css'
 import {fileHandler} from './index.ts'
-import {useState, Fragment} from "react";
+import {useState, Fragment, type ChangeEvent} from "react";
 
 type CharInfo = Map<string, string | boolean | undefined>
 
@@ -77,7 +77,7 @@ function App() {
     const [ranged, setRanged] = useState<{name: string, dmg: string, hand: string, reach: string, enc: string, notes: string}[]>([])
     const [openActions, setOpenActions] = useState<string[]>([])
 
-    async function handleFile(event) {
+    async function handleFile(event: ChangeEvent<HTMLInputElement>) {
         const file = event.target.files?.[0]
         if (!file) return
         const PDFInput : ArrayBuffer = await file.arrayBuffer()
