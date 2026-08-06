@@ -654,10 +654,6 @@ body:has(#center > h1){display:block}
 #center .spellCard .sphead b{font-weight:700}
 #center .spellCard .sphead span{font-weight:400;opacity:.85}
 
-/* two spells side by side so the panel stops eating vertical space */
-#center .spellGrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);align-items:start;margin-top:var(--gap)}
-#center .spellGrid .spellCard{margin-top:0}
-
 /* the add level and delete controls live in the card corner */
 #center .spTools{margin-left:auto;display:flex;gap:.4em}
 #center .spTools button{
@@ -731,11 +727,179 @@ body:has(#center > h1){display:block}
 }
 #center .foot a{color:var(--text)}
 
+/* two spells side by side so the panel stops eating vertical space */
+#center .spellGrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);align-items:start;margin-top:var(--gap)}
+#center .spellGrid .spellCard{margin-top:0}
+
+/* name and attribute boxes grow with their letters instead of clipping */
+#center .sphead{flex-wrap:wrap}
+#center .sphead input[type=text]{field-sizing:content;width:auto;min-width:4ch;max-width:100%}
+
+/* descriptions are textareas that wrap onto more rows when they run long */
+#center .spdescRow textarea,
+#center .notesArea{
+  field-sizing:content;
+  width:100%;
+  resize:none;
+  font:inherit;
+  font-weight:400;
+  color:inherit;
+  background:none;
+  border:0;
+  padding:0;
+  text-align:left;
+  line-height:1.35;
+}
+#center .spdescRow textarea:focus,
+#center .notesArea:focus{outline:0;background:rgba(255,255,255,.06)}
+
+/* skills on the left, specializations and rituals in a side column */
+#center .spSkillsBand{display:flex;gap:var(--gap);align-items:start}
+#center .spSkillsBand .stable{flex:0 0 auto}
+#center .spSide{flex:1;min-width:0}
+#center .spSide h3:first-child{margin-top:0}
+
+/* combat */
+
+#center .combatBand{display:flex;gap:var(--gap);align-items:start}
+#center .combatL{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--gap)}
+#center .combatR{flex:1.15;min-width:0;display:flex;flex-direction:column;gap:var(--gap)}
+
+/* armor by hit location, arranged in pairs like the paper sheet */
+#center .armGrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+#center .armLoc{background:var(--tile);border:1px solid var(--line)}
+#center .armLoc .ahead{
+  display:flex;
+  justify-content:space-between;
+  padding:.28em .55em;
+  background:var(--band);
+  border-bottom:1px solid var(--line);
+}
+#center .armLoc .ahead b{font-weight:700}
+#center .armLoc .ahead span{opacity:.6}
+#center .arow{display:grid;grid-template-columns:3.5em minmax(0,1fr);border-bottom:1px solid var(--line)}
+#center .arow:last-child{border-bottom:0}
+#center .arow > *{padding:.28em .55em;min-width:0}
+#center .arow > .al{background:var(--band);border-right:1px solid var(--line)}
+#center .arow input[type=text]{text-align:left}
+
+/* the combat style block */
+#center .csBlock{background:var(--tile);border:1px solid var(--line)}
+#center .csBlock .csTop{
+  display:flex;
+  gap:1.2em;
+  align-items:baseline;
+  padding:.28em .55em;
+  background:var(--band);
+  border-bottom:1px solid var(--line);
+}
+#center .csBlock .csTop b{font-weight:700}
+#center .csBlock .csTop .stests{margin-left:auto}
+#center .csBlock .csLine{padding:.28em .55em;border-bottom:1px solid var(--line);font-weight:400}
+#center .csBlock .csLine:last-child{border-bottom:0}
+
+/* weapon tables, a stat row then a notes row per weapon */
+/* fixed em widths for the stat columns so empty inputs cannot balloon them */
+#center .wtable{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 6em 4em 4.5em 4em 2em;
+  background:var(--tile);
+  border:1px solid var(--line);
+}
+#center .wrow{
+  display:grid;
+  grid-template-columns:subgrid;
+  grid-column:1 / -1;
+  border-bottom:1px solid var(--line);
+}
+#center .wrow:last-child{border-bottom:0}
+#center .wrow > *{padding:.28em .55em;border-left:1px solid var(--line);min-width:0;font-weight:700}
+#center .wrow > *:first-child{border-left:0}
+#center .wrow.head > *{background:var(--band);font-weight:400}
+#center .wrow .wname{background:var(--band);font-weight:400}
+#center .wrow .wname input[type=text]{text-align:left}
+#center .wrow .wdel{display:flex;align-items:center;justify-content:center;padding:0}
+#center .wrow .wdel button{
+  font:inherit;
+  font-size:.8em;
+  color:var(--text);
+  opacity:.5;
+  background:none;
+  border:0;
+  cursor:pointer;
+}
+#center .wrow .wdel button:hover{opacity:1;color:var(--accent)}
+#center .wnotes{grid-column:1 / -1;padding:.28em .55em;border-bottom:1px solid var(--line);font-weight:400;font-style:normal;opacity:.85}
+#center .wnotes:last-child{border-bottom:0}
+#center .wnotes input[type=text]{text-align:left;font-weight:400}
+
+/* combat action panels */
+
+#center .roundOver{
+  font:inherit;
+  font-weight:600;
+  width:100%;
+  margin-top:1.1em;
+  padding:.45em;
+  color:var(--text);
+  background:var(--tile);
+  border:2px solid var(--accent);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .roundOver:hover{background:#241d1c}
+
+#center .subBar .tOn{border-color:#c9825c}
+#center .subBar .tNot{border-color:#5c6ec9}
+#center .subBar .tCond{border-color:#c95ca8}
+#center .subBar .tOn.active{background:#241f1a}
+#center .subBar .tNot.active{background:#1a1c29}
+#center .subBar .tCond.active{background:#251a22}
+
+/* actions fold out when their name is clicked */
+
+#center .actList{background:var(--tile);border:1px solid var(--line)}
+#center .act{border-bottom:1px solid var(--line)}
+#center .act:last-child{border-bottom:0}
+#center .actHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:.28em .55em;
+  background:var(--band);
+  cursor:pointer;
+  font-weight:700;
+}
+#center .actHead:hover{background:#1d2026}
+#center .actHead .ap{font-weight:400;opacity:.6}
+#center .actBody{padding:.45em .55em .55em;font-weight:400}
+#center .actBody p{margin:.3em 0}
+#center .actBody ul{margin:.3em 0;padding-left:1.2em}
+#center .actBody li{margin:.25em 0}
+
+#center .takeAction{
+  display:block;
+  width:100%;
+  margin-top:.55em;
+  padding:.4em;
+  font:inherit;
+  font-weight:600;
+  color:var(--text);
+  background:#241d1c;
+  border:2px solid var(--accent);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .takeAction:hover{filter:brightness(1.25)}
+
 /* narrow screens */
 
 @media (max-width:1100px){
-  #center .spellGrid{grid-template-columns:1fr}
   #center .skills{grid-template-columns:1fr}
+  #center .spellGrid{grid-template-columns:1fr}
+  #center .combatBand{flex-wrap:wrap}
+  #center .combatL,
+  #center .combatR{flex:1 1 100%}
 }
 
 @media (max-width:900px){

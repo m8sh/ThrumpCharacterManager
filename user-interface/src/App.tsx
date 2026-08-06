@@ -1,6 +1,6 @@
 import './App.css'
 import {fileHandler} from './index.ts'
-import {useState} from "react";
+import {useState, Fragment} from "react";
 
 type CharInfo = Map<string, string | boolean | undefined>
 
@@ -15,6 +15,54 @@ const charNames: Record<string, string> = {
     Wp: "Willpower", Prc: "Perception", Prs: "Personality", Lck: "Luck",
 }
 
+// the combat actions and reactions straight from the rulebook
+const onTurnActions: {name: string, text: string, bullets?: {label: string, text: string}[]}[] = [
+    {name: "Attack", text: "The character can make an attack with a melee or ranged weapon. A character may make no more than two total attacks in a single round. When attacking they can use one of three optional variations of this action. A player must declare if their character is choosing one of these variations before the attack test has been made.", bullets: [
+            {label: "All Out Attack (melee only)", text: "The character makes a melee attack with a +20 bonus by spending an additional AP. This is not an Extended Action."},
+            {label: "Coup de Gr\u00e2ce", text: "The character makes a killing blow against a helpless target. A helpless target is one who is either unconscious, both restrained and prone, or otherwise physically incapable of defending themselves. The GM may rule that certain characters cannot be killed in this way depending on the circumstances. This kills the target outright. For unarmed Coup de Gr\u00e2ce, refer to the Grappling rules."},
+            {label: "Precision Strike", text: "A character attempting a precision strike is aiming to hit a particular part of their opponent's body and thus suffers a -20 penalty on the attack test. If successful, the character may choose the hit location of that attack in addition to resolving any other effects the attack would have."},
+        ]},
+    {name: "Disengage", text: "The character can use this action to retreat from combat with an enemy. If they move out of an enemy's engagement range during this Turn then the attack of opportunity reaction or other delayed actions/reactions, may not be taken against them."},
+    {name: "Cast Magic", text: "The character casts a spell that they know using the rules for spellcasting found in Chapter 6: Magic (page 125). This may be used to cast spells that count as attacks, but a character may make no more than two attacks in a single round."},
+    {name: "Delay Turn", text: "The character declares a set of circumstances in which they will act. The character then skips their Turn without spending AP and may insert their delayed Turn into the order as a free reaction if the conditions are met. If the delayed Turn is not taken before the character's next Turn would occur, then the Action Points are lost entirely."},
+    {name: "Defensive Stance", text: "Using this action grants the character +10 on any defensive tests made until their next Turn. Taking this action reduces the character's Attack limit to 0 until their next Turn."},
+    {name: "Aim", text: "A character can spend an Action Point to aim, gaining a +10 bonus to their next ranged attack, including spells with the Bolt form. This bonus can stack if the character takes this action multiple consecutive times before the next ranged or bolt attack, but only up to three times for a maximum bonus of +30. The \"chain\" of aim actions can stretch across rounds. This chain is broken and the bonus lost if the character makes an attack with another weapon or takes any actions or reactions other than to continue aiming or fire the aimed weapon or spell. Once the aimed weapon is fired, the bonuses from this action are reset to +0."},
+    {name: "Cast Magic (Instant only)", text: "The character casts a spell that they know using the rules for spellcasting found in Chapter 6. This may only be used to cast spells that have the Instant spell attribute."},
+    {name: "Dash", text: "The character can use this action in order to move up to their speed. If this is done on their Turn, this movement is added to their base movement for that Turn. This action can be used to allow a character to move several times their speed during a round."},
+    {name: "Hide", text: "The character can use this action to attempt to hide from foes. If anyone might detect them while they do this, they must make a Stealth skill test opposed by the Observe of anyone who might spot them. On success, they gain the Hidden condition."},
+    {name: "Ready Weapon / Drink Potion", text: "The character may draw, sheath, withdraw, or reload a weapon. This action may also be used to drink a potion, assuming it is accessible to the character, but this costs 2 AP instead. Some missile weapons may require several AP to reload, in which case this action must be extended."},
+    {name: "Arise", text: "Allows the character to use a momentary opening to roll back up to their feet, removing the prone condition without granting opponents the ability to make an attack of opportunity."},
+    {name: "Bash", text: "Character makes an Athletics or unarmed Combat Style test which their opponent may oppose with their Athletics, unarmed Combat Style, or Evade skill. If they win, their opponent is knocked back 1 meter, loses an AP, and must make an Acrobatics test to avoid falling prone. Target character cannot be of larger size and must be within 2 meters."},
+    {name: "Blind Opponent", text: "Character makes a Combat Style test which their opponent may oppose with their Evade or Combat Style (if wielding a shield). If the target loses, they become blinded for 1 round. The character must reasonably have access to some way to blind their opponent (thrown sand or rocks, for example)."},
+    {name: "Disarm", text: "Character makes an Athletics or unarmed Combat Style test which their opponent may oppose with their unarmed Combat Style or Athletics skill. If the target of the disarm attempt loses, the character may choose to either take the target's weapon if they have a free hand or fling the target's weapon 1d4 meters in a random direction. Target cannot be of larger size and must be within 2 meters. Cannot disarm natural weapons."},
+    {name: "Feint", text: "Character attempts a Combat Style or Deceive test against an opponent's Observe or Combat Style within a 2m range. If successful, they treat their next melee attack against the target as if they were Hidden. This effect only applies if the attack occurs before the end of the character's current Turn."},
+    {name: "Force Movement", text: "Character makes a Combat Style test which their opponent may oppose with their Combat Style or Athletics skill. If they win, they may move themself and their opponent up to three meters in any direction (they must both move in the same direction and the same amount) as the character shifts the location of the fight. Target character must be within melee range."},
+    {name: "Resist", text: "Character makes an Athletics or unarmed Combat Style test which their opponent may oppose with their Athletics or unarmed Combat Style skill. If they win, they may escape being restrained, grappled, or blinded."},
+    {name: "Trip", text: "Character makes an Athletics or unarmed Combat Style test which their opponent may oppose with their Athletics, unarmed Combat Style, or Evade skill. If they win, their opponent falls prone. Target character cannot be of larger size and must be within 2 meters."},
+]
+
+const notTurnActions: {name: string, text: string, bullets?: {label: string, text: string}[]}[] = [
+    {name: "Attack of Opportunity", text: "This reaction allows a character to take advantage of an opening to make a melee attack (max 2 attacks per round) against an opponent when they are vulnerable. Attacks of Opportunity are resolved before the action they are being made in reaction to is resolved. Any character may use a reaction to an Attack of Opportunity without interrupting their current action, but they must be able to see their target. An Attack of Opportunity may be triggered by the following:", bullets: [
+            {label: "Retreat", text: "When an opponent voluntarily moves out of the character's melee range without taking the Disengage action."},
+            {label: "Approach", text: "When an opponent moves closer to the character within their melee range (such as from 3 meters away to 2 meters away against a 3m range weapon)."},
+            {label: "Spellcast", text: "When an opponent casts a spell within their melee range (unless the spell counts as a melee attack)."},
+            {label: "Standing Up", text: "When a prone character stands up within their melee range without using the Arise action."},
+            {label: "Ranged Attack", text: "When an opponent makes a ranged attack within the character's engagement range."},
+            {label: "Ready", text: "When an opponent readies a weapon, reloads a weapon, or drinks a potion within their melee range. If the opponent does so as a Free Action, it does not allow for an attack of opportunity."},
+        ]},
+    {name: "Block, Parry, Evade", text: "The character tries to defend against an incoming ranged or melee attack."},
+    {name: "Counter-Attack", text: "The character attempts to make a standard melee Counter-Attack (still subject to the two attack per round limit) in response to an attack from an opponent they are aware of through the use of their Combat Style skill."},
+    {name: "Aim", text: "A character can spend an Action Point to aim, gaining a +10 bonus to their next ranged attack, including spells with the Bolt form. This bonus can stack if the character takes this action multiple consecutive times before the next ranged or bolt attack, but only up to three times for a maximum bonus of +30. The \"chain\" of aim actions can stretch across rounds. This chain is broken and the bonus lost if the character makes an attack with another weapon or takes any actions or reactions other than to continue aiming or fire the aimed weapon or spell. Once the aimed weapon is fired, the bonuses from this action are reset to +0."},
+    {name: "Cast Magic (Instant only)", text: "The character casts a spell that they know using the rules for spellcasting found in Chapter 6. This may only be used to cast spells that have the Instant spell attribute."},
+    {name: "Dash", text: "The character can use this action in order to move up to their speed. If this is done on their Turn, this movement is added to their base movement for that Turn. This action can be used to allow a character to move several times their speed during a round."},
+    {name: "Hide", text: "The character can use this action to attempt to hide from foes. If anyone might detect them while they do this, they must make a Stealth skill test opposed by the Observe of anyone who might spot them. On success, they gain the Hidden condition."},
+    {name: "Ready Weapon / Drink Potion", text: "The character may draw, sheath, withdraw, or reload a weapon. This action may also be used to drink a potion, assuming it is accessible to the character, but this costs 2 AP instead. Some missile weapons may require several AP to reload, in which case this action must be extended."},
+    {name: "Arise", text: "Allows the character to use a momentary opening to roll back up to their feet, removing the prone condition without granting opponents the ability to make an attack of opportunity."},
+    {name: "Blind Opponent", text: "Character makes a Combat Style test which their opponent may oppose with their Evade or Combat Style (if wielding a shield). If the target loses, they become blinded for 1 round. The character must reasonably have access to some way to blind their opponent (thrown sand or rocks, for example)."},
+    {name: "Resist", text: "Character makes an Athletics or unarmed Combat Style test which their opponent may oppose with their Athletics or unarmed Combat Style skill. If they win, they may escape being restrained, grappled, or blinded."},
+    {name: "Trip", text: "Character makes an Athletics or unarmed Combat Style test which their opponent may oppose with their Athletics, unarmed Combat Style, or Evade skill. If they win, their opponent falls prone. Target character cannot be of larger size and must be within 2 meters."},
+]
+
 function App() {
     const [charInfo, setCharInfo] = useState<CharInfo | null>(null)
     const [languages, setLanguages] = useState<string[]>([])
@@ -25,6 +73,9 @@ function App() {
     const [specializations, setSpecializations] = useState<string[]>([])
     const [rituals, setRituals] = useState<string[]>([])
     const [spells, setSpells] = useState<{name: string, attr: string, desc: string, levels: {lvl: string, cost: string, str: string}[]}[]>([])
+    const [melee, setMelee] = useState<{name: string, dmg: string, hand: string, reach: string, enc: string, notes: string}[]>([])
+    const [ranged, setRanged] = useState<{name: string, dmg: string, hand: string, reach: string, enc: string, notes: string}[]>([])
+    const [openActions, setOpenActions] = useState<string[]>([])
 
     async function handleFile(event) {
         const file = event.target.files?.[0]
@@ -68,7 +119,7 @@ function App() {
         }
         setRituals(rits)
 
-        // port over everything from spell lsit
+        // port over every named spell even the thuum shouts that dont use costs
         const spellList = []
         for (let i = 1; i <= 21; i++) {
             const name = parsed.get("Spell Name " + i)
@@ -84,10 +135,41 @@ function App() {
                 name: String(name),
                 attr: String(parsed.get("Spell Attributes " + i) ?? ""),
                 desc: String(parsed.get("Spell Description 1 " + i) ?? "") + String(parsed.get("Spell Description 2 " + i) ?? ""),
-                levels: levels,
+                levels: levels.length > 0 ? levels : [{lvl: "", cost: "", str: ""}],
             })
         }
         setSpells(spellList)
+
+        // if weapons come up empty check these key names against the console log
+        const meleeList = []
+        for (let i = 1; i <= 5; i++) {
+            const name = parsed.get("Melee Weapon " + i)
+            if (!name) continue
+            meleeList.push({
+                name: String(name),
+                dmg: String(parsed.get("Melee Weapon " + i + " Damage") ?? ""),
+                hand: String(parsed.get("Melee Weapon " + i + " Hand") ?? ""),
+                reach: String(parsed.get("Melee Weapon " + i + " Reach") ?? ""),
+                enc: String(parsed.get("Melee Weapon " + i + " ENC") ?? ""),
+                notes: String(parsed.get("Melee Weapon Notes " + i) ?? ""),
+            })
+        }
+        setMelee(meleeList)
+
+        const rangedList = []
+        for (let i = 1; i <= 5; i++) {
+            const name = parsed.get("Ranged Weapon " + i)
+            if (!name) continue
+            rangedList.push({
+                name: String(name),
+                dmg: String(parsed.get("Ranged Weapon " + i + " Damage") ?? ""),
+                hand: String(parsed.get("Ranged Weapon " + i + " Hand") ?? ""),
+                reach: String(parsed.get("Ranged Weapon " + i + " Reach") ?? ""),
+                enc: String(parsed.get("Ranged Weapon " + i + " ENC") ?? ""),
+                notes: String(parsed.get("Ranged Weapon Notes " + i) ?? ""),
+            })
+        }
+        setRanged(rangedList)
     }
 
     if (charInfo) {
@@ -98,6 +180,234 @@ function App() {
 
         // total enc is just the sum of whatever enc numbers are filled in
         const totalEnc = inventory.reduce((sum, item) => sum + (Number(item.enc) || 0), 0)
+
+        // spending an ap and refreshing them, shared by every take this action button
+        const spendAp = () => setCharInfo(new Map(charInfo).set("Current AP", String(Math.max(0, Number(charInfo.get("Current AP")) - 1))))
+
+        // the spell cards are built once here since the same cards show in narrative and combat
+        const spellCards = spells.map((spell, i) => (
+            <div className="spellCard" key={i}>
+                <div className="sphead">
+                    <b><input type="text" value={spell.name} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, name: e.target.value} : old))}/></b>
+                    <span><input type="text" value={spell.attr} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, attr: e.target.value} : old))}/></span>
+                    <div className="spTools">
+                        <button type="button" className="addLevel" onClick={() => setSpells(spells.map((old, j) => j === i ? {...old, levels: [...old.levels, {lvl: "", cost: "", str: ""}]} : old))}>+ level</button>
+                        <button type="button" className="subLevel" onClick={() => setSpells(spells.map((old, j) => j === i && old.levels.length > 1 ? {...old, levels: old.levels.slice(0, -1)} : old))}>&#8722; level</button>
+                        <button type="button" className="delSpell" onClick={() => setSpells(spells.filter((_old, j) => j !== i))}>&#215;</button>
+                    </div>
+                </div>
+                <div className="lvlGrid" style={{gridTemplateColumns: "max-content repeat(" + spell.levels.length + ",minmax(3em,1fr))"}}>
+                    <div className="lh">Level</div>
+                    {spell.levels.map((level, k) => (
+                        <div key={k}><input type="text" value={level.lvl} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, levels: old.levels.map((l, m) => m === k ? {...l, lvl: e.target.value} : l)} : old))}/></div>
+                    ))}
+                    <div className="lh">Cost</div>
+                    {spell.levels.map((level, k) => (
+                        <div key={k}><input type="text" value={level.cost} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, levels: old.levels.map((l, m) => m === k ? {...l, cost: e.target.value} : l)} : old))}/></div>
+                    ))}
+                    <div className="lh">Spell Str.</div>
+                    {spell.levels.map((level, k) => (
+                        <div key={k}><input type="text" value={level.str} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, levels: old.levels.map((l, m) => m === k ? {...l, str: e.target.value} : l)} : old))}/></div>
+                    ))}
+                </div>
+                <div className="spdescRow">
+                    <textarea rows={1} value={spell.desc} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, desc: e.target.value} : old))}/>
+                </div>
+            </div>
+        ))
+
+        // same idea for the magic skills table with spec and rituals in a side column
+        const spellSkills = (
+            <div className="spSkillsBand">
+                <div className="stable">
+                    <div className="srow head">
+                        <div>Skill</div><div>Rank</div><div>Bonus</div><div>Target Numbers</div>
+                    </div>
+                    <div className="srow">
+                        <div className="sname">Alteration</div>
+                        <div>{rankNames[String(charInfo.get("Alteration Rank") ?? "")] ?? "Untrained"}</div>
+                        <div>{charInfo.get("Alteration Rank") ? String(charInfo.get("Alteration Bonus") ?? "0") : "-20"}</div>
+                        <div className="stests">
+                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Alteration Rank") ? Number(charInfo.get("Alteration Bonus") ?? 0) : -20)}</b></span>
+                        </div>
+                    </div>
+                    <div className="srow">
+                        <div className="sname">Conjuration</div>
+                        <div>{rankNames[String(charInfo.get("Conjuration Rank") ?? "")] ?? "Untrained"}</div>
+                        <div>{charInfo.get("Conjuration Rank") ? String(charInfo.get("Conjuration Bonus") ?? "0") : "-20"}</div>
+                        <div className="stests">
+                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Conjuration Rank") ? Number(charInfo.get("Conjuration Bonus") ?? 0) : -20)}</b></span>
+                        </div>
+                    </div>
+                    <div className="srow">
+                        <div className="sname">Destruction</div>
+                        <div>{rankNames[String(charInfo.get("Destruction Rank") ?? "")] ?? "Untrained"}</div>
+                        <div>{charInfo.get("Destruction Rank") ? String(charInfo.get("Destruction Bonus") ?? "0") : "-20"}</div>
+                        <div className="stests">
+                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Destruction Rank") ? Number(charInfo.get("Destruction Bonus") ?? 0) : -20)}</b></span>
+                        </div>
+                    </div>
+                    <div className="srow">
+                        <div className="sname">Illusion</div>
+                        <div>{rankNames[String(charInfo.get("Illusion Rank") ?? "")] ?? "Untrained"}</div>
+                        <div>{charInfo.get("Illusion Rank") ? String(charInfo.get("Illusion Bonus") ?? "0") : "-20"}</div>
+                        <div className="stests">
+                            <span>Intelligence <b>{Number(charInfo.get("Int")) + (charInfo.get("Illusion Rank") ? Number(charInfo.get("Illusion Bonus") ?? 0) : -20)}</b></span>
+                        </div>
+                    </div>
+                    <div className="srow">
+                        <div className="sname">Mysticism</div>
+                        <div>{rankNames[String(charInfo.get("Mysticism Rank") ?? "")] ?? "Untrained"}</div>
+                        <div>{charInfo.get("Mysticism Rank") ? String(charInfo.get("Mysticism Bonus") ?? "0") : "-20"}</div>
+                        <div className="stests">
+                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Mysticism Rank") ? Number(charInfo.get("Mysticism Bonus") ?? 0) : -20)}</b></span>
+                        </div>
+                    </div>
+                    <div className="srow">
+                        <div className="sname">Necromancy</div>
+                        <div>{rankNames[String(charInfo.get("Necromancy Rank") ?? "")] ?? "Untrained"}</div>
+                        <div>{charInfo.get("Necromancy Rank") ? String(charInfo.get("Necromancy Bonus") ?? "0") : "-20"}</div>
+                        <div className="stests">
+                            <span>Intelligence <b>{Number(charInfo.get("Int")) + (charInfo.get("Necromancy Rank") ? Number(charInfo.get("Necromancy Bonus") ?? 0) : -20)}</b></span>
+                        </div>
+                    </div>
+                    <div className="srow">
+                        <div className="sname">Restoration</div>
+                        <div>{rankNames[String(charInfo.get("Restoration Rank") ?? "")] ?? "Untrained"}</div>
+                        <div>{charInfo.get("Restoration Rank") ? String(charInfo.get("Restoration Bonus") ?? "0") : "-20"}</div>
+                        <div className="stests">
+                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Restoration Rank") ? Number(charInfo.get("Restoration Bonus") ?? 0) : -20)}</b></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="spSide">
+                    {specializations.length > 0 && (
+                        <>
+                            <h3>Specializations</h3>
+                            <div className="bonds">
+                                {specializations.map((spec, i) => (
+                                    <div className="band val" key={i}>
+                                        <input
+                                            type="text"
+                                            value={spec}
+                                            onChange={e => setSpecializations(specializations.map((old, j) => j === i ? e.target.value : old))}
+                                            onKeyDown={e => {
+                                                if (e.key === "Enter") {
+                                                    e.preventDefault()
+                                                    const copy = [...specializations]
+                                                    copy.splice(i + 1, 0, "")
+                                                    setSpecializations(copy)
+                                                }
+                                                if (e.key === "Backspace" && spec === "" && specializations.length > 1) {
+                                                    e.preventDefault()
+                                                    setSpecializations(specializations.filter((_old, j) => j !== i))
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
+
+                    {rituals.length > 0 && (
+                        <>
+                            <h3>Rituals</h3>
+                            <div className="bonds">
+                                {rituals.map((rit, i) => (
+                                    <div className="band val" key={i}>
+                                        <input
+                                            type="text"
+                                            value={rit}
+                                            onChange={e => setRituals(rituals.map((old, j) => j === i ? e.target.value : old))}
+                                            onKeyDown={e => {
+                                                if (e.key === "Enter") {
+                                                    e.preventDefault()
+                                                    const copy = [...rituals]
+                                                    copy.splice(i + 1, 0, "")
+                                                    setRituals(copy)
+                                                }
+                                                if (e.key === "Backspace" && rit === "" && rituals.length > 1) {
+                                                    e.preventDefault()
+                                                    setRituals(rituals.filter((_old, j) => j !== i))
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+        )
+
+        // the whole spellcasting panel shows in both modes so build it once
+        const spellPanel = (
+            <>
+                <h2>Spellcasting</h2>
+
+                {spellSkills}
+
+                <h3>Spells</h3>
+
+                <div className="spellGrid">
+                    {spellCards}
+                </div>
+
+                <button type="button" className="addSpell" onClick={() => setSpells([...spells, {name: "", attr: "", desc: "", levels: [{lvl: "", cost: "", str: ""}]}])}>+ add spell</button>
+            </>
+        )
+
+        // ttp shows in both modes too
+        const ttpPanel = (
+            <>
+                <h2>Traits, Talents &amp; Powers</h2>
+
+                <div className="ttp">
+                    <div className="ttpRow head"><div>Name</div><div>Description</div></div>
+                    {ttp.map((trait, i) => (
+                        <div className="ttpRow" key={i}>
+                            <div className="tname">
+                                <input
+                                    type="text"
+                                    value={trait.name}
+                                    onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, name: e.target.value} : old))}
+                                    onKeyDown={e => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault()
+                                            const copy = [...ttp]
+                                            copy.splice(i + 1, 0, {name: "", note: ""})
+                                            setTtp(copy)
+                                            setTimeout(() => {
+                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
+                                                rows[(i + 1) * 2]?.focus()
+                                            }, 0)
+                                        }
+                                        if (e.key === "Backspace" && trait.name === "" && trait.note === "" && ttp.length > 1) {
+                                            e.preventDefault()
+                                            setTtp(ttp.filter((_old, j) => j !== i))
+                                            setTimeout(() => {
+                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
+                                                rows[(i - 1) * 2]?.focus()
+                                            }, 0)
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <div className="tnote">
+                                <input
+                                    type="text"
+                                    value={trait.note}
+                                    onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, note: e.target.value} : old))}
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </>
+        )
 
         return (
             <section id='center'>
@@ -632,215 +942,9 @@ function App() {
                             </>
                         )}
 
-                        {panel === "ttp" && (
-                            <>
-                                <h2>Traits, Talents &amp; Powers</h2>
+                        {panel === "ttp" && ttpPanel}
 
-                                <div className="ttp">
-                                    <div className="ttpRow head"><div>Name</div><div>Description</div></div>
-                                    {ttp.map((trait, i) => (
-                                        <div className="ttpRow" key={i}>
-                                            <div className="tname">
-                                                <input
-                                                    type="text"
-                                                    value={trait.name}
-                                                    onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, name: e.target.value} : old))}
-                                                    onKeyDown={e => {
-                                                        if (e.key === "Enter") {
-                                                            e.preventDefault()
-                                                            const copy = [...ttp]
-                                                            copy.splice(i + 1, 0, {name: "", note: ""})
-                                                            setTtp(copy)
-                                                            setTimeout(() => {
-                                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
-                                                                rows[(i + 1) * 2]?.focus()
-                                                            }, 0)
-                                                        }
-                                                        if (e.key === "Backspace" && trait.name === "" && trait.note === "" && ttp.length > 1) {
-                                                            e.preventDefault()
-                                                            setTtp(ttp.filter((_old, j) => j !== i))
-                                                            setTimeout(() => {
-                                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
-                                                                rows[(i - 1) * 2]?.focus()
-                                                            }, 0)
-                                                        }
-                                                    }}
-                                                />
-                                            </div>
-                                            <div className="tnote">
-                                                <input
-                                                    type="text"
-                                                    value={trait.note}
-                                                    onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, note: e.target.value} : old))}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </>
-                        )}
-
-                        {panel === "spell" && (
-                            <>
-                                <h2>Spellcasting</h2>
-
-                                <div className="stable">
-                                    <div className="srow head">
-                                        <div>Skill</div><div>Rank</div><div>Bonus</div><div>Target Numbers</div>
-                                    </div>
-                                    <div className="srow">
-                                        <div className="sname">Alteration</div>
-                                        <div>{rankNames[String(charInfo.get("Alteration Rank") ?? "")] ?? "Untrained"}</div>
-                                        <div>{charInfo.get("Alteration Rank") ? String(charInfo.get("Alteration Bonus") ?? "0") : "-20"}</div>
-                                        <div className="stests">
-                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Alteration Rank") ? Number(charInfo.get("Alteration Bonus") ?? 0) : -20)}</b></span>
-                                        </div>
-                                    </div>
-                                    <div className="srow">
-                                        <div className="sname">Conjuration</div>
-                                        <div>{rankNames[String(charInfo.get("Conjuration Rank") ?? "")] ?? "Untrained"}</div>
-                                        <div>{charInfo.get("Conjuration Rank") ? String(charInfo.get("Conjuration Bonus") ?? "0") : "-20"}</div>
-                                        <div className="stests">
-                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Conjuration Rank") ? Number(charInfo.get("Conjuration Bonus") ?? 0) : -20)}</b></span>
-                                        </div>
-                                    </div>
-                                    <div className="srow">
-                                        <div className="sname">Destruction</div>
-                                        <div>{rankNames[String(charInfo.get("Destruction Rank") ?? "")] ?? "Untrained"}</div>
-                                        <div>{charInfo.get("Destruction Rank") ? String(charInfo.get("Destruction Bonus") ?? "0") : "-20"}</div>
-                                        <div className="stests">
-                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Destruction Rank") ? Number(charInfo.get("Destruction Bonus") ?? 0) : -20)}</b></span>
-                                        </div>
-                                    </div>
-                                    <div className="srow">
-                                        <div className="sname">Illusion</div>
-                                        <div>{rankNames[String(charInfo.get("Illusion Rank") ?? "")] ?? "Untrained"}</div>
-                                        <div>{charInfo.get("Illusion Rank") ? String(charInfo.get("Illusion Bonus") ?? "0") : "-20"}</div>
-                                        <div className="stests">
-                                            <span>Intelligence <b>{Number(charInfo.get("Int")) + (charInfo.get("Illusion Rank") ? Number(charInfo.get("Illusion Bonus") ?? 0) : -20)}</b></span>
-                                        </div>
-                                    </div>
-                                    <div className="srow">
-                                        <div className="sname">Mysticism</div>
-                                        <div>{rankNames[String(charInfo.get("Mysticism Rank") ?? "")] ?? "Untrained"}</div>
-                                        <div>{charInfo.get("Mysticism Rank") ? String(charInfo.get("Mysticism Bonus") ?? "0") : "-20"}</div>
-                                        <div className="stests">
-                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Mysticism Rank") ? Number(charInfo.get("Mysticism Bonus") ?? 0) : -20)}</b></span>
-                                        </div>
-                                    </div>
-                                    <div className="srow">
-                                        <div className="sname">Necromancy</div>
-                                        <div>{rankNames[String(charInfo.get("Necromancy Rank") ?? "")] ?? "Untrained"}</div>
-                                        <div>{charInfo.get("Necromancy Rank") ? String(charInfo.get("Necromancy Bonus") ?? "0") : "-20"}</div>
-                                        <div className="stests">
-                                            <span>Intelligence <b>{Number(charInfo.get("Int")) + (charInfo.get("Necromancy Rank") ? Number(charInfo.get("Necromancy Bonus") ?? 0) : -20)}</b></span>
-                                        </div>
-                                    </div>
-                                    <div className="srow">
-                                        <div className="sname">Restoration</div>
-                                        <div>{rankNames[String(charInfo.get("Restoration Rank") ?? "")] ?? "Untrained"}</div>
-                                        <div>{charInfo.get("Restoration Rank") ? String(charInfo.get("Restoration Bonus") ?? "0") : "-20"}</div>
-                                        <div className="stests">
-                                            <span>Willpower <b>{Number(charInfo.get("Wp")) + (charInfo.get("Restoration Rank") ? Number(charInfo.get("Restoration Bonus") ?? 0) : -20)}</b></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {specializations.length > 0 && (
-                                    <>
-                                        <h3>Specializations</h3>
-                                        <div className="bonds">
-                                            {specializations.map((spec, i) => (
-                                                <div className="band val" key={i}>
-                                                    <input
-                                                        type="text"
-                                                        value={spec}
-                                                        onChange={e => setSpecializations(specializations.map((old, j) => j === i ? e.target.value : old))}
-                                                        onKeyDown={e => {
-                                                            if (e.key === "Enter") {
-                                                                e.preventDefault()
-                                                                const copy = [...specializations]
-                                                                copy.splice(i + 1, 0, "")
-                                                                setSpecializations(copy)
-                                                            }
-                                                            if (e.key === "Backspace" && spec === "" && specializations.length > 1) {
-                                                                e.preventDefault()
-                                                                setSpecializations(specializations.filter((_old, j) => j !== i))
-                                                            }
-                                                        }}
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
-
-                                {rituals.length > 0 && (
-                                    <>
-                                        <h3>Rituals</h3>
-                                        <div className="bonds">
-                                            {rituals.map((rit, i) => (
-                                                <div className="band val" key={i}>
-                                                    <input
-                                                        type="text"
-                                                        value={rit}
-                                                        onChange={e => setRituals(rituals.map((old, j) => j === i ? e.target.value : old))}
-                                                        onKeyDown={e => {
-                                                            if (e.key === "Enter") {
-                                                                e.preventDefault()
-                                                                const copy = [...rituals]
-                                                                copy.splice(i + 1, 0, "")
-                                                                setRituals(copy)
-                                                            }
-                                                            if (e.key === "Backspace" && rit === "" && rituals.length > 1) {
-                                                                e.preventDefault()
-                                                                setRituals(rituals.filter((_old, j) => j !== i))
-                                                            }
-                                                        }}
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
-
-                                <h3>Spells</h3>
-                                <div className="spellGrid">
-                                {spells.map((spell, i) => (
-                                    <div className="spellCard" key={i}>
-                                        <div className="sphead">
-                                            <b><input type="text" size={12} value={spell.name} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, name: e.target.value} : old))}/></b>
-                                            <span><input type="text" size={20} value={spell.attr} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, attr: e.target.value} : old))}/></span>
-                                            <div className="spTools">
-                                                <button type="button" className="addLevel" onClick={() => setSpells(spells.map((old, j) => j === i ? {...old, levels: [...old.levels, {lvl: "", cost: "", str: ""}]} : old))}>+ level</button>
-                                                <button type="button" className="subLevel" onClick={() => setSpells(spells.map((old, j) => j === i && old.levels.length > 1 ? {...old, levels: old.levels.slice(0, -1)} : old))}>&#8722; level</button>
-                                                <button type="button" className="delSpell" onClick={() => setSpells(spells.filter((_old, j) => j !== i))}>&#215;</button>
-                                            </div>
-                                        </div>
-                                        <div className="lvlGrid" style={{gridTemplateColumns: "max-content repeat(" + spell.levels.length + ",minmax(3em,1fr))"}}>
-                                            <div className="lh">Level</div>
-                                            {spell.levels.map((level, k) => (
-                                                <div key={k}><input type="text" value={level.lvl} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, levels: old.levels.map((l, m) => m === k ? {...l, lvl: e.target.value} : l)} : old))}/></div>
-                                            ))}
-                                            <div className="lh">Cost</div>
-                                            {spell.levels.map((level, k) => (
-                                                <div key={k}><input type="text" value={level.cost} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, levels: old.levels.map((l, m) => m === k ? {...l, cost: e.target.value} : l)} : old))}/></div>
-                                            ))}
-                                            <div className="lh">Spell Str.</div>
-                                            {spell.levels.map((level, k) => (
-                                                <div key={k}><input type="text" value={level.str} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, levels: old.levels.map((l, m) => m === k ? {...l, str: e.target.value} : l)} : old))}/></div>
-                                            ))}
-                                        </div>
-                                        <div className="spdescRow">
-                                            <input type="text" value={spell.desc} onChange={e => setSpells(spells.map((old, j) => j === i ? {...old, desc: e.target.value} : old))}/>
-                                        </div>
-                                    </div>
-                                ))}
-                                </div>
-
-                                <button type="button" className="addSpell" onClick={() => setSpells([...spells, {name: "", attr: "", desc: "", levels: [{lvl: "", cost: "", str: ""}]}])}>+ add spell</button>
-                            </>
-                        )}
+                        {panel === "spell" && spellPanel}
 
                         {panel === "craft" && (
                             <>
@@ -897,9 +1001,212 @@ function App() {
                 {mode === "combat" && (
                     <>
                         <h2>Combat</h2>
-                        <div className="bonds">
-                            <div className="band">nothing here yet</div>
+
+                        <div className="combatBand">
+
+                            <div className="combatL">
+                                <h3>Armor</h3>
+
+                                <div className="armGrid">
+                                    <div className="armLoc">
+                                        <div className="ahead"><b>Head</b><span>(10)</span></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Head AR") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Head ENC") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Head Type") ?? "")}/></div></div>
+                                    </div>
+                                    <div className="armLoc">
+                                        <div className="ahead"><b>Body</b><span>(1-5)</span></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Body AR") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Body ENC") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Body Type") ?? "")}/></div></div>
+                                    </div>
+                                    <div className="armLoc">
+                                        <div className="ahead"><b>Right Arm</b><span>(8)</span></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Right Arm AR") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Right Arm ENC") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Right Arm Type") ?? "")}/></div></div>
+                                    </div>
+                                    <div className="armLoc">
+                                        <div className="ahead"><b>Left Arm</b><span>(9)</span></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Left Arm AR") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Left Arm ENC") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Left Arm Type") ?? "")}/></div></div>
+                                    </div>
+                                    <div className="armLoc">
+                                        <div className="ahead"><b>Right Leg</b><span>(6)</span></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Right Leg AR") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Right Leg ENC") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Right Leg Type") ?? "")}/></div></div>
+                                    </div>
+                                    <div className="armLoc">
+                                        <div className="ahead"><b>Left Leg</b><span>(7)</span></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Left Leg AR") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Left Leg ENC") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Left Leg Type") ?? "")}/></div></div>
+                                    </div>
+                                </div>
+
+                                <div className="armLoc">
+                                    <div className="ahead"><b>Shield</b><span>(BR / Type / ENC)</span></div>
+                                    <div className="arow"><div className="al">BR</div><div><input type="text" defaultValue={String(charInfo.get("Languages 2") ?? "").split("/")[0]?.trim() ?? ""}/></div></div>
+                                    <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Languages 2") ?? "").split("/")[1]?.trim() ?? ""}/></div></div>
+                                    <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Languages 2") ?? "").split("/")[2]?.trim() ?? ""}/></div></div>
+                                </div>
+
+                                <div className="armLoc">
+                                    <div className="ahead"><b>Armor Notes</b></div>
+                                    <div className="arow"><div style={{gridColumn: "1/-1"}}><textarea className="notesArea" rows={1} defaultValue={String(charInfo.get("Armor Notes") ?? charInfo.get("Armor Notes 1") ?? "") + String(charInfo.get("Armor Notes 2") ?? "")}/></div></div>
+                                </div>
+                            </div>
+
+                            <div className="combatR">
+                                <h3>Combat Style</h3>
+
+                                <div className="csBlock">
+                                    <div className="csTop">
+                                        <b><input type="text" defaultValue={String(charInfo.get("Combat Style") ?? "")}/></b>
+                                        <span>{rankNames[String(charInfo.get("Combat Style Rank") ?? "")] ?? "Untrained"}</span>
+                                        <span>{String(charInfo.get("Combat Style Bonus") ?? "")}</span>
+                                        <div className="stests">
+                                            <span>Strength <b>{String(charInfo.get("Combat Style (Str)") ?? "")}</b></span>
+                                            <span>Agility <b>{String(charInfo.get("Combat Style (Ag)") ?? "")}</b></span>
+                                        </div>
+                                    </div>
+                                    <div className="csLine"><textarea className="notesArea" rows={1} defaultValue={String(charInfo.get("Combat Style 2") ?? "")}/></div>
+                                    <div className="csLine"><textarea className="notesArea" rows={1} defaultValue={String(charInfo.get("Combat Style 3") ?? "")}/></div>
+                                </div>
+
+                                <h3>Melee Weapons</h3>
+
+                                <div className="wtable">
+                                    <div className="wrow head"><div>Weapon</div><div>Dmg</div><div>Hand</div><div>Reach</div><div>ENC</div><div></div></div>
+                                    {melee.map((w, i) => (
+                                        <Fragment key={i}>
+                                            <div className="wrow">
+                                                <div className="wname"><input type="text" value={w.name} onChange={e => setMelee(melee.map((old, j) => j === i ? {...old, name: e.target.value} : old))}/></div>
+                                                <div><input type="text" value={w.dmg} onChange={e => setMelee(melee.map((old, j) => j === i ? {...old, dmg: e.target.value} : old))}/></div>
+                                                <div><input type="text" value={w.hand} onChange={e => setMelee(melee.map((old, j) => j === i ? {...old, hand: e.target.value} : old))}/></div>
+                                                <div><input type="text" value={w.reach} onChange={e => setMelee(melee.map((old, j) => j === i ? {...old, reach: e.target.value} : old))}/></div>
+                                                <div><input type="text" value={w.enc} onChange={e => setMelee(melee.map((old, j) => j === i ? {...old, enc: e.target.value} : old))}/></div>
+                                                <div className="wdel"><button type="button" onClick={() => setMelee(melee.filter((_old, j) => j !== i))}>&#215;</button></div>
+                                            </div>
+                                            <div className="wnotes"><input type="text" value={w.notes} onChange={e => setMelee(melee.map((old, j) => j === i ? {...old, notes: e.target.value} : old))}/></div>
+                                        </Fragment>
+                                    ))}
+                                </div>
+                                <button type="button" className="addSpell" onClick={() => setMelee([...melee, {name: "", dmg: "", hand: "", reach: "", enc: "", notes: ""}])}>+ add weapon</button>
+
+                                <h3>Ranged Weapons</h3>
+
+                                <div className="wtable">
+                                    <div className="wrow head"><div>Weapon</div><div>Dmg</div><div>Hand</div><div>Reach</div><div>ENC</div><div></div></div>
+                                    {ranged.map((w, i) => (
+                                        <Fragment key={i}>
+                                            <div className="wrow">
+                                                <div className="wname"><input type="text" value={w.name} onChange={e => setRanged(ranged.map((old, j) => j === i ? {...old, name: e.target.value} : old))}/></div>
+                                                <div><input type="text" value={w.dmg} onChange={e => setRanged(ranged.map((old, j) => j === i ? {...old, dmg: e.target.value} : old))}/></div>
+                                                <div><input type="text" value={w.hand} onChange={e => setRanged(ranged.map((old, j) => j === i ? {...old, hand: e.target.value} : old))}/></div>
+                                                <div><input type="text" value={w.reach} onChange={e => setRanged(ranged.map((old, j) => j === i ? {...old, reach: e.target.value} : old))}/></div>
+                                                <div><input type="text" value={w.enc} onChange={e => setRanged(ranged.map((old, j) => j === i ? {...old, enc: e.target.value} : old))}/></div>
+                                                <div className="wdel"><button type="button" onClick={() => setRanged(ranged.filter((_old, j) => j !== i))}>&#215;</button></div>
+                                            </div>
+                                            <div className="wnotes"><input type="text" value={w.notes} onChange={e => setRanged(ranged.map((old, j) => j === i ? {...old, notes: e.target.value} : old))}/></div>
+                                        </Fragment>
+                                    ))}
+                                </div>
+                                <button type="button" className="addSpell" onClick={() => setRanged([...ranged, {name: "", dmg: "", hand: "", reach: "", enc: "", notes: ""}])}>+ add weapon</button>
+
+                                <div className="armLoc">
+                                    <div className="ahead"><b>Wounds</b></div>
+                                    <div className="arow"><div style={{gridColumn: "1/-1"}}><textarea className="notesArea" rows={1} defaultValue={[charInfo.get("Wounds 1"), charInfo.get("Wounds 2"), charInfo.get("Wounds 3")].filter(w => w).join("\n")}/></div></div>
+                                </div>
+
+                                <div className="armLoc">
+                                    <div className="ahead"><b>Conditions</b></div>
+                                    <div className="arow"><div style={{gridColumn: "1/-1"}}><textarea className="notesArea" rows={1} defaultValue={[charInfo.get("Conditions 1"), charInfo.get("Conditions 2"), charInfo.get("Conditions 3")].filter(c => c).join("\n")}/></div></div>
+                                </div>
+                            </div>
+
                         </div>
+
+                        <button type="button" className="roundOver" onClick={() => setCharInfo(new Map(charInfo).set("Current AP", String(charInfo.get("Max AP") ?? "")))}>Round Over &#8212; refresh Action Points</button>
+
+                        <div className="subBar">
+                            <button type="button" className={panel === "onTurn" ? "tOn active" : "tOn"} onClick={() => setPanel(panel === "onTurn" ? null : "onTurn")}>On Your Turn</button>
+                            <button type="button" className={panel === "notTurn" ? "tNot active" : "tNot"} onClick={() => setPanel(panel === "notTurn" ? null : "notTurn")}>Not On Your Turn</button>
+                            <button type="button" className={panel === "cond" ? "tCond active" : "tCond"} onClick={() => setPanel(panel === "cond" ? null : "cond")}>Conditions &amp; Rules</button>
+                            <button type="button" className={panel === "cTtp" ? "tTtp active" : "tTtp"} onClick={() => setPanel(panel === "cTtp" ? null : "cTtp")}>Traits, Talents &amp; Powers</button>
+                            <button type="button" className={panel === "cSpell" ? "tSpell active" : "tSpell"} onClick={() => setPanel(panel === "cSpell" ? null : "cSpell")}>Spellcasting</button>
+                        </div>
+
+                        {panel === "onTurn" && (
+                            <>
+                                <h2>On Your Turn</h2>
+
+                                <div className="actList">
+                                    {onTurnActions.map(act => (
+                                        <div className="act" key={act.name}>
+                                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("on " + act.name) ? openActions.filter(n => n !== "on " + act.name) : [...openActions, "on " + act.name])}>
+                                                <span>{act.name}</span><span className="ap">1 AP</span>
+                                            </div>
+                                            {openActions.includes("on " + act.name) && (
+                                                <div className="actBody">
+                                                    <p>{act.text}</p>
+                                                    {act.bullets && (
+                                                        <ul>
+                                                            {act.bullets.map(b => <li key={b.label}><b>{b.label}:</b> {b.text}</li>)}
+                                                        </ul>
+                                                    )}
+                                                    <button type="button" className="takeAction" onClick={spendAp}>Take This Action</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+
+                        {panel === "notTurn" && (
+                            <>
+                                <h2>Not On Your Turn</h2>
+
+                                <div className="rules">
+                                    <p>Reactions can be used at any time during the combat round in response to a threat or event that a character is aware of by spending an AP. Reactions can be triggered by other reactions: if this happens, resolve them however makes the most sense.</p>
+                                </div>
+
+                                <div className="actList" style={{marginTop: ".4em"}}>
+                                    {notTurnActions.map(act => (
+                                        <div className="act" key={act.name}>
+                                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("not " + act.name) ? openActions.filter(n => n !== "not " + act.name) : [...openActions, "not " + act.name])}>
+                                                <span>{act.name}</span><span className="ap">1 AP</span>
+                                            </div>
+                                            {openActions.includes("not " + act.name) && (
+                                                <div className="actBody">
+                                                    <p>{act.text}</p>
+                                                    {act.bullets && (
+                                                        <ul>
+                                                            {act.bullets.map(b => <li key={b.label}><b>{b.label}:</b> {b.text}</li>)}
+                                                        </ul>
+                                                    )}
+                                                    <button type="button" className="takeAction" onClick={spendAp}>Take This Action</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+
+                        {panel === "cond" && (
+                            <>
+                                <h2>Conditions &amp; Rules</h2>
+                                <div className="rules"><p>TBD</p></div>
+                            </>
+                        )}
+
+                        {panel === "cTtp" && ttpPanel}
+
+                        {panel === "cSpell" && spellPanel}
                     </>
                 )}
 
@@ -924,92 +1231,6 @@ function App() {
 
                 <input type="file" id="charPDF" name="charPDF" accept=".pdf" onChange={handleFile}/>
             </section>
-            {/*
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>  */}
         </>
     )
 }
