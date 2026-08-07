@@ -191,8 +191,8 @@ body{background:#15171b}
 
 /* the vite starter caps the page width and centers it in the middle of the screen */
 /* only undo that on the sheet view so the upload screen still looks normal */
-body:has(#center > h1){display:block}
-#root:has(#center > h1){
+body:has(#center > .nameRow){display:block}
+#root:has(#center > .nameRow){
   max-width:none;
   width:100%;
   margin:0;
@@ -201,7 +201,7 @@ body:has(#center > h1){display:block}
 }
 
 /* the upload screen keeps its h1 inside a div so this only hits the sheet */
-#center:has(> h1){
+#center:has(> .nameRow){
   --tile:#1e2127;
   --band:#181b20;
   --line:#31363e;
@@ -229,14 +229,14 @@ body:has(#center > h1){display:block}
 
 /* everything below is in em so it all scales with that one font size */
 
-#center:has(> h1) h1{
+#center:has(> .nameRow) h1{
   text-align:center;
   font-size:1.6em;
   font-weight:600;
   margin:0 0 .45em;
 }
 
-#center:has(> h1) h2{
+#center:has(> .nameRow) h2{
   display:flex;
   align-items:center;
   gap:.7em;
@@ -247,8 +247,8 @@ body:has(#center > h1){display:block}
   color:var(--accent);
   margin:1.1em 0 .5em;
 }
-#center:has(> h1) h2::before,
-#center:has(> h1) h2::after{content:"";flex:1;height:1px;background:var(--line)}
+#center:has(> .nameRow) h2::before,
+#center:has(> .nameRow) h2::after{content:"";flex:1;height:1px;background:var(--line)}
 
 #center h3{
   font-size:.66em;
@@ -875,6 +875,7 @@ body:has(#center > h1){display:block}
 #center .actBody{padding:.45em .55em .55em;font-weight:400}
 #center .actBody p{margin:.3em 0}
 #center .actBody ul{margin:.3em 0;padding-left:1.2em}
+#center .actBody .subHead{font-weight:700;margin:.6em 0 .2em}
 #center .actBody li{margin:.25em 0}
 
 #center .takeAction{
@@ -891,6 +892,208 @@ body:has(#center > h1){display:block}
   cursor:pointer;
 }
 #center .takeAction:hover{filter:brightness(1.25)}
+
+/* the name row keeps the name dead centre by giving both sides equal width */
+
+#center .nameRow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-bottom:1.1em}
+/* the name sits in the middle column so the buttons on the right cannot shove it off centre */
+#center .nameRow h1{grid-column:2;margin:0}
+#center .rests{grid-column:3;justify-self:end;display:flex;gap:var(--gap)}
+#center .rests button{
+  font:inherit;
+  font-weight:600;
+  padding:.3em .8em;
+  color:var(--text);
+  background:var(--tile);
+  border:2px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .rests .shortRest:hover{border-color:#5cc98a;color:#5cc98a}
+#center .rests .longRest:hover{border-color:#5c86c9;color:#5c86c9}
+
+/* conditions as assignable boxes that actually change the numbers */
+
+#center .condBox{background:var(--tile);border:1px solid var(--line)}
+#center .condBox .ahead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:.28em .55em;
+  background:var(--band);
+  border-bottom:1px solid var(--line);
+}
+#center .condBox .ahead b{font-weight:700}
+#center .condBox .condSum{font-weight:400;opacity:.6}
+#center .condBox .condSum.on{opacity:1;color:var(--accent);font-weight:700}
+
+#center .condList{display:flex;flex-direction:column}
+#center .condNone{padding:.28em .55em;font-weight:400;opacity:.5}
+
+#center .condCard{
+  display:flex;
+  align-items:center;
+  gap:.5em;
+  border-bottom:1px solid var(--line);
+  padding:.28em .55em;
+}
+#center .condCard:last-child{border-bottom:0}
+#center .condCard b{font-weight:700}
+#center .condCard .condLvl{font-weight:400;opacity:.6}
+#center .condCard .condNote{
+  flex:1;
+  min-width:0;
+  font-weight:400;
+  opacity:.55;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#center .condTools{margin-left:auto;display:flex;gap:.3em;flex:0 0 auto}
+#center .condTools button{
+  font:inherit;
+  font-size:.8em;
+  padding:0 .4em;
+  color:var(--text);
+  background:var(--band);
+  border:1px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .condTools button:hover{border-color:var(--accent);color:var(--accent)}
+
+#center .addCond{
+  display:block;
+  width:100%;
+  padding:.3em;
+  font:inherit;
+  font-weight:400;
+  color:var(--text);
+  opacity:.6;
+  background:none;
+  border:0;
+  border-top:1px dashed var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .addCond:hover{opacity:1;color:var(--accent)}
+
+#center .condPicker{border-top:1px solid var(--line)}
+#center .condPicker button{
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:.28em .55em;
+  font:inherit;
+  font-weight:400;
+  color:var(--text);
+  background:none;
+  border:0;
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .condPicker button:last-child{border-bottom:0}
+#center .condPicker button:hover{background:var(--band);color:var(--accent)}
+
+/* a target number bent by a condition is called out so it is never a mystery */
+#center .stests b.modded{color:var(--accent)}
+#center .attrs input.modded{color:var(--accent);font-weight:700}
+
+/* a table inside a fold out gets its own line and room for the wording */
+#center .actBody .dtable{margin:.5em 0 .2em}
+#center .dtable.wide{grid-template-columns:max-content minmax(0,1fr);max-width:34em}
+
+/* the popout window sits over everything so the sheet underneath never moves */
+
+.scrim{
+  /* this window is attached to the page body, outside the sheet, so it needs
+     its own copies of the colours or everything in it comes out invisible */
+  --tile:#1e2127;
+  --band:#181b20;
+  --line:#31363e;
+  --text:#e7e7e6;
+  --accent:#c96a5c;
+
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:1.5em;
+  background:rgba(0,0,0,.65);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.25;
+  text-align:left;
+  z-index:50;
+}
+.popout{
+  width:min(38em, 100%);
+  max-height:100%;
+  overflow-y:auto;
+  background:var(--tile);
+  border:2px solid var(--accent);
+  font-size:clamp(15px, 1vw, 22px);
+}
+.popout .pophead{
+  padding:.4em .7em;
+  background:var(--band);
+  border-bottom:1px solid var(--line);
+  font-weight:700;
+}
+.popout .popbody{padding:.6em .7em;font-weight:400}
+.popout .popbody p{margin:.4em 0}
+.popout .popfoot{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5em;
+  padding:.6em .7em;
+  border-top:1px solid var(--line);
+}
+.popout .popfoot button{
+  flex:1;
+  min-width:8em;
+  padding:.4em;
+  font:inherit;
+  font-weight:600;
+  color:var(--text);
+  background:var(--band);
+  border:2px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+.popout .popfoot button:hover{filter:brightness(1.3)}
+.popout .popfoot button.go{border-color:var(--accent)}
+.popout .popfoot button.go:hover{border-color:var(--accent);color:var(--accent)}
+
+.popout .pickRow{
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:.45em .7em;
+  font:inherit;
+  font-weight:400;
+  color:var(--text);
+  background:none;
+  border:0;
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+.popout .pickRow:hover{background:var(--band)}
+.popout .pickRow b{display:block;font-weight:700}
+.popout .pickRow span{opacity:.7}
+.popout .pickRow.taken{opacity:.35;cursor:default}
+.popout .pickRow.taken:hover{background:none}
+
+.popout .recapHead{font-weight:700;margin:.6em 0 .2em}
+.popout .popbody ul{margin:.4em 0;padding-left:1.2em}
+.popout .popbody li{margin:.25em 0}
+
+/* what a rest actually did, shown in the same window after confirming */
+.popout .result{border-top:1px solid var(--line);padding:.6em .7em;font-weight:400}
+.popout .result b{color:var(--accent)}
 
 /* narrow screens */
 
@@ -910,7 +1113,7 @@ body:has(#center > h1){display:block}
 }
 
 @media (max-width:760px){
-  #center:has(> h1){padding:.8em .7em 1em}
+  #center:has(> .nameRow){padding:.8em .7em 1em}
   #center .cblock{min-width:48em;font-size:.9em}
   #center .crow{grid-template-columns:4em repeat(8,minmax(0,1fr))}
   #center .crow > *{padding:.28em .2em}
