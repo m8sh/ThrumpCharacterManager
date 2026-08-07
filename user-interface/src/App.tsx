@@ -1,6 +1,6 @@
 import './App.css'
 import {fileHandler} from './index.ts'
-import {useState, Fragment} from "react";
+import {useState, Fragment, type ChangeEvent} from "react";
 
 type CharInfo = Map<string, string | boolean | undefined>
 
@@ -300,7 +300,7 @@ function App() {
     const [popout, setPopout] = useState<string | null>(null)
     const [restLines, setRestLines] = useState<string[] | null>(null)
 
-    async function handleFile(event) {
+    async function handleFile(event: ChangeEvent<HTMLInputElement>) {
         const file = event.target.files?.[0]
         if (!file) return
         const PDFInput : ArrayBuffer = await file.arrayBuffer()
@@ -1807,8 +1807,8 @@ function App() {
 
                             <div className="popfoot">
                                 {!restLines && <button type="button" onClick={() => setPopout(null)}>Cancel</button>}
-                                {!restLines && <button type="button" className="go" onClick={() => doShortRest("stamina")}>Rest, Recover 1 SP</button>}
-                                {!restLines && <button type="button" className="go" onClick={() => doShortRest("fatigue")}>Rest, Remove 1 Fatigue</button>}
+                                {!restLines && <button type="button" className="go" onClick={() => doShortRest("stamina")}>Rest, recover Stamina</button>}
+                                {!restLines && <button type="button" className="go" onClick={() => doShortRest("fatigue")}>Rest, shed fatigue</button>}
                                 {restLines && <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>}
                             </div>
                         </div>
@@ -1835,7 +1835,7 @@ function App() {
                             <div className="popfoot">
                                 {!restLines && <button type="button" onClick={() => setPopout(null)}>Cancel</button>}
                                 {!restLines && <button type="button" className="go" onClick={() => doLongRest(false)}>Rest</button>}
-                                {!restLines && <button type="button" className="go" onClick={() => doLongRest(true)}>Rest and Get Healed</button>}
+                                {!restLines && <button type="button" className="go" onClick={() => doLongRest(true)}>Rest and Convalesce</button>}
                                 {restLines && <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>}
                             </div>
                         </div>
