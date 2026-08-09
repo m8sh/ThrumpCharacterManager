@@ -339,6 +339,9 @@ function App() {
     const [recap, setRecap] = useState<string[]>([])
     const [wounds, setWounds] = useState(saved?.wounds ?? "")
     const [pdfText, setPdfText] = useState<string | null>(savedPdf)
+    const [shield, setShield] = useState<{br: string, type: string, enc: string}>(saved?.shield ?? {br: "", type: "", enc: ""})
+    const [armorNotes, setArmorNotes] = useState(saved?.armorNotes ?? "")
+    const [overflow, setOverflow] = useState<string[]>([])
     const [popout, setPopout] = useState<string | null>(null)
     const [restLines, setRestLines] = useState<string[] | null>(null)
 
@@ -351,12 +354,14 @@ function App() {
                 charInfo: Array.from(charInfo),
                 languages, mode, panel, inventory, ttp, specializations,
                 rituals, spells, melee, ranged, openActions, conditions, wounds,
+                shield, armorNotes,
             }))
         } catch {
             // running out of space or private browsing should not break the sheet
         }
     }, [charInfo, languages, mode, panel, inventory, ttp, specializations,
-        rituals, spells, melee, ranged, openActions, conditions, wounds])
+        rituals, spells, melee, ranged, openActions, conditions, wounds,
+        shield, armorNotes])
 
     // fills the original sheet back in and hands it over as a download
     async function downloadPdf() {
@@ -368,6 +373,22 @@ function App() {
         try {
             const doc = await PDFDocument.load(textToBytes(pdfText))
             const form = doc.getForm()
+
+            // the paper sheet only has so many rows, so anything past the end would
+            // vanish without a word. count it up and say so afterwards
+            const tooMany: string[] = []
+            const checkFit = (what: string, count: number, slots: number) => {
+                if (count > slots) tooMany.push(what + ": " + count + " of them, the sheet has room for " + slots)
+            }
+            checkFit("Inventory items", inventory.length, 28)
+            checkFit("Traits, talents and powers", ttp.length, 29)
+            checkFit("Spells", spells.length, 21)
+            checkFit("Melee weapons", melee.length, 3)
+            checkFit("Ranged weapons", ranged.length, 3)
+            checkFit("Specializations", specializations.length, 5)
+            checkFit("Rituals", rituals.length, 7)
+            checkFit("Wound lines", wounds.split("\n").filter(w => w.trim() !== "").length, 3)
+            checkFit("Conditions", conditions.length, 3)
 
             // one place that knows how to write a value back, unknown fields are skipped
             const put = (name: string, value: string) => {
@@ -426,7 +447,7 @@ function App() {
                 }
             }
 
-            for (let i = 1; i <= 5; i++) {
+            for (let i = 1; i <= 3; i++) {
                 const w = melee[i - 1]
                 put("Melee Weapon " + i, w ? w.name : "")
                 put("Melee Weapon " + i + " Damage", w ? w.dmg : "")
@@ -443,6 +464,12 @@ function App() {
                 put("Ranged Weapon " + i + " ENC", r ? r.enc : "")
                 put("Ranged Weapon Notes " + i, r ? r.notes : "")
             }
+
+            // back into the one field the sheet keeps them in
+            put("Languages 2", [shield.br, shield.type, shield.enc].join(" / "))
+            put("Armor Notes", armorNotes)
+            put("Armor Notes 1", armorNotes)
+            put("Armor Notes 2", "")
 
             const woundLines = wounds.split("\n")
             for (let i = 1; i <= 3; i++) put("Wounds " + i, woundLines[i - 1] ?? "")
@@ -467,6 +494,11 @@ function App() {
             link.download = String(charInfo.get("Name") ?? "character") + ".pdf"
             link.click()
             URL.revokeObjectURL(url)
+
+            if (tooMany.length > 0) {
+                setOverflow(tooMany)
+                setPopout("tooMany")
+            }
         } catch {
             setPopout("pdfFailed")
         }
@@ -495,6 +527,8 @@ function App() {
         setOpenActions([])
         setConditions([])
         setWounds("")
+        setShield({br: "", type: "", enc: ""})
+        setArmorNotes("")
         setPopout(null)
         setRestLines(null)
         setRecap([])
@@ -573,9 +607,9 @@ function App() {
         }
         setSpells(spellList)
 
-        // if weapons come up empty check these key names against the console log
+        // the sheet has three rows in each weapon table
         const meleeList = []
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 3; i++) {
             const name = parsed.get("Melee Weapon " + i)
             if (!name) continue
             meleeList.push({
@@ -590,7 +624,7 @@ function App() {
         setMelee(meleeList)
 
         const rangedList = []
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 3; i++) {
             const name = parsed.get("Ranged Weapon " + i)
             if (!name) continue
             rangedList.push({
@@ -605,6 +639,16 @@ function App() {
         setRanged(rangedList)
 
         setWounds([parsed.get("Wounds 1"), parsed.get("Wounds 2"), parsed.get("Wounds 3")].filter(w => w).join("\n"))
+
+        // the shield ended up in a language field on the sheet, written as br / type / enc
+        const shieldBits = String(parsed.get("Languages 2") ?? "").split("/")
+        setShield({
+            br: shieldBits[0]?.trim() ?? "",
+            type: shieldBits[1]?.trim() ?? "",
+            enc: shieldBits[2]?.trim() ?? "",
+        })
+
+        setArmorNotes(String(parsed.get("Armor Notes") ?? parsed.get("Armor Notes 1") ?? "") + String(parsed.get("Armor Notes 2") ?? ""))
     }
 
     if (charInfo) {
@@ -1004,35 +1048,35 @@ function App() {
                 <div className="top">
                     <div className="tile">
                         <div className="band head">Race</div>
-                        <div className="band val"><input type="text" id="race" defaultValue={String(charInfo.get("Race") ?? "")}/></div>
+                        <div className="band val"><input type="text" id="race" value={String(charInfo.get("Race") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Race", e.target.value))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Size</div>
-                        <div className="band val"><input type="text" id="size" defaultValue={String(charInfo.get("Size") ?? "")}/></div>
+                        <div className="band val"><input type="text" id="size" value={String(charInfo.get("Size") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Size", e.target.value))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Birthsign</div>
-                        <div className="band val"><input type="text" id="birthsign" defaultValue={String(charInfo.get("Birthsign") ?? "")}/></div>
+                        <div className="band val"><input type="text" id="birthsign" value={String(charInfo.get("Birthsign") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Birthsign", e.target.value))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Elite Advance</div>
-                        <div className="band val"><input type="text" id="elite" defaultValue={String(charInfo.get("Elite Adv") ?? "")}/></div>
+                        <div className="band val"><input type="text" id="elite" value={String(charInfo.get("Elite Adv") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Elite Adv", e.target.value))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Experience / Total</div>
                         <div className="band val">
-                            <input type="text" className="pair" id="xp" defaultValue={String(charInfo.get("Current XP") ?? "")}/>
+                            <input type="text" className="pair" id="xp" value={String(charInfo.get("Current XP") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Current XP", e.target.value))}/>
                             <span className="sep">/</span>
-                            <input type="text" className="pair" id="xpTotal" defaultValue={String(charInfo.get("Total XP") ?? "")}/>
+                            <input type="text" className="pair" id="xpTotal" value={String(charInfo.get("Total XP") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Total XP", e.target.value))}/>
                         </div>
                     </div>
                     <div className="tile">
                         <div className="band head">Lucky Numbers</div>
-                        <div className="band val"><input type="text" id="lucky" defaultValue={String(charInfo.get("Lucky Numbers") ?? "")}/></div>
+                        <div className="band val"><input type="text" id="lucky" value={String(charInfo.get("Lucky Numbers") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Lucky Numbers", e.target.value))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Unlucky Numbers</div>
-                        <div className="band val"><input type="text" id="unlucky" defaultValue={String(charInfo.get("Unlucky Numbers") ?? "")}/></div>
+                        <div className="band val"><input type="text" id="unlucky" value={String(charInfo.get("Unlucky Numbers") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Unlucky Numbers", e.target.value))}/></div>
                     </div>
                 </div>
 
@@ -1049,36 +1093,36 @@ function App() {
                             </div>
                             <div className="crow">
                                 <div className="rl">Score</div>
-                                <div><input type="text" id="str" defaultValue={String(charInfo.get("Str") ?? "")}/></div>
-                                <div><input type="text" id="end" defaultValue={String(charInfo.get("End") ?? "")}/></div>
-                                <div><input type="text" id="ag" defaultValue={String(charInfo.get("Ag") ?? "")}/></div>
-                                <div><input type="text" id="int" defaultValue={String(charInfo.get("Int") ?? "")}/></div>
-                                <div><input type="text" id="wp" defaultValue={String(charInfo.get("Wp") ?? "")}/></div>
-                                <div><input type="text" id="prc" defaultValue={String(charInfo.get("Prc") ?? "")}/></div>
-                                <div><input type="text" id="prs" defaultValue={String(charInfo.get("Prs") ?? "")}/></div>
-                                <div><input type="text" id="lck" defaultValue={String(charInfo.get("Lck") ?? "")}/></div>
+                                <div><input type="text" id="str" value={String(charInfo.get("Str") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Str", e.target.value))}/></div>
+                                <div><input type="text" id="end" value={String(charInfo.get("End") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("End", e.target.value))}/></div>
+                                <div><input type="text" id="ag" value={String(charInfo.get("Ag") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Ag", e.target.value))}/></div>
+                                <div><input type="text" id="int" value={String(charInfo.get("Int") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Int", e.target.value))}/></div>
+                                <div><input type="text" id="wp" value={String(charInfo.get("Wp") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Wp", e.target.value))}/></div>
+                                <div><input type="text" id="prc" value={String(charInfo.get("Prc") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Prc", e.target.value))}/></div>
+                                <div><input type="text" id="prs" value={String(charInfo.get("Prs") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Prs", e.target.value))}/></div>
+                                <div><input type="text" id="lck" value={String(charInfo.get("Lck") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Lck", e.target.value))}/></div>
                             </div>
                             <div className="crow">
                                 <div className="rl">Favored</div>
-                                <label className="check"><input type="checkbox" id="favStr" defaultChecked={!!charInfo.get("Str Favored")}/><span>&#10003;</span></label>
-                                <label className="check"><input type="checkbox" id="favEnd" defaultChecked={!!charInfo.get("End Favored")}/><span>&#10003;</span></label>
-                                <label className="check"><input type="checkbox" id="favAg" defaultChecked={!!charInfo.get("Ag Favored")}/><span>&#10003;</span></label>
-                                <label className="check"><input type="checkbox" id="favInt" defaultChecked={!!charInfo.get("Int Favored")}/><span>&#10003;</span></label>
-                                <label className="check"><input type="checkbox" id="favWp" defaultChecked={!!charInfo.get("Wp Favored")}/><span>&#10003;</span></label>
-                                <label className="check"><input type="checkbox" id="favPrc" defaultChecked={!!charInfo.get("Prc Favored")}/><span>&#10003;</span></label>
-                                <label className="check"><input type="checkbox" id="favPrs" defaultChecked={!!charInfo.get("Prs Favored")}/><span>&#10003;</span></label>
-                                <label className="check"><input type="checkbox" id="favLck" defaultChecked={!!charInfo.get("Lck Favored")}/><span>&#10003;</span></label>
+                                <label className="check"><input type="checkbox" id="favStr" checked={!!charInfo.get("Str Favored")} onChange={e => setCharInfo(new Map(charInfo).set("Str Favored", e.target.checked))}/><span>&#10003;</span></label>
+                                <label className="check"><input type="checkbox" id="favEnd" checked={!!charInfo.get("End Favored")} onChange={e => setCharInfo(new Map(charInfo).set("End Favored", e.target.checked))}/><span>&#10003;</span></label>
+                                <label className="check"><input type="checkbox" id="favAg" checked={!!charInfo.get("Ag Favored")} onChange={e => setCharInfo(new Map(charInfo).set("Ag Favored", e.target.checked))}/><span>&#10003;</span></label>
+                                <label className="check"><input type="checkbox" id="favInt" checked={!!charInfo.get("Int Favored")} onChange={e => setCharInfo(new Map(charInfo).set("Int Favored", e.target.checked))}/><span>&#10003;</span></label>
+                                <label className="check"><input type="checkbox" id="favWp" checked={!!charInfo.get("Wp Favored")} onChange={e => setCharInfo(new Map(charInfo).set("Wp Favored", e.target.checked))}/><span>&#10003;</span></label>
+                                <label className="check"><input type="checkbox" id="favPrc" checked={!!charInfo.get("Prc Favored")} onChange={e => setCharInfo(new Map(charInfo).set("Prc Favored", e.target.checked))}/><span>&#10003;</span></label>
+                                <label className="check"><input type="checkbox" id="favPrs" checked={!!charInfo.get("Prs Favored")} onChange={e => setCharInfo(new Map(charInfo).set("Prs Favored", e.target.checked))}/><span>&#10003;</span></label>
+                                <label className="check"><input type="checkbox" id="favLck" checked={!!charInfo.get("Lck Favored")} onChange={e => setCharInfo(new Map(charInfo).set("Lck Favored", e.target.checked))}/><span>&#10003;</span></label>
                             </div>
                             <div className="crow">
                                 <div className="rl">Bonus</div>
-                                <div><input type="text" id="sb" defaultValue={String(charInfo.get("SB") ?? "")}/></div>
-                                <div><input type="text" id="eb" defaultValue={String(charInfo.get("EB") ?? "")}/></div>
-                                <div><input type="text" id="ab" defaultValue={String(charInfo.get("AB") ?? "")}/></div>
-                                <div><input type="text" id="ib" defaultValue={String(charInfo.get("IB") ?? "")}/></div>
-                                <div><input type="text" id="wb" defaultValue={String(charInfo.get("WB") ?? "")}/></div>
-                                <div><input type="text" id="pcb" defaultValue={String(charInfo.get("PcB") ?? "")}/></div>
-                                <div><input type="text" id="psb" defaultValue={String(charInfo.get("PsB") ?? "")}/></div>
-                                <div><input type="text" id="lb" defaultValue={String(charInfo.get("LB") ?? "")}/></div>
+                                <div><input type="text" id="sb" value={String(charInfo.get("SB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("SB", e.target.value))}/></div>
+                                <div><input type="text" id="eb" value={String(charInfo.get("EB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("EB", e.target.value))}/></div>
+                                <div><input type="text" id="ab" value={String(charInfo.get("AB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("AB", e.target.value))}/></div>
+                                <div><input type="text" id="ib" value={String(charInfo.get("IB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("IB", e.target.value))}/></div>
+                                <div><input type="text" id="wb" value={String(charInfo.get("WB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("WB", e.target.value))}/></div>
+                                <div><input type="text" id="pcb" value={String(charInfo.get("PcB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("PcB", e.target.value))}/></div>
+                                <div><input type="text" id="psb" value={String(charInfo.get("PsB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("PsB", e.target.value))}/></div>
+                                <div><input type="text" id="lb" value={String(charInfo.get("LB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("LB", e.target.value))}/></div>
                             </div>
                         </div>
                     </div>
@@ -1211,7 +1255,7 @@ function App() {
                                    readOnly={halfSpeed}
                                    onChange={e => setCharInfo(new Map(charInfo).set("Current Speed", e.target.value))}/>
                             <span className="sep">/</span>
-                            <input type="text" className="pair" id="speedCalc" defaultValue={String(charInfo.get("Base Speed") ?? "")}/>
+                            <input type="text" className="pair" id="speedCalc" value={String(charInfo.get("Base Speed") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Base Speed", e.target.value))}/>
                         </div>
                     </div>
                     <div className="tile">
@@ -1223,18 +1267,18 @@ function App() {
                     </div>
                     <div className="tile">
                         <div className="band head">Initiative Rating</div>
-                        <div className="band val"><input type="text" id="ir" defaultValue={String(charInfo.get("IR") ?? "")}/></div>
+                        <div className="band val"><input type="text" id="ir" value={String(charInfo.get("IR") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("IR", e.target.value))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Linguistics</div>
-                        <div className="band val"><input type="text" id="linguistics" defaultValue={String(charInfo.get("Linguistics") ?? "")}/></div>
+                        <div className="band val"><input type="text" id="linguistics" value={String(charInfo.get("Linguistics") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Linguistics", e.target.value))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Encumbrance / Carry Rating</div>
                         <div className="band val">
-                            <input type="text" className="pair" id="enc" defaultValue={String(charInfo.get("Encumbrance") ?? "")}/>
+                            <input type="text" className="pair" id="enc" value={String(charInfo.get("Encumbrance") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Encumbrance", e.target.value))}/>
                             <span className="sep">/</span>
-                            <input type="text" className="pair" id="cr" defaultValue={String(charInfo.get("Carry Rating") ?? "")}/>
+                            <input type="text" className="pair" id="cr" value={String(charInfo.get("Carry Rating") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Carry Rating", e.target.value))}/>
                         </div>
                     </div>
                 </div>
@@ -1258,9 +1302,9 @@ function App() {
                         <h2>Bonds</h2>
 
                         <div className="bonds">
-                            {charInfo.get("Bonds 1") && <div className="band val"><input type="text" defaultValue={String(charInfo.get("Bonds 1"))}/></div>}
-                            {charInfo.get("Bonds 2") && <div className="band val"><input type="text" defaultValue={String(charInfo.get("Bonds 2"))}/></div>}
-                            {charInfo.get("Bonds 3") && <div className="band val"><input type="text" defaultValue={String(charInfo.get("Bonds 3"))}/></div>}
+                            {charInfo.get("Bonds 1") && <div className="band val"><input type="text" value={String(charInfo.get("Bonds 1") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Bonds 1", e.target.value))}/></div>}
+                            {charInfo.get("Bonds 2") && <div className="band val"><input type="text" value={String(charInfo.get("Bonds 2") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Bonds 2", e.target.value))}/></div>}
+                            {charInfo.get("Bonds 3") && <div className="band val"><input type="text" value={String(charInfo.get("Bonds 3") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Bonds 3", e.target.value))}/></div>}
                         </div>
 
                         <h2>Skills</h2>
@@ -1526,8 +1570,8 @@ function App() {
 
                                     <div className="invSide">
                                         <div className="tile">
-                                            <div className="band head">Drakes</div>
-                                            <div className="band val"><input type="text" defaultValue={String(charInfo.get("Drakes") ?? "")}/></div>
+                                            <div className="band head">Septims</div>
+                                            <div className="band val"><input type="text" value={String(charInfo.get("Drakes") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Drakes", e.target.value))}/></div>
                                         </div>
                                         <div className="tile">
                                             <div className="band head">Total ENC</div>
@@ -1606,52 +1650,52 @@ function App() {
                                 <div className="armGrid">
                                     <div className="armLoc">
                                         <div className="ahead"><b>Head</b><span>(10)</span></div>
-                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Head AR") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Head ENC") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Head Type") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" value={String(charInfo.get("Head AR") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Head AR", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" value={String(charInfo.get("Head ENC") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Head ENC", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" value={String(charInfo.get("Head Type") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Head Type", e.target.value))}/></div></div>
                                     </div>
                                     <div className="armLoc">
                                         <div className="ahead"><b>Body</b><span>(1-5)</span></div>
-                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Body AR") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Body ENC") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Body Type") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" value={String(charInfo.get("Body AR") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Body AR", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" value={String(charInfo.get("Body ENC") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Body ENC", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" value={String(charInfo.get("Body Type") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Body Type", e.target.value))}/></div></div>
                                     </div>
                                     <div className="armLoc">
                                         <div className="ahead"><b>Right Arm</b><span>(8)</span></div>
-                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Right Arm AR") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Right Arm ENC") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Right Arm Type") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" value={String(charInfo.get("Right Arm AR") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Right Arm AR", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" value={String(charInfo.get("Right Arm ENC") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Right Arm ENC", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" value={String(charInfo.get("Right Arm Type") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Right Arm Type", e.target.value))}/></div></div>
                                     </div>
                                     <div className="armLoc">
                                         <div className="ahead"><b>Left Arm</b><span>(9)</span></div>
-                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Left Arm AR") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Left Arm ENC") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Left Arm Type") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" value={String(charInfo.get("Left Arm AR") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Left Arm AR", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" value={String(charInfo.get("Left Arm ENC") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Left Arm ENC", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" value={String(charInfo.get("Left Arm Type") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Left Arm Type", e.target.value))}/></div></div>
                                     </div>
                                     <div className="armLoc">
                                         <div className="ahead"><b>Right Leg</b><span>(6)</span></div>
-                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Right Leg AR") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Right Leg ENC") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Right Leg Type") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" value={String(charInfo.get("Right Leg AR") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Right Leg AR", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" value={String(charInfo.get("Right Leg ENC") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Right Leg ENC", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" value={String(charInfo.get("Right Leg Type") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Right Leg Type", e.target.value))}/></div></div>
                                     </div>
                                     <div className="armLoc">
                                         <div className="ahead"><b>Left Leg</b><span>(7)</span></div>
-                                        <div className="arow"><div className="al">AR</div><div><input type="text" defaultValue={String(charInfo.get("Left Leg AR") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Left Leg ENC") ?? "")}/></div></div>
-                                        <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Left Leg Type") ?? "")}/></div></div>
+                                        <div className="arow"><div className="al">AR</div><div><input type="text" value={String(charInfo.get("Left Leg AR") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Left Leg AR", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">ENC</div><div><input type="text" value={String(charInfo.get("Left Leg ENC") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Left Leg ENC", e.target.value))}/></div></div>
+                                        <div className="arow"><div className="al">Type</div><div><input type="text" value={String(charInfo.get("Left Leg Type") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Left Leg Type", e.target.value))}/></div></div>
                                     </div>
                                 </div>
 
                                 <div className="armLoc">
                                     <div className="ahead"><b>Shield</b><span>(BR / Type / ENC)</span></div>
-                                    <div className="arow"><div className="al">BR</div><div><input type="text" defaultValue={String(charInfo.get("Languages 2") ?? "").split("/")[0]?.trim() ?? ""}/></div></div>
-                                    <div className="arow"><div className="al">Type</div><div><input type="text" defaultValue={String(charInfo.get("Languages 2") ?? "").split("/")[1]?.trim() ?? ""}/></div></div>
-                                    <div className="arow"><div className="al">ENC</div><div><input type="text" defaultValue={String(charInfo.get("Languages 2") ?? "").split("/")[2]?.trim() ?? ""}/></div></div>
+                                    <div className="arow"><div className="al">BR</div><div><input type="text" value={shield.br} onChange={e => setShield({...shield, br: e.target.value})}/></div></div>
+                                    <div className="arow"><div className="al">Type</div><div><input type="text" value={shield.type} onChange={e => setShield({...shield, type: e.target.value})}/></div></div>
+                                    <div className="arow"><div className="al">ENC</div><div><input type="text" value={shield.enc} onChange={e => setShield({...shield, enc: e.target.value})}/></div></div>
                                 </div>
 
                                 <div className="armLoc">
                                     <div className="ahead"><b>Armor Notes</b></div>
-                                    <div className="arow"><div style={{gridColumn: "1/-1"}}><textarea className="notesArea" rows={1} defaultValue={String(charInfo.get("Armor Notes") ?? charInfo.get("Armor Notes 1") ?? "") + String(charInfo.get("Armor Notes 2") ?? "")}/></div></div>
+                                    <div className="arow"><div style={{gridColumn: "1/-1"}}><textarea className="notesArea" rows={1} value={armorNotes} onChange={e => setArmorNotes(e.target.value)}/></div></div>
                                 </div>
                             </div>
 
@@ -1660,7 +1704,7 @@ function App() {
 
                                 <div className="csBlock">
                                     <div className="csTop">
-                                        <b><input type="text" defaultValue={String(charInfo.get("Combat Style") ?? "")}/></b>
+                                        <b><input type="text" value={String(charInfo.get("Combat Style") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Combat Style", e.target.value))}/></b>
                                         <span>{rankNames[String(charInfo.get("Combat Style Rank") ?? "")] ?? "Untrained"}</span>
                                         <span>{String(charInfo.get("Combat Style Bonus") ?? "")}</span>
                                         <div className="stests">
@@ -1668,8 +1712,8 @@ function App() {
                                             <span>Agility <b className={testMod + csMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Combat Style (Ag)") ?? 0) + testMod + csMod}</b></span>
                                         </div>
                                     </div>
-                                    <div className="csLine"><textarea className="notesArea" rows={1} defaultValue={String(charInfo.get("Combat Style 2") ?? "")}/></div>
-                                    <div className="csLine"><textarea className="notesArea" rows={1} defaultValue={String(charInfo.get("Combat Style 3") ?? "")}/></div>
+                                    <div className="csLine"><textarea className="notesArea" rows={1} value={String(charInfo.get("Combat Style 2") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Combat Style 2", e.target.value))}/></div>
+                                    <div className="csLine"><textarea className="notesArea" rows={1} value={String(charInfo.get("Combat Style 3") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Combat Style 3", e.target.value))}/></div>
                                 </div>
 
                                 <h3>Melee Weapons</h3>
@@ -1926,6 +1970,24 @@ function App() {
                     <span>&#183;</span>
                     <span>thrump's character manager</span>
                 </div>
+
+                {popout === "tooMany" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Downloaded, But Some Rows Did Not Fit</div>
+                            <div className="popbody">
+                                <p>The sheet has been downloaded, but the paper character sheet does not have enough rows for everything, so the extras were left out of the file:</p>
+                                <ul>
+                                    {overflow.map((line, i) => <li key={i}>{line}</li>)}
+                                </ul>
+                                <p>Nothing has been lost here on the page.</p>
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {popout === "noPdf" && (
                     <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
