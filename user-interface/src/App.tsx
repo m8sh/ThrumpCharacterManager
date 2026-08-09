@@ -1,6 +1,7 @@
 import './App.css'
 import {fileHandler} from './index.ts'
-import {useState, Fragment, type ChangeEvent} from "react";
+import {PDFDocument} from 'pdf-lib'
+import {useState, useEffect, Fragment, type ChangeEvent} from "react";
 
 type CharInfo = Map<string, string | boolean | undefined>
 
@@ -67,6 +68,46 @@ const notTurnActions: {name: string, text: string, bullets?: {label: string, tex
     {name: "Resist", text: "Character makes an Athletics or unarmed Combat Style test which their opponent may oppose with their Athletics or unarmed Combat Style skill. If they win, they may escape being restrained, grappled, or blinded."},
     {name: "Trip", text: "Character makes an Athletics or unarmed Combat Style test which their opponent may oppose with their Athletics, unarmed Combat Style, or Evade skill. If they win, their opponent falls prone. Target character cannot be of larger size and must be within 2 meters."},
 ]
+
+// the whole sheet is kept under one key in the browsers own storage
+const saveKey = "thrump-character"
+const pdfKey = "thrump-pdf"
+
+// this runs once when the page loads rather than on every render
+const saved = (() => {
+    try {
+        const raw = localStorage.getItem(saveKey)
+        return raw ? JSON.parse(raw) : null
+    } catch {
+        // storage can be switched off or the save can be from an older version
+        return null
+    }
+})()
+
+// the pdf is held as text so it can sit in storage beside everything else
+function bytesToText(bytes: Uint8Array) {
+    let out = ""
+    // going a chunk at a time because a whole file at once overflows the call stack
+    for (let i = 0; i < bytes.length; i += 8192) {
+        out += String.fromCharCode(...bytes.subarray(i, i + 8192))
+    }
+    return btoa(out)
+}
+
+function textToBytes(text: string) {
+    const raw = atob(text)
+    const bytes = new Uint8Array(raw.length)
+    for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i)
+    return bytes
+}
+
+const savedPdf = (() => {
+    try {
+        return localStorage.getItem(pdfKey)
+    } catch {
+        return null
+    }
+})()
 
 type Cond = {name: string, value?: number, part?: string, fresh?: boolean, auto?: boolean, why?: string}
 
@@ -282,28 +323,197 @@ function addUp(text: string) {
 }
 
 function App() {
-    const [charInfo, setCharInfo] = useState<CharInfo | null>(null)
-    const [languages, setLanguages] = useState<string[]>([])
-    const [mode, setMode] = useState<string | null>(null)
-    const [panel, setPanel] = useState<string | null>(null)
-    const [inventory, setInventory] = useState<{name: string, enc: string}[]>([])
-    const [ttp, setTtp] = useState<{name: string, note: string}[]>([])
-    const [specializations, setSpecializations] = useState<string[]>([])
-    const [rituals, setRituals] = useState<string[]>([])
-    const [spells, setSpells] = useState<{name: string, attr: string, desc: string, levels: {lvl: string, cost: string, str: string}[]}[]>([])
-    const [melee, setMelee] = useState<{name: string, dmg: string, hand: string, reach: string, enc: string, notes: string}[]>([])
-    const [ranged, setRanged] = useState<{name: string, dmg: string, hand: string, reach: string, enc: string, notes: string}[]>([])
-    const [openActions, setOpenActions] = useState<string[]>([])
-    const [conditions, setConditions] = useState<Cond[]>([])
+    const [charInfo, setCharInfo] = useState<CharInfo | null>(saved ? new Map(saved.charInfo) : null)
+    const [languages, setLanguages] = useState<string[]>(saved?.languages ?? [])
+    const [mode, setMode] = useState<string | null>(saved?.mode ?? null)
+    const [panel, setPanel] = useState<string | null>(saved?.panel ?? null)
+    const [inventory, setInventory] = useState<{name: string, enc: string}[]>(saved?.inventory ?? [])
+    const [ttp, setTtp] = useState<{name: string, note: string}[]>(saved?.ttp ?? [])
+    const [specializations, setSpecializations] = useState<string[]>(saved?.specializations ?? [])
+    const [rituals, setRituals] = useState<string[]>(saved?.rituals ?? [])
+    const [spells, setSpells] = useState<{name: string, attr: string, desc: string, levels: {lvl: string, cost: string, str: string}[]}[]>(saved?.spells ?? [])
+    const [melee, setMelee] = useState<{name: string, dmg: string, hand: string, reach: string, enc: string, notes: string}[]>(saved?.melee ?? [])
+    const [ranged, setRanged] = useState<{name: string, dmg: string, hand: string, reach: string, enc: string, notes: string}[]>(saved?.ranged ?? [])
+    const [openActions, setOpenActions] = useState<string[]>(saved?.openActions ?? [])
+    const [conditions, setConditions] = useState<Cond[]>(saved?.conditions ?? [])
     const [recap, setRecap] = useState<string[]>([])
-    const [wounds, setWounds] = useState("")
+    const [wounds, setWounds] = useState(saved?.wounds ?? "")
+    const [pdfText, setPdfText] = useState<string | null>(savedPdf)
     const [popout, setPopout] = useState<string | null>(null)
     const [restLines, setRestLines] = useState<string[] | null>(null)
+
+    // anything in this list being edited saves the sheet again
+    useEffect(() => {
+        if (!charInfo) return
+        try {
+            localStorage.setItem(saveKey, JSON.stringify({
+                // a Map does not survive being turned into text so store it as pairs
+                charInfo: Array.from(charInfo),
+                languages, mode, panel, inventory, ttp, specializations,
+                rituals, spells, melee, ranged, openActions, conditions, wounds,
+            }))
+        } catch {
+            // running out of space or private browsing should not break the sheet
+        }
+    }, [charInfo, languages, mode, panel, inventory, ttp, specializations,
+        rituals, spells, melee, ranged, openActions, conditions, wounds])
+
+    // fills the original sheet back in and hands it over as a download
+    async function downloadPdf() {
+        if (!charInfo || !pdfText) {
+            setPopout("noPdf")
+            return
+        }
+
+        try {
+            const doc = await PDFDocument.load(textToBytes(pdfText))
+            const form = doc.getForm()
+
+            // one place that knows how to write a value back, unknown fields are skipped
+            const put = (name: string, value: string) => {
+                try {
+                    form.getTextField(name).setText(value)
+                } catch {
+                    // the sheet does not have this field, nothing to do
+                }
+            }
+            const tick = (name: string, on: boolean) => {
+                try {
+                    const box = form.getCheckBox(name)
+                    if (on) box.check()
+                    else box.uncheck()
+                } catch {
+                    // same again, some sheets simply do not carry this one
+                }
+            }
+
+            // everything that is still stored under its own field name goes straight back
+            charInfo.forEach((value, name) => {
+                if (typeof value === "boolean") tick(name, value)
+                else put(name, String(value ?? ""))
+            })
+
+            // the lists were pulled apart when the sheet loaded, so put them back together
+            put("Languages", languages.filter(l => l.trim() !== "").join(", "))
+
+            for (let i = 1; i <= 28; i++) {
+                const item = inventory[i - 1]
+                put("Item " + i, item ? item.name : "")
+                put(i === 1 ? "Item 1 ENC" : "Item 1 ENC " + i, item ? item.enc : "")
+            }
+
+            for (let i = 1; i <= 29; i++) {
+                const trait = ttp[i - 1]
+                put("TTP " + i, trait ? trait.name : "")
+                put("TTP Notes " + i, trait ? trait.note : "")
+            }
+
+            for (let i = 1; i <= 5; i++) put("Spell Specializations " + i, specializations[i - 1] ?? "")
+            for (let i = 1; i <= 7; i++) put("Rituals " + i, rituals[i - 1] ?? "")
+
+            for (let i = 1; i <= 21; i++) {
+                const spell = spells[i - 1]
+                put("Spell Name " + i, spell ? spell.name : "")
+                put("Spell Attributes " + i, spell ? spell.attr : "")
+                // the description was read out of two boxes and merged so it all goes in the first
+                put("Spell Description 1 " + i, spell ? spell.desc : "")
+                put("Spell Description 2 " + i, "")
+                for (let j = 1; j <= 7; j++) {
+                    const level = spell ? spell.levels[j - 1] : undefined
+                    put("Spell Level " + j + " " + i, level ? level.lvl : "")
+                    put("Spell Cost " + j + " " + i, level ? level.cost : "")
+                    put("Spell Strength " + j + " " + i, level ? level.str : "")
+                }
+            }
+
+            for (let i = 1; i <= 5; i++) {
+                const w = melee[i - 1]
+                put("Melee Weapon " + i, w ? w.name : "")
+                put("Melee Weapon " + i + " Damage", w ? w.dmg : "")
+                put("Melee Weapon " + i + " Hand", w ? w.hand : "")
+                put("Melee Weapon " + i + " Reach", w ? w.reach : "")
+                put("Melee Weapon " + i + " ENC", w ? w.enc : "")
+                put("Melee Weapon Notes " + i, w ? w.notes : "")
+
+                const r = ranged[i - 1]
+                put("Ranged Weapon " + i, r ? r.name : "")
+                put("Ranged Weapon " + i + " Damage", r ? r.dmg : "")
+                put("Ranged Weapon " + i + " Hand", r ? r.hand : "")
+                put("Ranged Weapon " + i + " Reach", r ? r.reach : "")
+                put("Ranged Weapon " + i + " ENC", r ? r.enc : "")
+                put("Ranged Weapon Notes " + i, r ? r.notes : "")
+            }
+
+            const woundLines = wounds.split("\n")
+            for (let i = 1; i <= 3; i++) put("Wounds " + i, woundLines[i - 1] ?? "")
+
+            // conditions are written out the way they read on the card
+            const condLines = conditions.map(c => {
+                if (c.part) return c.name + " (" + c.part + ")"
+                if (conditionTypes[c.name].kind === "value") return c.name + " (" + c.value + ")"
+                if (c.name === "Fatigued") return fatigueSteps[(c.value ?? 1) - 1].label
+                return c.name
+            })
+            for (let i = 1; i <= 3; i++) put("Conditions " + i, condLines[i - 1] ?? "")
+
+            // the form is left fillable so the download can be uploaded again later
+            const out = await doc.save()
+            // copying into a fresh array gives it a plain buffer, which is what a Blob wants
+            const bytes = new Uint8Array(out)
+            const blob = new Blob([bytes], {type: "application/pdf"})
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement("a")
+            link.href = url
+            link.download = String(charInfo.get("Name") ?? "character") + ".pdf"
+            link.click()
+            URL.revokeObjectURL(url)
+        } catch {
+            setPopout("pdfFailed")
+        }
+    }
+
+    // the only way back to the upload screen, and the only thing that clears the save
+    function startOver() {
+        try {
+            localStorage.removeItem(saveKey)
+            localStorage.removeItem(pdfKey)
+        } catch {
+            // nothing to clean up if storage was never available
+        }
+        setPdfText(null)
+        setCharInfo(null)
+        setLanguages([])
+        setMode(null)
+        setPanel(null)
+        setInventory([])
+        setTtp([])
+        setSpecializations([])
+        setRituals([])
+        setSpells([])
+        setMelee([])
+        setRanged([])
+        setOpenActions([])
+        setConditions([])
+        setWounds("")
+        setPopout(null)
+        setRestLines(null)
+        setRecap([])
+    }
 
     async function handleFile(event: ChangeEvent<HTMLInputElement>) {
         const file = event.target.files?.[0]
         if (!file) return
         const PDFInput : ArrayBuffer = await file.arrayBuffer()
+
+        // hang on to the original so the download can fill this very sheet back in
+        const asText = bytesToText(new Uint8Array(PDFInput))
+        setPdfText(asText)
+        try {
+            localStorage.setItem(pdfKey, asText)
+        } catch {
+            // too big for storage, the download still works until the page is refreshed
+        }
+
         const parsed = await fileHandler(PDFInput)
         console.log(parsed)
         setCharInfo(parsed)
@@ -780,6 +990,10 @@ function App() {
         return (
             <section id='center'>
                 <div className="nameRow">
+                    <div className="upload">
+                        <button type="button" className="newChar" onClick={() => setPopout("newChar")}>Upload New Character</button>
+                        <button type="button" className="savePdf" onClick={downloadPdf}>Download PDF</button>
+                    </div>
                     <h1>{charInfo.get("Name")}</h1>
                     <div className="rests">
                         <button type="button" className="shortRest" onClick={() => {setRestLines(null); setPopout("shortRest")}}>Short Rest</button>
@@ -1712,6 +1926,43 @@ function App() {
                     <span>&#183;</span>
                     <span>thrump's character manager</span>
                 </div>
+
+                {popout === "noPdf" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">No Sheet To Fill In</div>
+                            <div className="popbody"><p>The original PDF is not being held any more, so there is nothing to write these values back into. Upload the character sheet again and the download will work from then on.</p></div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "pdfFailed" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Download Failed</div>
+                            <div className="popbody"><p>Something went wrong while filling in the sheet, so nothing was downloaded. Nothing on this page has been changed.</p></div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "newChar" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Upload New Character</div>
+                            <div className="popbody"><p>This will wipe all of the current character data. Proceed?</p></div>
+                            <div className="popfoot">
+                                <button type="button" onClick={() => setPopout(null)}>Cancel</button>
+                                <button type="button" className="go" onClick={startOver}>Proceed</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {popout === "addCond" && (
                     <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>

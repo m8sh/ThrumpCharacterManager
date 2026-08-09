@@ -898,7 +898,20 @@ body:has(#center > .nameRow){display:block}
 #center .nameRow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-bottom:1.1em}
 /* the name sits in the middle column so the buttons on the right cannot shove it off centre */
 #center .nameRow h1{grid-column:2;margin:0}
+#center .upload{grid-column:1;justify-self:start;display:flex;gap:var(--gap)}
 #center .rests{grid-column:3;justify-self:end;display:flex;gap:var(--gap)}
+#center .upload button{
+  font:inherit;
+  font-weight:600;
+  padding:.3em .8em;
+  color:var(--text);
+  background:var(--tile);
+  border:2px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .upload .newChar:hover{border-color:var(--accent);color:var(--accent)}
+#center .upload .savePdf:hover{border-color:#5cc98a;color:#5cc98a}
 #center .rests button{
   font:inherit;
   font-weight:600;
@@ -1110,6 +1123,13 @@ body:has(#center > .nameRow){display:block}
   #center .langs{flex:1 1 100%}
   #center .langsInner{position:static;overflow:visible}
   #center .langs .band.val:last-child{flex:0 0 auto}
+}
+
+@media (max-width:900px){
+  #center .nameRow{grid-template-columns:1fr;justify-items:center;gap:var(--gap)}
+  #center .nameRow h1{grid-column:1}
+  #center .upload{grid-column:1;justify-self:center}
+  #center .rests{grid-column:1;justify-self:center}
 }
 
 @media (max-width:760px){
