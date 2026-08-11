@@ -971,7 +971,8 @@ body:has(#center > .nameRow){display:block}
 #center .condTools button{
   font:inherit;
   font-size:.8em;
-  padding:0 .4em;
+  padding:0 .5em;
+  white-space:nowrap;
   color:var(--text);
   background:var(--band);
   border:1px solid var(--line);

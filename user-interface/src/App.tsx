@@ -112,6 +112,8 @@ const savedPdf = (() => {
     }
 })()
 
+type Wound = {part: string, treated: boolean, rounds: number}
+
 type Cond = {name: string, value?: number, part?: string, fresh?: boolean, auto?: boolean, why?: string}
 
 const bodyParts = ["Left Eye", "Right Eye", "Left Ear", "Right Ear", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Body"]
@@ -486,7 +488,7 @@ function App() {
     const [openActions, setOpenActions] = useState<string[]>(saved?.openActions ?? [])
     const [conditions, setConditions] = useState<Cond[]>(saved?.conditions ?? [])
     const [recap, setRecap] = useState<string[]>([])
-    const [wounds, setWounds] = useState<string>(saved?.wounds ?? "")
+    const [wounds, setWounds] = useState<Wound[]>(saved?.woundList ?? [])
     const [pdfText, setPdfText] = useState<string | null>(savedPdf)
     const [shield, setShield] = useState<{br: string, type: string, enc: string}>(saved?.shield ?? {br: "", type: "", enc: ""})
     const [armorNotes, setArmorNotes] = useState<string>(saved?.armorNotes ?? "")
@@ -509,8 +511,8 @@ function App() {
                 // a Map does not survive being turned into text so store it as pairs
                 charInfo: Array.from(charInfo),
                 languages, mode, panel, inventory, ttp, specializations,
-                rituals, spells, melee, ranged, openActions, conditions, wounds,
-                shield, armorNotes,
+                rituals, spells, melee, ranged, openActions, conditions,
+                woundList: wounds, shield, armorNotes,
             }))
         } catch {
             // running out of space or private browsing should not break the sheet
@@ -569,7 +571,7 @@ function App() {
             checkFit("Ranged weapons", ranged.length, 3)
             checkFit("Specializations", specializations.length, 5)
             checkFit("Rituals", rituals.length, 7)
-            checkFit("Wound lines", wounds.split("\n").filter(w => w.trim() !== "").length, 3)
+            checkFit("Wounds", wounds.length, 3)
             checkFit("Conditions", conditions.length, 3)
 
             // one place that knows how to write a value back, unknown fields are skipped
@@ -668,8 +670,10 @@ function App() {
             put("Armor Notes 1", armorNotes)
             put("Armor Notes 2", "")
 
-            const woundLines = wounds.split("\n")
-            for (let i = 1; i <= 3; i++) put("Wounds " + i, woundLines[i - 1] ?? "")
+            for (let i = 1; i <= 3; i++) {
+                const w = wounds[i - 1]
+                put("Wounds " + i, w ? w.part + (w.treated ? ", treated" : ", untreated") : "")
+            }
 
             // conditions are written out the way they read on the card
             const condLines = conditions.map(c => {
@@ -723,7 +727,7 @@ function App() {
         setRanged([])
         setOpenActions([])
         setConditions([])
-        setWounds("")
+        setWounds([])
         setShield({br: "", type: "", enc: ""})
         setArmorNotes("")
         setPopout(null)
@@ -835,7 +839,10 @@ function App() {
         }
         setRanged(rangedList)
 
-        setWounds([parsed.get("Wounds 1"), parsed.get("Wounds 2"), parsed.get("Wounds 3")].filter(w => w).join("\n"))
+        // wounds are tracked as their own things now, so only the named ones come across
+        setWounds([parsed.get("Wounds 1"), parsed.get("Wounds 2"), parsed.get("Wounds 3")]
+            .filter(w => w)
+            .map(w => ({part: String(w), treated: false, rounds: 5})))
 
         // the shield ended up in a language field on the sheet, written as br / type / enc
         const shieldBits = String(parsed.get("Languages 2") ?? "").split("/")
@@ -881,7 +888,12 @@ function App() {
 
         const bonusOf = (key: string) => bonusFrom(charInfo, key)
 
-        const testMod = modOf("testMod")
+        // an untreated wound is -20 to everything and -2 initiative until it is seen to
+        const untreated = wounds.filter(w => !w.treated)
+        const woundTestMod = untreated.length * -20
+        const woundIrMod = untreated.length * -2
+
+        const testMod = modOf("testMod") + woundTestMod
         const csMod = modOf("csMod")
         const magicMod = modOf("magicMod")
         const wtMod = modOf("wtMod")
@@ -957,9 +969,8 @@ function App() {
 
             said.push("Until this wound is fully healed you take -20 to all tests and -2 to future initiative rolls, and you have 5 rounds before blood loss drops you to 0 HP.")
 
-            // the wound itself goes in the wounds box the way the rules ask
-            const record = woundTarget + " wound, untreated"
-            setWounds(wounds.trim() === "" ? record : wounds + "\n" + record)
+            // the wound itself is written down with its own five round clock
+            setWounds([...wounds, {part: woundTarget, treated: false, rounds: 5}])
 
             // a part can only be crippled or lost once, so drop any that are already there
             const parts = conditions.filter(c => conditionTypes[c.name].kind === "part").map(c => c.part)
@@ -1052,7 +1063,7 @@ function App() {
             if (organs) heal = Math.floor(heal / 2)
 
             let healed = 0
-            if (wounds.trim() !== "") {
+            if (wounds.some(w => !w.treated)) {
                 lines.push("No Hit Points healed, the character still has untreated wounds.")
             } else {
                 healed = heal
@@ -1541,7 +1552,10 @@ function App() {
                     </div>
                     <div className="tile">
                         <div className="band head">Initiative Rating</div>
-                        <div className="band val"><input type="text" id="ir" value={String(charInfo.get("IR") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("IR", e.target.value))}/></div>
+                        <div className="band val"><input type="text" id="ir" className={woundIrMod !== 0 ? "modded" : ""}
+                                                         value={String(Number(charInfo.get("IR") ?? 0) + woundIrMod)}
+                                                         readOnly={woundIrMod !== 0}
+                                                         onChange={e => setCharInfo(new Map(charInfo).set("IR", e.target.value))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Linguistics</div>
@@ -2030,9 +2044,28 @@ function App() {
                                 </div>
                                 <button type="button" className="addSpell" onClick={() => setRanged([...ranged, {name: "", dmg: "", hand: "", reach: "", enc: "", notes: ""}])}>+ Add Weapon</button>
 
-                                <div className="armLoc">
+                                <div className="condBox">
                                     <div className="ahead"><b>Wounds</b></div>
-                                    <div className="arow"><div style={{gridColumn: "1/-1"}}><textarea className="notesArea" rows={1} value={wounds} onChange={e => setWounds(e.target.value)}/></div></div>
+
+                                    <div className="condList">
+                                        {wounds.map((w, i) => (
+                                            <div className="condCard" key={w.part + i}>
+                                                <b>{w.part}</b>
+                                                <span className="condLvl">{w.treated ? "treated" : "untreated"}</span>
+                                                <span className="condNote">{w.treated ? "ready to cure once you heal the damage that caused it" : "-20 to all tests, -2 initiative, " + w.rounds + " rounds to blood loss"}</span>
+                                                <div className="condTools">
+                                                    {/* first aid stops the bleeding, curing takes healing on top of that */}
+                                                    {!w.treated && (
+                                                        <button type="button" onClick={() => setWounds(wounds.map((old, j) => j === i ? {...old, treated: true} : old))}>Treat Wound</button>
+                                                    )}
+                                                    {w.treated && (
+                                                        <button type="button" onClick={() => setWounds(wounds.filter((_old, j) => j !== i))}>Cure Wound</button>
+                                                    )}
+                                                    <button type="button" onClick={() => setWounds(wounds.filter((_old, j) => j !== i))}>Remove</button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 <div className="condBox">
@@ -2068,7 +2101,7 @@ function App() {
                                                                 setCharInfo(next)
                                                             }
                                                             setConditions(list)
-                                                        }}>remove</button>
+                                                        }}>Remove</button>
                                                     )}
                                                 </div>
                                             </div>
@@ -2090,6 +2123,20 @@ function App() {
                             const lines: string[] = []
                             const kept: Cond[] = []
                             let hp = Number(next.get("Current HP")) || 0
+
+                            // an untreated wound bleeds, and after five rounds it drops you
+                            const woundsAfter = wounds.map(w => {
+                                if (w.treated) return w
+                                const left = w.rounds - 1
+                                if (left <= 0) {
+                                    hp = 0
+                                    lines.push("Your untreated wound on your " + w.part + " has bled you out. You are at 0 HP.")
+                                } else {
+                                    lines.push("You currently have an untreated wound on your " + w.part + " so you will pass out from blood loss after " + left + " more round" + (left === 1 ? "" : "s") + ".")
+                                }
+                                return {...w, rounds: Math.max(0, left)}
+                            })
+                            setWounds(woundsAfter)
 
                             conditions.forEach(c => {
                                 // bleeding does nothing the round it lands, it starts at the end of the next one
