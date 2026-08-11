@@ -130,11 +130,12 @@ const partInfo: Record<string, {note: string, wtMod?: number, spMaxMod?: number,
 }
 
 // losing a matched pair pulls a second condition along with it
-const derivedRules: {all?: string[], any?: string[], gives: string, why: string}[] = [
-    {all: ["Left Eye", "Right Eye"], gives: "Blinded", why: "both eyes are gone"},
-    {all: ["Left Ear", "Right Ear"], gives: "Deafened", why: "both ears are gone"},
-    {all: ["Left Leg", "Right Leg"], gives: "Immobilized", why: "both legs are gone"},
-    {any: ["Left Leg", "Right Leg"], gives: "Slowed", why: "a leg is gone"},
+const derivedRules: {when: (parts: string[], conds: Cond[]) => boolean, gives: string, why: string}[] = [
+    {when: p => p.includes("Left Eye") && p.includes("Right Eye"), gives: "Blinded", why: "both eyes are gone"},
+    {when: p => p.includes("Left Ear") && p.includes("Right Ear"), gives: "Deafened", why: "both ears are gone"},
+    {when: p => p.includes("Left Leg") && p.includes("Right Leg"), gives: "Immobilized", why: "both legs are gone"},
+    {when: p => p.includes("Left Leg") || p.includes("Right Leg"), gives: "Slowed", why: "a leg is gone"},
+    {when: (_p, c) => c.some(x => x.name === "Fatigued" && (x.value ?? 1) >= 4), gives: "Unconscious", why: "fatigue has reached level 4"},
 ]
 
 const fatigueSteps = [
@@ -157,6 +158,7 @@ const conditionTypes: Record<string, {
     detail?: (c: Cond) => string,
     testMod?: (c: Cond) => number,
     csMod?: (c: Cond) => number,
+    magicMod?: (c: Cond) => number,
     frenzyMod?: (c: Cond) => number,
     sbMod?: (c: Cond) => number,
     wtMod?: (c: Cond) => number,
@@ -247,6 +249,47 @@ const conditionTypes: Record<string, {
         zeroSpeed: () => true,
         recap: () => "You are Immobilized and cannot move, though you can still attack and defend.",
     },
+    "Muffled": {
+        kind: "value",
+        max: 99,
+        note: "-X to hearing based tests to detect you",
+        recap: (c) => "You have Muffled (" + c.value + ") and hearing based tests to detect you suffer a -" + c.value + " penalty.",
+    },
+    "Paralyzed": {
+        kind: "flag",
+        note: "frozen, speech and motion free spells only",
+        zeroSpeed: () => true,
+        recap: () => "You are Paralyzed, unable to move any part of your body, and may only cast spells that do not require speech or motion.",
+    },
+    "Prone": {
+        kind: "flag",
+        note: "-20 to combat tests, movement costs double",
+        csMod: () => -20,
+        recap: () => "You are Prone, taking -20 on combat related tests, paying 2 meters of movement for every 1 you cover, and counting any full armor you wear as partial.",
+    },
+    "Restrained": {
+        kind: "flag",
+        note: "cannot move, attack or defend",
+        zeroSpeed: () => true,
+        recap: () => "You are Restrained and cannot move, attack or defend yourself, and may only cast spells that do not require motion.",
+    },
+    "Silenced": {
+        kind: "flag",
+        note: "-20 when casting spells",
+        magicMod: () => -20,
+        recap: () => "You are Silenced. You take the usual -20 for being unable to speak when casting spells, and may roll a Perception test at the start of each round to realise what is happening.",
+    },
+    "Stunned": {
+        kind: "flag",
+        note: "no Action Points, and none come back",
+        recap: () => "You are Stunned and do not regain Action Points at the start of the round.",
+    },
+    "Unconscious": {
+        kind: "flag",
+        note: "knocked out, cannot act",
+        zeroSpeed: () => true,
+        recap: () => "You are Unconscious and may not take actions. Gaining a level of fatigue now would kill you.",
+    },
     "Invisible": {
         kind: "flag",
         note: "cannot be seen, attackers take -30",
@@ -262,8 +305,9 @@ const conditionTypes: Record<string, {
     },
     "Slowed": {
         kind: "flag",
-        note: "reduced movement speed",
-        recap: () => "You are Slowed.",
+        note: "Speed reduced by half",
+        halfSpeed: () => true,
+        recap: () => "You are Slowed and your Speed is reduced by half, rounding up.",
     },
 }
 
@@ -337,6 +381,31 @@ const conditionRules: {name: string, blocks: {head?: string, text?: string, bull
     {name: "Invisible", blocks: [
             {text: "Invisible characters cannot be seen. Characters fail all sight related tests related to spotting the Invisible character and attack them at a -30 penalty, assuming they can guess where the character might be in the first place."},
         ]},
+    {name: "Muffled (X)", blocks: [
+            {text: "A character with this condition is harder to hear. Hearing based tests to detect this character are made with a -X penalty. Only apply the highest value version of this condition if a character would receive it more than once."},
+        ]},
+    {name: "Paralyzed", blocks: [
+            {text: "The character is frozen, unable to move any part of their body. They may only cast spells that do not require speech or motion."},
+        ]},
+    {name: "Prone", blocks: [
+            {text: "The character is prone, and every 1 meter that they move while prone costs 2 meters of their movement for the round. They also suffer a -20 penalty to all combat related tests and count any full armor they are wearing as partial (to represent that it is easier for characters to take advantage of gaps in their defenses while they are down)."},
+            {text: "Dropping prone costs no movement, but standing up requires that a character spend movement equal to half of their base Speed. If the character does not have this much movement left over to use, then they cannot get up unless they take the Arise action."},
+        ]},
+    {name: "Restrained", blocks: [
+            {text: "The character is restrained and thus unable to move. They also cannot attack or defend themselves. They may only cast spells that do not require motion."},
+        ]},
+    {name: "Silenced", blocks: [
+            {text: "Magically silenced characters believe they are making sound, but in reality their words never pass their lips. They suffer the usual -20 penalty for being unable to speak when casting spells. At the start of each round they can roll a Perception test to see if they realize what is happening."},
+        ]},
+    {name: "Slowed", blocks: [
+            {text: "The character\u2019s Speed is reduced by half (round up)."},
+        ]},
+    {name: "Stunned", blocks: [
+            {text: "The character immediately loses all remaining Action Points upon becoming stunned. Stunned characters do not regain Action Points at the start of each round."},
+        ]},
+    {name: "Unconscious", blocks: [
+            {text: "The character is knocked out and loses consciousness. They fall prone if the circumstances allow and may not take actions. If a character gains a level of fatigue while unconscious, they die."},
+        ]},
     {name: "Lost Body Part", blocks: [
             {text: "The character loses a part of their body. A character can have multiple instances of this condition at once, each affecting a different body part. If an attack would hit a body part that has been entirely lost, the attack hits the body location instead. This condition applies additional penalties that vary based on the body part. In the case of the head, there is a choice between an ear or an eye (GM\u2019s decision)."},
             {head: "Lost Ear", text: "The character has had their ear removed or destroyed and their hearing damaged. They suffer the following penalties:", bullets: [
@@ -388,6 +457,7 @@ function App() {
     const [shield, setShield] = useState<{br: string, type: string, enc: string}>(saved?.shield ?? {br: "", type: "", enc: ""})
     const [armorNotes, setArmorNotes] = useState<string>(saved?.armorNotes ?? "")
     const [overflow, setOverflow] = useState<string[]>([])
+    const [apRefreshed, setApRefreshed] = useState(true)
     const [popout, setPopout] = useState<string | null>(null)
     const [restLines, setRestLines] = useState<string[] | null>(null)
 
@@ -738,16 +808,14 @@ function App() {
         const partsHit = conditions.filter(c => conditionTypes[c.name].kind === "part").map(c => c.part ?? "")
         const derived: Cond[] = []
         derivedRules.forEach(rule => {
-            const owed = rule.all
-                ? rule.all.every(p => partsHit.includes(p))
-                : (rule.any ?? []).some(p => partsHit.includes(p))
+            const owed = rule.when(partsHit, conditions)
             const already = conditions.some(c => c.name === rule.gives) || derived.some(c => c.name === rule.gives)
             if (owed && !already) derived.push({name: rule.gives, value: 1, auto: true, why: rule.why})
         })
         const allConditions = [...conditions, ...derived]
 
         // a condition only writes down the parts it cares about so everything else reads as zero
-        const modOf = (which: "testMod" | "csMod" | "wtMod" | "apMaxMod" | "spMaxMod" | "frenzyMod" | "sbMod") => {
+        const modOf = (which: "testMod" | "csMod" | "magicMod" | "wtMod" | "apMaxMod" | "spMaxMod" | "frenzyMod" | "sbMod") => {
             let total = 0
             allConditions.forEach(c => {
                 const fn = conditionTypes[c.name][which]
@@ -758,6 +826,7 @@ function App() {
 
         const testMod = modOf("testMod")
         const csMod = modOf("csMod")
+        const magicMod = modOf("magicMod")
         const wtMod = modOf("wtMod")
         const apMaxMod = modOf("apMaxMod")
         const spMaxMod = modOf("spMaxMod")
@@ -927,7 +996,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Alteration Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Alteration Rank") ? String(charInfo.get("Alteration Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Alteration Rank") ? Number(charInfo.get("Alteration Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Alteration Rank") ? Number(charInfo.get("Alteration Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -935,7 +1004,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Conjuration Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Conjuration Rank") ? String(charInfo.get("Conjuration Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Conjuration Rank") ? Number(charInfo.get("Conjuration Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Conjuration Rank") ? Number(charInfo.get("Conjuration Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -943,7 +1012,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Destruction Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Destruction Rank") ? String(charInfo.get("Destruction Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Destruction Rank") ? Number(charInfo.get("Destruction Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Destruction Rank") ? Number(charInfo.get("Destruction Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -951,7 +1020,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Illusion Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Illusion Rank") ? String(charInfo.get("Illusion Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Illusion Rank") ? Number(charInfo.get("Illusion Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                            <span>Intelligence <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Illusion Rank") ? Number(charInfo.get("Illusion Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -959,7 +1028,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Mysticism Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Mysticism Rank") ? String(charInfo.get("Mysticism Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Mysticism Rank") ? Number(charInfo.get("Mysticism Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Mysticism Rank") ? Number(charInfo.get("Mysticism Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -967,7 +1036,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Necromancy Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Necromancy Rank") ? String(charInfo.get("Necromancy Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Necromancy Rank") ? Number(charInfo.get("Necromancy Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                            <span>Intelligence <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Necromancy Rank") ? Number(charInfo.get("Necromancy Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -975,7 +1044,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Restoration Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Restoration Rank") ? String(charInfo.get("Restoration Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Restoration Rank") ? Number(charInfo.get("Restoration Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Restoration Rank") ? Number(charInfo.get("Restoration Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
                         </div>
                     </div>
                 </div>
@@ -1890,7 +1959,9 @@ function App() {
 
                         <button type="button" className="roundOver" onClick={() => {
                             const next = new Map(charInfo)
-                            next.set("Current AP", String(shownApMax))
+                            const stunned = allConditions.some(c => c.name === "Stunned")
+                            if (!stunned) next.set("Current AP", String(shownApMax))
+                            setApRefreshed(!stunned)
 
                             const lines: string[] = []
                             const kept: Cond[] = []
@@ -2171,7 +2242,7 @@ function App() {
                         <div className="popout">
                             <div className="pophead">Round Over</div>
                             <div className="popbody">
-                                <p>Your AP is back up to full.</p>
+                                <p>{apRefreshed ? "Your AP is back up to full." : "You are Stunned, so your AP does not come back this round."}</p>
                                 {recap.length > 0 && <div className="recapHead">Your conditions:</div>}
                                 {recap.map((line, i) => <p key={i}>{line}</p>)}
                             </div>
