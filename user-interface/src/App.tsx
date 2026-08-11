@@ -2092,7 +2092,7 @@ function App() {
                                                 <b>{w.part}</b>
                                                 <span className="condLvl">{w.treated ? "treated" : "untreated"}</span>
                                                 <span className="condNote">{w.treated
-                                                    ? (w.damage > 0 ? "treated, healed " + w.healed + " of the " + w.damage + " needed to cure" : "treated, cure it by hand once the damage is healed")
+                                                    ? (w.damage > 0 ? "healed " + w.healed + " of the " + w.damage + " needed to cure" : "cure it by hand once the damage is healed")
                                                     : "-20 to all tests, -2 initiative, " + w.rounds + " rounds to blood loss"}</span>
                                                 <div className="condTools">
                                                     {/* first aid stops the bleeding, curing takes healing on top of that */}
