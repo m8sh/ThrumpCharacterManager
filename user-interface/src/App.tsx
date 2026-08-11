@@ -430,6 +430,11 @@ const conditionRules: {name: string, blocks: {head?: string, text?: string, bull
         ]},
 ]
 
+// a characteristic bonus is the tens digit of the score
+function bonusFrom(info: CharInfo, key: string) {
+    return Math.floor((Number(info.get(key)) || 0) / 10)
+}
+
 // speed can be written as a plain number or as a little sum like 10 - 1
 function addUp(text: string) {
     const parts = String(text).replace(/\s+/g, "").match(/[+-]?\d+/g)
@@ -607,16 +612,22 @@ function App() {
                 put("Ranged Weapon Notes " + i, r ? r.notes : "")
             }
 
-            // back into the one field the sheet keeps them in
-            put("SB", String(bonusOf("Str") + sbMod))
-            put("EB", String(bonusOf("End")))
-            put("AB", String(bonusOf("Ag")))
-            put("IB", String(bonusOf("Int")))
-            put("WB", String(bonusOf("Wp")))
-            put("PcB", String(bonusOf("Prc")))
-            put("PsB", String(bonusOf("Prs")))
-            put("LB", String(bonusOf("Lck")))
+            // the bonuses are worked out rather than stored so they go in fresh
+            let exportSbMod = 0
+            conditions.forEach(c => {
+                const fn = conditionTypes[c.name].sbMod
+                if (fn) exportSbMod += fn(c)
+            })
+            put("SB", String(bonusFrom(charInfo, "Str") + exportSbMod))
+            put("EB", String(bonusFrom(charInfo, "End")))
+            put("AB", String(bonusFrom(charInfo, "Ag")))
+            put("IB", String(bonusFrom(charInfo, "Int")))
+            put("WB", String(bonusFrom(charInfo, "Wp")))
+            put("PcB", String(bonusFrom(charInfo, "Prc")))
+            put("PsB", String(bonusFrom(charInfo, "Prs")))
+            put("LB", String(bonusFrom(charInfo, "Lck")))
 
+            // back into the one field the sheet keeps them in
             put("Languages 2", [shield.br, shield.type, shield.enc].join(" / "))
             put("Armor Notes", armorNotes)
             put("Armor Notes 1", armorNotes)
@@ -833,8 +844,7 @@ function App() {
             return total
         }
 
-        // a characteristic bonus is the tens digit of the score, so it follows the score
-        const bonusOf = (key: string) => Math.floor((Number(charInfo.get(key)) || 0) / 10)
+        const bonusOf = (key: string) => bonusFrom(charInfo, key)
 
         const testMod = modOf("testMod")
         const csMod = modOf("csMod")
