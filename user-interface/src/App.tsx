@@ -492,6 +492,12 @@ function App() {
     const [armorNotes, setArmorNotes] = useState<string>(saved?.armorNotes ?? "")
     const [overflow, setOverflow] = useState<string[]>([])
     const [apRefreshed, setApRefreshed] = useState(true)
+
+    // what the wound wizard has been told so far, one answer per question
+    const [woundPart, setWoundPart] = useState("")
+    const [woundSide, setWoundSide] = useState("")
+    const [woundShockPassed, setWoundShockPassed] = useState(true)
+    const [woundLines, setWoundLines] = useState<string[]>([])
     const [popout, setPopout] = useState<string | null>(null)
     const [restLines, setRestLines] = useState<string[] | null>(null)
 
@@ -893,6 +899,77 @@ function App() {
         const shownSpeed = zeroSpeed ? "0"
             : halfSpeed && !isNaN(baseSpeed) ? String(Math.ceil(baseSpeed / 2))
                 : String(charInfo.get("Current Speed") ?? "")
+
+        // an ear or eye wound needs a side, everything else already names its part
+        const woundTarget = woundPart === "Head (Ear)" ? woundSide + " Ear"
+            : woundPart === "Head (Eye)" ? woundSide + " Eye"
+                : woundPart
+
+        const needsSide = woundPart === "Head (Ear)" || woundPart === "Head (Eye)"
+        const isHead = needsSide
+        const isBody = woundPart === "Body"
+
+        // writes the wound down and applies everything the shock test decided
+        const applyWound = (magicType: string) => {
+            const added: Cond[] = []
+            const said: string[] = []
+            const next = new Map(charInfo)
+
+            if (isBody) {
+                // a body wound costs an action point, or one off the next round if there are none
+                const ap = Number(next.get("Current AP")) || 0
+                if (ap > 0) {
+                    next.set("Current AP", String(ap - 1))
+                    said.push("You suffered a wound to the Body and lose an Action Point.")
+                } else {
+                    said.push("You suffered a wound to the Body. You have no Action Points left, so you begin the next round with one less.")
+                }
+                if (!woundShockPassed) {
+                    added.push({name: "Crippled", part: "Body"})
+                    said.push("Since you failed your Shock Test, you are also suffering from the Crippled (Body) condition, which is organ damage.")
+                }
+            } else if (isHead) {
+                // a blow to the head stuns instead of crippling
+                said.push("You suffered a wound to the " + woundTarget + " and are stunned for 1 round.")
+                if (!conditions.some(c => c.name === "Stunned")) added.push({name: "Stunned"})
+                if (!woundShockPassed) {
+                    added.push({name: "Lost", part: woundTarget})
+                    said.push("Since you failed your Shock Test, you are also suffering from the Lost (" + woundTarget + ") condition.")
+                }
+            } else {
+                added.push({name: "Crippled", part: woundTarget})
+                said.push("You suffered a wound on your " + woundTarget + " and are now suffering from the Crippled (" + woundTarget + ") condition.")
+                if (!woundShockPassed) {
+                    added.push({name: "Lost", part: woundTarget})
+                    said.push("Since you failed your Shock Test, you are also suffering from the Lost (" + woundTarget + ") condition.")
+                }
+            }
+
+            if (magicType === "Fire") {
+                said.push("Since the damage was inflicted with Fire magic, you must make a Strength or Agility test, or gain the Burning (1) condition. Did you pass the test?")
+            } else if (magicType === "Magic, Frost, or Poison") {
+                const sp = Number(next.get("Current SP")) || 0
+                next.set("Current SP", String(sp - 1))
+                said.push("Since the damage included magic, frost or poison, you also lose a Stamina point.")
+            } else if (magicType === "Shock") {
+                said.push("Since the damage included shock, you also lose Magicka points equal to the damage inflicted. Take those off by hand, since the sheet was never told how much the hit was for.")
+            }
+
+            said.push("Until this wound is fully healed you take -20 to all tests and -2 to future initiative rolls, and you have 5 rounds before blood loss drops you to 0 HP.")
+
+            // the wound itself goes in the wounds box the way the rules ask
+            const record = woundTarget + " wound, untreated"
+            setWounds(wounds.trim() === "" ? record : wounds + "\n" + record)
+
+            // a part can only be crippled or lost once, so drop any that are already there
+            const parts = conditions.filter(c => conditionTypes[c.name].kind === "part").map(c => c.part)
+            const fresh = added.filter(c => !c.part || !parts.includes(c.part))
+
+            setCharInfo(next)
+            setConditions([...conditions, ...fresh])
+            setWoundLines(said)
+            setPopout(magicType === "Fire" ? "woundFire" : "woundDone")
+        }
 
         const nameOf = (c: Cond) => {
             const type = conditionTypes[c.name]
@@ -2144,6 +2221,12 @@ function App() {
                                                         )}
                                                     </div>
                                                 ))}
+                                                <button type="button" className="takeAction" onClick={() => {
+                                                    setWoundPart("")
+                                                    setWoundSide("")
+                                                    setWoundShockPassed(true)
+                                                    setPopout("wound1")
+                                                }}>Add Wound</button>
                                             </div>
                                         )}
                                     </div>
@@ -2327,6 +2410,137 @@ function App() {
                                         </button>
                                     )
                                 })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "wound1" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Add Wound</div>
+                            <div className="popbody">
+                                <p>Did you take damage from a single attack (including enchantments and poisons) that exceeded {Number(charInfo.get("WT") ?? 0) + wtMod}?</p>
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" onClick={() => setPopout(null)}>Cancel</button>
+                                <button type="button" className="go" onClick={() => setPopout("wound2")}>Yes</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "wound2" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Where were you hit?</div>
+                            <div className="popbody" style={{padding: 0}}>
+                                {["Head (Ear)", "Head (Eye)", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Body"].map(part => (
+                                    <button type="button" key={part} className="pickRow" onClick={() => {
+                                        setWoundPart(part)
+                                        setPopout("wound3")
+                                    }}><b>{part}</b></button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "wound3" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Shock Test</div>
+                            <div className="popbody">
+                                <p>Did you succeed on your Shock Test (Endurance)?</p>
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => {
+                                    setWoundShockPassed(true)
+                                    setPopout("wound5")
+                                }}>Yes</button>
+                                <button type="button" className="go" onClick={() => {
+                                    setWoundShockPassed(false)
+                                    // a failed test costs a part, and the sheet tracks left and right separately
+                                    setPopout(needsSide ? "wound4" : "wound5")
+                                }}>No</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "wound4" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Which side?</div>
+                            <div className="popbody">
+                                <p>The shock test failed, so the {woundPart === "Head (Ear)" ? "ear" : "eye"} is lost. Which one?</p>
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => {setWoundSide("Left"); setPopout("wound5")}}>Left</button>
+                                <button type="button" className="go" onClick={() => {setWoundSide("Right"); setPopout("wound5")}}>Right</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "wound5" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Magic Damage</div>
+                            <div className="popbody">
+                                <p>Was the wound caused by magic damage?</p>
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => applyWound("")}>No</button>
+                                <button type="button" className="go" onClick={() => setPopout("wound6")}>Yes</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "wound6" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">What type?</div>
+                            <div className="popbody">
+                                <p className="fineprint">If the wound is from an attack which includes multiple magic damage types, the type that contributed the most damage determines this effect. In case of a tie, the attacker chooses which effect is applied.</p>
+                            </div>
+                            <div className="popbody" style={{padding: 0}}>
+                                {["Fire", "Magic, Frost, or Poison", "Shock"].map(kind => (
+                                    <button type="button" key={kind} className="pickRow" onClick={() => applyWound(kind)}><b>{kind}</b></button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "woundFire" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Wound Taken</div>
+                            <div className="popbody">
+                                {woundLines.map((line, i) => <p key={i}>{line}</p>)}
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout(null)}>I passed</button>
+                                <button type="button" className="go" onClick={() => {
+                                    if (!conditions.some(c => c.name === "Burning")) setConditions([...conditions, {name: "Burning", value: 1}])
+                                    setPopout(null)
+                                }}>I failed</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "woundDone" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Wound Taken</div>
+                            <div className="popbody">
+                                {woundLines.map((line, i) => <p key={i}>{line}</p>)}
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
                             </div>
                         </div>
                     </div>

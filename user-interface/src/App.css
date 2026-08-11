@@ -1106,6 +1106,8 @@ body:has(#center > .nameRow){display:block}
 .popout .pickRow.taken:hover{background:none}
 
 .popout .recapHead{font-weight:700;margin:.6em 0 .2em}
+/* the aside under a question, quieter than the question itself */
+.popout .fineprint{font-size:.85em;opacity:.7}
 .popout .popbody ul{margin:.4em 0;padding-left:1.2em}
 .popout .popbody li{margin:.25em 0}
 
