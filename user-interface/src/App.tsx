@@ -608,6 +608,15 @@ function App() {
             }
 
             // back into the one field the sheet keeps them in
+            put("SB", String(bonusOf("Str") + sbMod))
+            put("EB", String(bonusOf("End")))
+            put("AB", String(bonusOf("Ag")))
+            put("IB", String(bonusOf("Int")))
+            put("WB", String(bonusOf("Wp")))
+            put("PcB", String(bonusOf("Prc")))
+            put("PsB", String(bonusOf("Prs")))
+            put("LB", String(bonusOf("Lck")))
+
             put("Languages 2", [shield.br, shield.type, shield.enc].join(" / "))
             put("Armor Notes", armorNotes)
             put("Armor Notes 1", armorNotes)
@@ -823,6 +832,9 @@ function App() {
             })
             return total
         }
+
+        // a characteristic bonus is the tens digit of the score, so it follows the score
+        const bonusOf = (key: string) => Math.floor((Number(charInfo.get(key)) || 0) / 10)
 
         const testMod = modOf("testMod")
         const csMod = modOf("csMod")
@@ -1261,17 +1273,14 @@ function App() {
                             </div>
                             <div className="crow">
                                 <div className="rl">Bonus</div>
-                                <div><input type="text" id="sb" className={sbMod !== 0 ? "modded" : ""}
-                                            value={String(Number(charInfo.get("SB") ?? 0) + sbMod)}
-                                            readOnly={sbMod !== 0}
-                                            onChange={e => setCharInfo(new Map(charInfo).set("SB", e.target.value))}/></div>
-                                <div><input type="text" id="eb" value={String(charInfo.get("EB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("EB", e.target.value))}/></div>
-                                <div><input type="text" id="ab" value={String(charInfo.get("AB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("AB", e.target.value))}/></div>
-                                <div><input type="text" id="ib" value={String(charInfo.get("IB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("IB", e.target.value))}/></div>
-                                <div><input type="text" id="wb" value={String(charInfo.get("WB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("WB", e.target.value))}/></div>
-                                <div><input type="text" id="pcb" value={String(charInfo.get("PcB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("PcB", e.target.value))}/></div>
-                                <div><input type="text" id="psb" value={String(charInfo.get("PsB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("PsB", e.target.value))}/></div>
-                                <div><input type="text" id="lb" value={String(charInfo.get("LB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("LB", e.target.value))}/></div>
+                                <div><input type="text" id="sb" className={sbMod !== 0 ? "modded" : ""} value={String(bonusOf("Str") + sbMod)} readOnly/></div>
+                                <div><input type="text" id="eb" value={String(bonusOf("End"))} readOnly/></div>
+                                <div><input type="text" id="ab" value={String(bonusOf("Ag"))} readOnly/></div>
+                                <div><input type="text" id="ib" value={String(bonusOf("Int"))} readOnly/></div>
+                                <div><input type="text" id="wb" value={String(bonusOf("Wp"))} readOnly/></div>
+                                <div><input type="text" id="pcb" value={String(bonusOf("Prc"))} readOnly/></div>
+                                <div><input type="text" id="psb" value={String(bonusOf("Prs"))} readOnly/></div>
+                                <div><input type="text" id="lb" value={String(bonusOf("Lck"))} readOnly/></div>
                             </div>
                         </div>
                     </div>
@@ -1857,8 +1866,8 @@ function App() {
                                         <span>{rankNames[String(charInfo.get("Combat Style Rank") ?? "")] ?? "Untrained"}</span>
                                         <span>{String(charInfo.get("Combat Style Bonus") ?? "")}</span>
                                         <div className="stests">
-                                            <span>Strength <b className={testMod + csMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Combat Style (Str)") ?? 0) + testMod + csMod}</b></span>
-                                            <span>Agility <b className={testMod + csMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Combat Style (Ag)") ?? 0) + testMod + csMod}</b></span>
+                                            <span>Strength <b className={testMod + csMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Str")) + (charInfo.get("Combat Style Rank") ? Number(charInfo.get("Combat Style Bonus") ?? 0) : -20) + testMod + csMod}</b></span>
+                                            <span>Agility <b className={testMod + csMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Combat Style Rank") ? Number(charInfo.get("Combat Style Bonus") ?? 0) : -20) + testMod + csMod}</b></span>
                                         </div>
                                     </div>
                                     <div className="csLine"><textarea className="notesArea" rows={1} value={String(charInfo.get("Combat Style 2") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Combat Style 2", e.target.value))}/></div>
@@ -1883,7 +1892,7 @@ function App() {
                                         </Fragment>
                                     ))}
                                 </div>
-                                <button type="button" className="addSpell" onClick={() => setMelee([...melee, {name: "", dmg: "", hand: "", reach: "", enc: "", notes: ""}])}>+ add weapon</button>
+                                <button type="button" className="addSpell" onClick={() => setMelee([...melee, {name: "", dmg: "", hand: "", reach: "", enc: "", notes: ""}])}>+ Add Weapon</button>
 
                                 <h3>Ranged Weapons</h3>
 
@@ -1903,7 +1912,7 @@ function App() {
                                         </Fragment>
                                     ))}
                                 </div>
-                                <button type="button" className="addSpell" onClick={() => setRanged([...ranged, {name: "", dmg: "", hand: "", reach: "", enc: "", notes: ""}])}>+ add weapon</button>
+                                <button type="button" className="addSpell" onClick={() => setRanged([...ranged, {name: "", dmg: "", hand: "", reach: "", enc: "", notes: ""}])}>+ Add Weapon</button>
 
                                 <div className="armLoc">
                                     <div className="ahead"><b>Wounds</b></div>
@@ -1914,7 +1923,6 @@ function App() {
                                     <div className="ahead"><b>Conditions</b></div>
 
                                     <div className="condList">
-                                        {allConditions.length === 0 && <div className="condNone">none</div>}
                                         {allConditions.map((c, i) => (
                                             <div className="condCard" key={c.name + (c.part ?? "")}>
                                                 <b>{nameOf(c)}</b>
@@ -1951,7 +1959,7 @@ function App() {
                                         ))}
                                     </div>
 
-                                    <button type="button" className="addCond" onClick={() => setPopout("addCond")}>+ add condition</button>
+                                    <button type="button" className="addCond" onClick={() => setPopout("addCond")}>+ Add Condition</button>
                                 </div>
                             </div>
 
@@ -2079,42 +2087,53 @@ function App() {
                                 <h2>Conditions &amp; Rules</h2>
 
                                 <div className="actList">
-                                    {conditionRules.map(rule => (
-                                        <div className="act" key={rule.name}>
-                                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("cond " + rule.name) ? openActions.filter(n => n !== "cond " + rule.name) : [...openActions, "cond " + rule.name])}>
-                                                <span>{rule.name}</span>
-                                            </div>
-                                            {openActions.includes("cond " + rule.name) && (
-                                                <div className="actBody">
-                                                    {rule.blocks.map((block, i) => (
-                                                        <div key={i}>
-                                                            {block.head && <div className="subHead">{block.head}</div>}
-                                                            {block.text && <p>{block.text}</p>}
-                                                            {block.bullets && (
-                                                                <ul>
-                                                                    {block.bullets.map((b, j) => <li key={j}>{b}</li>)}
-                                                                </ul>
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                    {rule.name === "Fatigued" && (
-                                                        <>
-                                                            <div className="subHead">Fatigue Effects</div>
-                                                            <div className="dtable wide">
-                                                                <div className="dh">Levels</div><div className="dh">Effects</div>
-                                                                {fatigueSteps.map(step => (
-                                                                    <Fragment key={step.label}>
-                                                                        <div>{step.level}</div>
-                                                                        <div>{step.effect}</div>
-                                                                    </Fragment>
-                                                                ))}
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            )}
+                                    {/* the whole set folds away so there is room for the other rules to come */}
+                                    <div className="act">
+                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Conditions") ? openActions.filter(n => n !== "group Conditions") : [...openActions, "group Conditions"])}>
+                                            <span>Conditions</span>
+                                            <span className="ap">{conditionRules.length}</span>
                                         </div>
-                                    ))}
+                                        {openActions.includes("group Conditions") && (
+                                            <div className="actGroup">
+                                                {conditionRules.slice().sort((a, b) => a.name.localeCompare(b.name)).map(rule => (
+                                                    <div className="act" key={rule.name}>
+                                                        <div className="actHead" onClick={() => setOpenActions(openActions.includes("cond " + rule.name) ? openActions.filter(n => n !== "cond " + rule.name) : [...openActions, "cond " + rule.name])}>
+                                                            <span>{rule.name}</span>
+                                                        </div>
+                                                        {openActions.includes("cond " + rule.name) && (
+                                                            <div className="actBody">
+                                                                {rule.blocks.map((block, i) => (
+                                                                    <div key={i}>
+                                                                        {block.head && <div className="subHead">{block.head}</div>}
+                                                                        {block.text && <p>{block.text}</p>}
+                                                                        {block.bullets && (
+                                                                            <ul>
+                                                                                {block.bullets.map((b, j) => <li key={j}>{b}</li>)}
+                                                                            </ul>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                                {rule.name === "Fatigued" && (
+                                                                    <>
+                                                                        <div className="subHead">Fatigue Effects</div>
+                                                                        <div className="dtable wide">
+                                                                            <div className="dh">Levels</div><div className="dh">Effects</div>
+                                                                            {fatigueSteps.map(step => (
+                                                                                <Fragment key={step.label}>
+                                                                                    <div>{step.level}</div>
+                                                                                    <div>{step.effect}</div>
+                                                                                </Fragment>
+                                                                            ))}
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </>
                         )}
@@ -2191,7 +2210,7 @@ function App() {
                         <div className="popout">
                             <div className="pophead">Add a Condition</div>
                             <div className="popbody" style={{padding: 0}}>
-                                {Object.keys(conditionTypes).map(name => {
+                                {Object.keys(conditionTypes).sort().map(name => {
                                     // a body part condition can be taken again and again as long as the part differs
                                     const taken = conditionTypes[name].kind !== "part" && allConditions.some(c => c.name === name)
                                     return (
@@ -2206,7 +2225,7 @@ function App() {
                                             if (name === "Frenzied") setCharInfo(new Map(charInfo).set("Current SP", String(Number(charInfo.get("Current SP") ?? 0) + 1)))
                                             setPopout(null)
                                         }}>
-                                            <b>{name}{taken ? " \u2014 already applied" : ""}</b>
+                                            <b>{conditionTypes[name].kind === "part" ? name + " Body Part" : name}{taken ? " \u2014 already applied" : ""}</b>
                                         </button>
                                     )
                                 })}
@@ -2218,7 +2237,7 @@ function App() {
                 {popout !== null && popout.startsWith("part ") && (
                     <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
                         <div className="popout">
-                            <div className="pophead">{popout.slice(5) === "Lost" ? "Lost Body Part" : "Crippled"}</div>
+                            <div className="pophead">{popout.slice(5)} Body Part</div>
                             <div className="popbody" style={{padding: 0}}>
                                 {bodyParts.map(part => {
                                     const gone = partsHit.includes(part)

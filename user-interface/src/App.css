@@ -871,6 +871,11 @@ body:has(#center > .nameRow){display:block}
   font-weight:700;
 }
 #center .actHead:hover{background:#1d2026}
+/* the heading that folds a whole set of rules away */
+#center .actHead.groupHead{background:#1f232a;border-bottom:1px solid var(--line)}
+#center .actHead.groupHead:hover{background:#252932}
+#center .actGroup{border-top:1px solid var(--line)}
+#center .actGroup .act:last-child{border-bottom:0}
 #center .actHead .ap{font-weight:400;opacity:.6}
 #center .actBody{padding:.45em .55em .55em;font-weight:400}
 #center .actBody p{margin:.3em 0}
