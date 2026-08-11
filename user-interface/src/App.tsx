@@ -430,6 +430,35 @@ const conditionRules: {name: string, blocks: {head?: string, text?: string, bull
         ]},
 ]
 
+// the wounds and healing rules, worded exactly as the rulebook has them
+type RuleBlock = {head?: string, text?: string, bullets?: string[]}
+
+const woundRules: RuleBlock[] = [
+    {text: "Wounds represent devestating injuries caused by more damaging attacks, and not just simple cuts and bruises. If a character ever takes damage from a single attack (including enchantments and/or poisons) in excess of their Wound Threshold (WT), then they take a wound. Record the amount of damage and hit location, then follow these steps:"},
+    {head: "Shock Effects", text: "First, the character must make a special Endurance test known as a Shock Test, which represents how well the character fares against the initial effects.", bullets: [
+            "If the wound is to the body, the character loses an Action Point. If they have none remaining, they begin the next round with one less. If they fail the shock test then they also suffer the crippled body condition.",
+            "If the wound is to a limb, the character suffers the crippled limb condition (blows to the head instead stun for 1 round). If they fail the shock test, then they also suffer the lost limb condition (lost ear or lost eye for the head).",
+        ]},
+    {text: "If the wound was caused by magic damage, the following applies:", bullets: [
+            "If the wound is by an attack which includes fire damage, the character also must pass a Strength or Agility test or gain the Burning (1) condition.",
+            "If the wound is from an attack which includes magic, frost, or poison damage, the character also loses a Stamina point.",
+            "If the wound is from an attack which includes shock damage, the character also loses Magicka points equal to the damage inflicted.",
+            "If the wound is from an attack which includes multiple magic damage types, the type that contributed the most damage determines this effect. In case of a tie, the attacker chooses which effect is applied.",
+        ]},
+    {head: "Passive Effects", text: "After the shock test has been resolved, the character suffers a -20 to all tests and a -2 to future initiative rolls until the wound is fully healed. The character has 30 seconds (5 rounds) before they drop to 0 HP through blood loss. These effects can be removed by first aid (a Survival or Profession [Medicine] skill test must be performed, which takes 1 Turn and requires a healer\u2019s kit or other supplies), or delayed with magical healing (see below)."},
+]
+
+const healingRules: RuleBlock[] = [
+    {text: "There are two means by which characters can heal damage and wounds which have been dealt to them: natural healing, and magic healing."},
+    {head: "Restoring HP", text: "Both magical and natural healing can restore missing HP."},
+    {head: "Magical Healing", text: "Magical healing will always specify an amount of missing HP that it restores, and this happens instantly unless otherwise noted."},
+    {head: "Natural Healing", text: "Characters naturally regenerate a number of missing HP equal to their Endurance bonus each time they take a long rest as long as they have no untreated wounds. This amount is doubled if the character is not doing anything strenuous and is focused entirely on healing themselves (or if another person is caring for them)."},
+    {head: "Healing Wounds", text: "In order for a character to begin to heal wounds, those wounds must be treated first. If a wound is not treated within a number of days equal to the character\u2019s Endurance bonus, the character becomes Maimed: any body parts crippled by the wound become crippled permanently and count as being lost."},
+    {head: "Healing Untreated Wounds", text: "Characters cannot regenerate HP naturally while they have untreated wounds. In addition to restoring HP, magical healing done while the character is wounded temporarily removes the passive effects and forestalls unconsciousness for a number of rounds equal to the amount healed. If a character ever heals to full HP while they have an untreated wound, they become maimed as the wound has healed improperly."},
+    {head: "Treating Wounds", text: "A wound can be treated by a successful Profession [Medicine] test, which takes approximately an hour. Once a character\u2019s wound(s) have been treated, they can begin to heal naturally again. Treating a wound related to the Crippled Condition can only be done once per long rest. If this test results in a dramatic failure, the limb immediately becomes Maimed."},
+    {head: "Curing Wounds", text: "Once a wound has been treated it can be properly healed. After treatment if a character regenerates HP (by magical or natural means) equal to or in excess of the damage that caused the wound, then the wound and all of its effects are removed. The one exception is that characters cannot heal lost limbs in this fashion."},
+]
+
 // a characteristic bonus is the tens digit of the score
 function bonusFrom(info: CharInfo, key: string) {
     return Math.floor((Number(info.get(key)) || 0) / 10)
@@ -2097,7 +2126,44 @@ function App() {
                                 <h2>Conditions &amp; Rules</h2>
 
                                 <div className="actList">
-                                    {/* the whole set folds away so there is room for the other rules to come */}
+                                    {/* one fold out per rules section, the same way the actions read */}
+                                    <div className="act">
+                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Wounds") ? openActions.filter(n => n !== "group Wounds") : [...openActions, "group Wounds"])}>
+                                            <span>Wounds</span>
+                                        </div>
+                                        {openActions.includes("group Wounds") && (
+                                            <div className="actBody">
+                                                {woundRules.map((block, i) => (
+                                                    <div key={i}>
+                                                        {block.head && <div className="subHead">{block.head}</div>}
+                                                        {block.text && <p>{block.text}</p>}
+                                                        {block.bullets && (
+                                                            <ul>
+                                                                {block.bullets.map((b, j) => <li key={j}>{b}</li>)}
+                                                            </ul>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="act">
+                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Healing") ? openActions.filter(n => n !== "group Healing") : [...openActions, "group Healing"])}>
+                                            <span>Healing</span>
+                                        </div>
+                                        {openActions.includes("group Healing") && (
+                                            <div className="actBody">
+                                                {healingRules.map((block, i) => (
+                                                    <div key={i}>
+                                                        {block.head && <div className="subHead">{block.head}</div>}
+                                                        {block.text && <p>{block.text}</p>}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <div className="act">
                                         <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Conditions") ? openActions.filter(n => n !== "group Conditions") : [...openActions, "group Conditions"])}>
                                             <span>Conditions</span>
