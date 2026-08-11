@@ -11,6 +11,9 @@ const rankNames: Record<string, string> = {
     "Jour.": "Journeyman", "Adep.": "Adept", "Expe.": "Expert", "Mast.": "Master",
 }
 
+// the three characteristics a frenzy does not get in the way of
+const physicalChars = ["Str", "Ag", "End"]
+
 const charNames: Record<string, string> = {
     Str: "Strength", End: "Endurance", Ag: "Agility", Int: "Intelligence",
     Wp: "Willpower", Prc: "Perception", Prs: "Personality", Lck: "Luck",
@@ -154,10 +157,13 @@ const conditionTypes: Record<string, {
     detail?: (c: Cond) => string,
     testMod?: (c: Cond) => number,
     csMod?: (c: Cond) => number,
+    frenzyMod?: (c: Cond) => number,
+    sbMod?: (c: Cond) => number,
     wtMod?: (c: Cond) => number,
     apMaxMod?: (c: Cond) => number,
     spMaxMod?: (c: Cond) => number,
     halfSpeed?: (c: Cond) => boolean,
+    zeroSpeed?: (c: Cond) => boolean,
     shortOf?: (c: Cond) => string,
     recap?: (c: Cond) => string,
 }> = {
@@ -221,10 +227,30 @@ const conditionTypes: Record<string, {
         testMod: (c) => (c.value ?? 1) <= 3 ? -10 * (c.value ?? 1) : -30,
         recap: (c) => "You are " + fatigueSteps[(c.value ?? 1) - 1].label + ", " + fatigueSteps[(c.value ?? 1) - 1].effect.replace(/\.$/, "").toLowerCase() + ".",
     },
+    "Frenzied": {
+        kind: "flag",
+        note: "+3 WT, +1 SB, -20 to non physical tests",
+        wtMod: () => 3,
+        sbMod: () => 1,
+        // everything that is not strength, agility or endurance takes the penalty
+        frenzyMod: () => -20,
+        recap: () => "You are Frenzied. You must attack the nearest person or creature in melee combat each Turn if able, including allies, using only All Out Attacks. If you are not in range, you must move toward the nearest potential target. You are immune to stunned, fear, and passive wound effects.",
+    },
+    "Hidden": {
+        kind: "flag",
+        note: "movement costs double, cannot Dash",
+        recap: () => "You are Hidden, so check the movement and line of sight rules.",
+    },
     "Immobilized": {
         kind: "flag",
-        note: "fails tests relying entirely on movement",
-        recap: () => "You are Immobilized and fail any test that relies entirely on movement.",
+        note: "cannot move at all",
+        zeroSpeed: () => true,
+        recap: () => "You are Immobilized and cannot move, though you can still attack and defend.",
+    },
+    "Invisible": {
+        kind: "flag",
+        note: "cannot be seen, attackers take -30",
+        recap: () => "You are Invisible, so check what enemies can and cannot do about it.",
     },
     "Lost": {
         kind: "part",
@@ -290,6 +316,26 @@ const conditionRules: {name: string, blocks: {head?: string, text?: string, bull
     {name: "Fatigued", blocks: [
             {text: "When a chracter gains a level of fatigue, they acquire the Fatigued condition. If they gain additional levels of fatigue, the effects worsen."},
             {text: "Fatigue is most typically gained when a character falls below 0 SP or spends/loses SP when they are at 0."},
+        ]},
+    {name: "Frenzied", blocks: [
+            {text: "The character is flung into an uncontrollable rage. Frenzied characters gain the following rules:", bullets: [
+                    "Must attempt to attack the nearest person or creature in melee combat each Turn if able, using only All Out Attacks.",
+                    "If not within range of a potential target, the character must move toward the nearest potential target. They may not attempt to flee the fight.",
+                    "Increase WT by 3 and SB by 1. Suffer a -20 penalty to all skill tests based on anything except Strength, Agility, or Endurance.",
+                    "Gain an extra SP, which can exceed their SP maximum.",
+                    "Immune to the effects of the stunned condition, fear, and passive wound effects.",
+                ]},
+            {text: "Once the encounter has ended, the character snaps out of their frenzied state and loses 2 SP (this cannot kill them). The char- acter can also test Willpower at a -20 as a Secondary Action during combat to attempt to snap out of frenzy, which ends the condition."},
+        ]},
+    {name: "Hidden", blocks: [
+            {text: "The character is hidden from enemies and moving stealthily. Characters must spend 2 meters of their movement for the round for each 1 meter that they actually move while hidden, and they cannot Dash. Enemies cannot attempt to defend themselves against the attacks of hidden characters, but attacking causes a character to lose this condition immediately afterwards."},
+            {text: "If a hidden character would enter line of sight of at least one character from whom they have not previously hidden, they must make a Stealth test opposed by that character\u2019s Observe. On success, or if they achieve more degrees of success, they remain hidden. Otherwise that character becomes aware of them."},
+        ]},
+    {name: "Immobilized", blocks: [
+            {text: "Immobilized characters cannot move. They may still attack and take other actions and can defend themselves."},
+        ]},
+    {name: "Invisible", blocks: [
+            {text: "Invisible characters cannot be seen. Characters fail all sight related tests related to spotting the Invisible character and attack them at a -30 penalty, assuming they can guess where the character might be in the first place."},
         ]},
     {name: "Lost Body Part", blocks: [
             {text: "The character loses a part of their body. A character can have multiple instances of this condition at once, each affecting a different body part. If an attack would hit a body part that has been entirely lost, the attack hits the body location instead. This condition applies additional penalties that vary based on the body part. In the case of the head, there is a choice between an ear or an eye (GM\u2019s decision)."},
@@ -362,6 +408,32 @@ function App() {
     }, [charInfo, languages, mode, panel, inventory, ttp, specializations,
         rituals, spells, melee, ranged, openActions, conditions, wounds,
         shield, armorNotes])
+
+    // stamina can be spent that the character does not have. landing exactly on zero
+    // is free, but every point spent past empty is a level of fatigue. this hands back
+    // how many points went under, which is how many levels are owed
+    function spendStamina(map: CharInfo, amount: number) {
+        const cur = Number(map.get("Current SP") ?? 0)
+        const left = cur - amount
+        map.set("Current SP", String(Math.max(0, left)))
+        return left < 0 ? -left : 0
+    }
+
+    // adds levels of fatigue, starting the condition if it was not there already.
+    // the cap is how far this particular source is allowed to push it, so running out
+    // of stamina can leave a character Drained but never unconscious or dead
+    function withFatigue(list: Cond[], levels: number, cap: number) {
+        if (levels <= 0) return list
+        const f = list.find(c => c.name === "Fatigued")
+        if (!f) return [...list, {name: "Fatigued", value: Math.min(cap, levels)}]
+        const now = f.value ?? 1
+        // never drags a worse fatigue back down to the cap
+        const next = Math.max(now, Math.min(cap, now + levels))
+        return list.map(c => c === f ? {...c, value: next} : c)
+    }
+
+    // running out of stamina can knock a character out but never kills them
+    const staminaFatigueCap = 4
 
     // fills the original sheet back in and hands it over as a download
     async function downloadPdf() {
@@ -675,7 +747,7 @@ function App() {
         const allConditions = [...conditions, ...derived]
 
         // a condition only writes down the parts it cares about so everything else reads as zero
-        const modOf = (which: "testMod" | "csMod" | "wtMod" | "apMaxMod" | "spMaxMod") => {
+        const modOf = (which: "testMod" | "csMod" | "wtMod" | "apMaxMod" | "spMaxMod" | "frenzyMod" | "sbMod") => {
             let total = 0
             allConditions.forEach(c => {
                 const fn = conditionTypes[c.name][which]
@@ -689,13 +761,18 @@ function App() {
         const wtMod = modOf("wtMod")
         const apMaxMod = modOf("apMaxMod")
         const spMaxMod = modOf("spMaxMod")
+        const frenzyMod = modOf("frenzyMod")
+        const sbMod = modOf("sbMod")
         const halfSpeed = allConditions.some(c => conditionTypes[c.name].halfSpeed !== undefined)
+        const zeroSpeed = allConditions.some(c => conditionTypes[c.name].zeroSpeed !== undefined)
 
         // a character never drops below one action point no matter how dazed they are
         const shownApMax = Math.max(1, Number(charInfo.get("Max AP") ?? 0) + apMaxMod)
         const shownSpMax = Math.max(0, Number(charInfo.get("Max SP") ?? 0) + spMaxMod)
         const baseSpeed = addUp(String(charInfo.get("Current Speed") ?? ""))
-        const shownSpeed = halfSpeed && !isNaN(baseSpeed) ? String(Math.ceil(baseSpeed / 2)) : String(charInfo.get("Current Speed") ?? "")
+        const shownSpeed = zeroSpeed ? "0"
+            : halfSpeed && !isNaN(baseSpeed) ? String(Math.ceil(baseSpeed / 2))
+                : String(charInfo.get("Current Speed") ?? "")
 
         const nameOf = (c: Cond) => {
             const type = conditionTypes[c.name]
@@ -850,7 +927,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Alteration Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Alteration Rank") ? String(charInfo.get("Alteration Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Alteration Rank") ? Number(charInfo.get("Alteration Bonus") ?? 0) : -20) + testMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Alteration Rank") ? Number(charInfo.get("Alteration Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -858,7 +935,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Conjuration Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Conjuration Rank") ? String(charInfo.get("Conjuration Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Conjuration Rank") ? Number(charInfo.get("Conjuration Bonus") ?? 0) : -20) + testMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Conjuration Rank") ? Number(charInfo.get("Conjuration Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -866,7 +943,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Destruction Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Destruction Rank") ? String(charInfo.get("Destruction Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Destruction Rank") ? Number(charInfo.get("Destruction Bonus") ?? 0) : -20) + testMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Destruction Rank") ? Number(charInfo.get("Destruction Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -874,7 +951,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Illusion Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Illusion Rank") ? String(charInfo.get("Illusion Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Illusion Rank") ? Number(charInfo.get("Illusion Bonus") ?? 0) : -20) + testMod}</b></span>
+                            <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Illusion Rank") ? Number(charInfo.get("Illusion Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -882,7 +959,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Mysticism Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Mysticism Rank") ? String(charInfo.get("Mysticism Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Mysticism Rank") ? Number(charInfo.get("Mysticism Bonus") ?? 0) : -20) + testMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Mysticism Rank") ? Number(charInfo.get("Mysticism Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -890,7 +967,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Necromancy Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Necromancy Rank") ? String(charInfo.get("Necromancy Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Necromancy Rank") ? Number(charInfo.get("Necromancy Bonus") ?? 0) : -20) + testMod}</b></span>
+                            <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Necromancy Rank") ? Number(charInfo.get("Necromancy Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                         </div>
                     </div>
                     <div className="srow">
@@ -898,7 +975,7 @@ function App() {
                         <div>{rankNames[String(charInfo.get("Restoration Rank") ?? "")] ?? "Untrained"}</div>
                         <div>{charInfo.get("Restoration Rank") ? String(charInfo.get("Restoration Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
-                            <span>Willpower <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Restoration Rank") ? Number(charInfo.get("Restoration Bonus") ?? 0) : -20) + testMod}</b></span>
+                            <span>Willpower <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Restoration Rank") ? Number(charInfo.get("Restoration Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                         </div>
                     </div>
                 </div>
@@ -1115,7 +1192,10 @@ function App() {
                             </div>
                             <div className="crow">
                                 <div className="rl">Bonus</div>
-                                <div><input type="text" id="sb" value={String(charInfo.get("SB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("SB", e.target.value))}/></div>
+                                <div><input type="text" id="sb" className={sbMod !== 0 ? "modded" : ""}
+                                            value={String(Number(charInfo.get("SB") ?? 0) + sbMod)}
+                                            readOnly={sbMod !== 0}
+                                            onChange={e => setCharInfo(new Map(charInfo).set("SB", e.target.value))}/></div>
                                 <div><input type="text" id="eb" value={String(charInfo.get("EB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("EB", e.target.value))}/></div>
                                 <div><input type="text" id="ab" value={String(charInfo.get("AB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("AB", e.target.value))}/></div>
                                 <div><input type="text" id="ib" value={String(charInfo.get("IB") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("IB", e.target.value))}/></div>
@@ -1250,9 +1330,9 @@ function App() {
                     <div className="tile">
                         <div className="band head">Speed</div>
                         <div className="band val">
-                            <input type="text" className={halfSpeed ? "pair modded" : "pair"} id="speed"
+                            <input type="text" className={halfSpeed || zeroSpeed ? "pair modded" : "pair"} id="speed"
                                    value={shownSpeed}
-                                   readOnly={halfSpeed}
+                                   readOnly={halfSpeed || zeroSpeed}
                                    onChange={e => setCharInfo(new Map(charInfo).set("Current Speed", e.target.value))}/>
                             <span className="sep">/</span>
                             <input type="text" className="pair" id="speedCalc" value={String(charInfo.get("Base Speed") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Base Speed", e.target.value))}/>
@@ -1329,7 +1409,7 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Alchemy Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Alchemy Rank") ? String(charInfo.get("Alchemy Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Alchemy Rank") ? Number(charInfo.get("Alchemy Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Alchemy Rank") ? Number(charInfo.get("Alchemy Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1347,8 +1427,8 @@ function App() {
                                     <div>{charInfo.get("Command Rank") ? String(charInfo.get("Command Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Strength <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Str")) + (charInfo.get("Command Rank") ? Number(charInfo.get("Command Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Command Rank") ? Number(charInfo.get("Command Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Personality <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prs")) + (charInfo.get("Command Rank") ? Number(charInfo.get("Command Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Command Rank") ? Number(charInfo.get("Command Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                                        <span>Personality <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prs")) + (charInfo.get("Command Rank") ? Number(charInfo.get("Command Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1356,8 +1436,8 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Commerce Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Commerce Rank") ? String(charInfo.get("Commerce Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Commerce Rank") ? Number(charInfo.get("Commerce Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Personality <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prs")) + (charInfo.get("Commerce Rank") ? Number(charInfo.get("Commerce Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Commerce Rank") ? Number(charInfo.get("Commerce Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                                        <span>Personality <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prs")) + (charInfo.get("Commerce Rank") ? Number(charInfo.get("Commerce Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1365,8 +1445,8 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Deceive Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Deceive Rank") ? String(charInfo.get("Deceive Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Deceive Rank") ? Number(charInfo.get("Deceive Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Personality <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prs")) + (charInfo.get("Deceive Rank") ? Number(charInfo.get("Deceive Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Deceive Rank") ? Number(charInfo.get("Deceive Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                                        <span>Personality <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prs")) + (charInfo.get("Deceive Rank") ? Number(charInfo.get("Deceive Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1374,7 +1454,7 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Enchant Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Enchant Rank") ? String(charInfo.get("Enchant Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Enchant Rank") ? Number(charInfo.get("Enchant Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Enchant Rank") ? Number(charInfo.get("Enchant Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1390,8 +1470,8 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Investigate Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Investigate Rank") ? String(charInfo.get("Investigate Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Investigate Rank") ? Number(charInfo.get("Investigate Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Perception <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Investigate Rank") ? Number(charInfo.get("Investigate Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Investigate Rank") ? Number(charInfo.get("Investigate Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                                        <span>Perception <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Investigate Rank") ? Number(charInfo.get("Investigate Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1399,8 +1479,8 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Logic Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Logic Rank") ? String(charInfo.get("Logic Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Logic Rank") ? Number(charInfo.get("Logic Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Perception <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Logic Rank") ? Number(charInfo.get("Logic Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Logic Rank") ? Number(charInfo.get("Logic Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                                        <span>Perception <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Logic Rank") ? Number(charInfo.get("Logic Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                             </div>
@@ -1414,7 +1494,7 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Lore Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Lore Rank") ? String(charInfo.get("Lore Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Lore Rank") ? Number(charInfo.get("Lore Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Lore Rank") ? Number(charInfo.get("Lore Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1422,8 +1502,8 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Navigate Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Navigate Rank") ? String(charInfo.get("Navigate Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Navigate Rank") ? Number(charInfo.get("Navigate Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Perception <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Navigate Rank") ? Number(charInfo.get("Navigate Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Navigate Rank") ? Number(charInfo.get("Navigate Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                                        <span>Perception <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Navigate Rank") ? Number(charInfo.get("Navigate Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1431,7 +1511,7 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Observe Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Observe Rank") ? String(charInfo.get("Observe Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Perception <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Observe Rank") ? Number(charInfo.get("Observe Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Perception <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Observe Rank") ? Number(charInfo.get("Observe Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1440,7 +1520,7 @@ function App() {
                                     <div>{charInfo.get("Persuade Rank") ? String(charInfo.get("Persuade Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Strength <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Str")) + (charInfo.get("Persuade Rank") ? Number(charInfo.get("Persuade Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Personality <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prs")) + (charInfo.get("Persuade Rank") ? Number(charInfo.get("Persuade Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Personality <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prs")) + (charInfo.get("Persuade Rank") ? Number(charInfo.get("Persuade Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1457,7 +1537,7 @@ function App() {
                                     <div>{charInfo.get("Stealth Rank") ? String(charInfo.get("Stealth Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Stealth Rank") ? Number(charInfo.get("Stealth Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Perception <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Stealth Rank") ? Number(charInfo.get("Stealth Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Perception <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Stealth Rank") ? Number(charInfo.get("Stealth Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1466,7 +1546,7 @@ function App() {
                                     <div>{charInfo.get("Subterfuge Rank") ? String(charInfo.get("Subterfuge Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Subterfuge Rank") ? Number(charInfo.get("Subterfuge Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Subterfuge Rank") ? Number(charInfo.get("Subterfuge Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Subterfuge Rank") ? Number(charInfo.get("Subterfuge Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -1474,8 +1554,8 @@ function App() {
                                     <div>{rankNames[String(charInfo.get("Survival Rank") ?? "")] ?? "Untrained"}</div>
                                     <div>{charInfo.get("Survival Rank") ? String(charInfo.get("Survival Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Intelligence <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Survival Rank") ? Number(charInfo.get("Survival Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Perception <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Survival Rank") ? Number(charInfo.get("Survival Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Survival Rank") ? Number(charInfo.get("Survival Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
+                                        <span>Perception <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Survival Rank") ? Number(charInfo.get("Survival Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
                                 {charInfo.get("Profession 1") && (
@@ -1484,7 +1564,7 @@ function App() {
                                         <div>{rankNames[String(charInfo.get("Profession 1 Rank") ?? "")] ?? "Untrained"}</div>
                                         <div>{charInfo.get("Profession 1 Rank") ? String(charInfo.get("Profession 1 Bonus") ?? "0") : "-20"}</div>
                                         <div className="stests">
-                                            <span>{charNames[p1Char] ?? p1Char} <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get(p1Char) ?? 0) + (charInfo.get("Profession 1 Rank") ? Number(charInfo.get("Profession 1 Bonus") ?? 0) : -20) + testMod}</b></span>
+                                            <span>{charNames[p1Char] ?? p1Char} <b className={testMod + (physicalChars.includes(p1Char) ? 0 : frenzyMod) !== 0 ? "modded" : ""}>{Number(charInfo.get(p1Char) ?? 0) + (charInfo.get("Profession 1 Rank") ? Number(charInfo.get("Profession 1 Bonus") ?? 0) : -20) + testMod + (physicalChars.includes(p1Char) ? 0 : frenzyMod)}</b></span>
                                         </div>
                                     </div>
                                 )}
@@ -1494,7 +1574,7 @@ function App() {
                                         <div>{rankNames[String(charInfo.get("Profession 2 Rank") ?? "")] ?? "Untrained"}</div>
                                         <div>{charInfo.get("Profession 2 Rank") ? String(charInfo.get("Profession 2 Bonus") ?? "0") : "-20"}</div>
                                         <div className="stests">
-                                            <span>{charNames[p2Char] ?? p2Char} <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get(p2Char) ?? 0) + (charInfo.get("Profession 2 Rank") ? Number(charInfo.get("Profession 2 Bonus") ?? 0) : -20) + testMod}</b></span>
+                                            <span>{charNames[p2Char] ?? p2Char} <b className={testMod + (physicalChars.includes(p2Char) ? 0 : frenzyMod) !== 0 ? "modded" : ""}>{Number(charInfo.get(p2Char) ?? 0) + (charInfo.get("Profession 2 Rank") ? Number(charInfo.get("Profession 2 Bonus") ?? 0) : -20) + testMod + (physicalChars.includes(p2Char) ? 0 : frenzyMod)}</b></span>
                                         </div>
                                     </div>
                                 )}
@@ -1504,7 +1584,7 @@ function App() {
                                         <div>{rankNames[String(charInfo.get("Profession 3 Rank") ?? "")] ?? "Untrained"}</div>
                                         <div>{charInfo.get("Profession 3 Rank") ? String(charInfo.get("Profession 3 Bonus") ?? "0") : "-20"}</div>
                                         <div className="stests">
-                                            <span>{charNames[p3Char] ?? p3Char} <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get(p3Char) ?? 0) + (charInfo.get("Profession 3 Rank") ? Number(charInfo.get("Profession 3 Bonus") ?? 0) : -20) + testMod}</b></span>
+                                            <span>{charNames[p3Char] ?? p3Char} <b className={testMod + (physicalChars.includes(p3Char) ? 0 : frenzyMod) !== 0 ? "modded" : ""}>{Number(charInfo.get(p3Char) ?? 0) + (charInfo.get("Profession 3 Rank") ? Number(charInfo.get("Profession 3 Bonus") ?? 0) : -20) + testMod + (physicalChars.includes(p3Char) ? 0 : frenzyMod)}</b></span>
                                         </div>
                                     </div>
                                 )}
@@ -1786,7 +1866,16 @@ function App() {
                                                     )}
                                                     {/* an automatic condition leaves when its cause does, so there is nothing to press */}
                                                     {!c.auto && (
-                                                        <button type="button" onClick={() => setConditions(conditions.filter((_old, j) => j !== i))}>remove</button>
+                                                        <button type="button" onClick={() => {
+                                                            let list = conditions.filter((_old, j) => j !== i)
+                                                            // snapping out of a frenzy costs two stamina, which may run them into fatigue
+                                                            if (c.name === "Frenzied") {
+                                                                const next = new Map(charInfo)
+                                                                list = withFatigue(list, spendStamina(next, 2), staminaFatigueCap)
+                                                                setCharInfo(next)
+                                                            }
+                                                            setConditions(list)
+                                                        }}>remove</button>
                                                     )}
                                                 </div>
                                             </div>
@@ -2042,6 +2131,8 @@ function App() {
                                                 return
                                             }
                                             setConditions([...conditions, {name: name, value: 1, fresh: name === "Bleeding"}])
+                                            // the rage grants a stamina point that is allowed to sit above the maximum
+                                            if (name === "Frenzied") setCharInfo(new Map(charInfo).set("Current SP", String(Number(charInfo.get("Current SP") ?? 0) + 1)))
                                             setPopout(null)
                                         }}>
                                             <b>{name}{taken ? " \u2014 already applied" : ""}</b>
