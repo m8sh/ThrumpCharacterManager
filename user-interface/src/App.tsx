@@ -112,7 +112,7 @@ const savedPdf = (() => {
     }
 })()
 
-type Wound = {part: string, treated: boolean, rounds: number, damage: number, healed: number}
+type Wound = {part: string, treated: boolean, rounds: number, damage: number, healed: number, caused?: {name: string, part?: string}[]}
 
 type Cond = {name: string, value?: number, part?: string, fresh?: boolean, auto?: boolean, why?: string}
 
@@ -971,16 +971,29 @@ function App() {
             said.push("Until this wound is fully healed you take -20 to all tests and -2 to future initiative rolls, and you have 5 rounds before blood loss drops you to 0 HP.")
 
             // the wound itself is written down with its own five round clock
-            setWounds([...wounds, {part: woundTarget, treated: false, rounds: 5, damage: Number(woundDamage) || 0, healed: 0}])
+            setWounds([...wounds, {part: woundTarget, treated: false, rounds: 5, damage: Number(woundDamage) || 0, healed: 0, caused: []}])
 
             // a part can only be crippled or lost once, so drop any that are already there
             const parts = conditions.filter(c => conditionTypes[c.name].kind === "part").map(c => c.part)
             const fresh = added.filter(c => !c.part || !parts.includes(c.part))
 
             setCharInfo(next)
-            setConditions([...conditions, ...fresh])
+            setConditions(prev => [...prev, ...fresh])
+            // note what this wound caused, since curing it should undo the same things
+            setWounds(list => list.map((w, i) => i === list.length - 1 ? {...w, caused: fresh.map(c => ({name: c.name, part: c.part}))} : w))
             setWoundLines(said)
             setPopout(magicType === "Fire" ? "woundFire" : "woundDone")
+        }
+
+        // curing or removing a wound takes its effects with it, but a lost limb
+        // cannot be healed this way so it stays
+        const clearWound = (i: number) => {
+            const gone = wounds[i]
+            setWounds(list => list.filter((_w, j) => j !== i))
+            const undo = (gone.caused ?? []).filter(c => c.name !== "Lost")
+            if (undo.length > 0) {
+                setConditions(prev => prev.filter(c => !undo.some(u => u.name === c.name && u.part === c.part)))
+            }
         }
 
         const nameOf = (c: Cond) => {
@@ -1020,8 +1033,8 @@ function App() {
             const f = conditions.find(c => c.name === "Fatigued")
             if (!f || levels <= 0) return 0
             const dropped = Math.min(levels, f.value ?? 1)
-            if ((f.value ?? 1) - dropped <= 0) setConditions(conditions.filter(c => c !== f))
-            else setConditions(conditions.map(c => c === f ? {...c, value: (c.value ?? 1) - dropped} : c))
+            if ((f.value ?? 1) - dropped <= 0) setConditions(prev => prev.filter(c => c.name !== "Fatigued"))
+            else setConditions(prev => prev.map(c => c.name === "Fatigued" ? {...c, value: (c.value ?? 1) - dropped} : c))
             return dropped
         }
 
@@ -1084,6 +1097,11 @@ function App() {
                     // a wound with no damage written down has to be cured by hand
                     if (w.damage > 0 && total >= w.damage) {
                         lines.push("The wound on your " + w.part + " has healed and is cured.")
+                        const undo = (w.caused ?? []).filter(c => c.name !== "Lost")
+                        if (undo.length > 0) {
+                            setConditions(prev => prev.filter(c => !undo.some(u => u.name === c.name && u.part === c.part)))
+                            lines.push("Its effects have lifted, though anything lost outright stays lost.")
+                        }
                         return
                     }
                     if (w.damage > 0) lines.push("The wound on your " + w.part + " has healed " + total + " of the " + w.damage + " it needs to cure.")
@@ -1096,10 +1114,10 @@ function App() {
             const bleed = conditions.find(c => c.name === "Bleeding")
             if (healed > 0 && bleed) {
                 if ((bleed.value ?? 0) - healed <= 0) {
-                    setConditions(conditions.filter(c => c !== bleed))
+                    setConditions(prev => prev.filter(c => c.name !== "Bleeding"))
                     lines.push("The bleeding has stopped.")
                 } else {
-                    setConditions(conditions.map(c => c === bleed ? {...c, value: (c.value ?? 0) - healed} : c))
+                    setConditions(prev => prev.map(c => c.name === "Bleeding" ? {...c, value: (c.value ?? 0) - healed} : c))
                     lines.push("Bleeding reduced to " + ((bleed.value ?? 0) - healed) + ".")
                 }
             }
@@ -2082,9 +2100,9 @@ function App() {
                                                         <button type="button" onClick={() => setWounds(wounds.map((old, j) => j === i ? {...old, treated: true} : old))}>Treat Wound</button>
                                                     )}
                                                     {w.treated && (
-                                                        <button type="button" onClick={() => setWounds(wounds.filter((_old, j) => j !== i))}>Cure Wound</button>
+                                                        <button type="button" onClick={() => clearWound(i)}>Cure Wound</button>
                                                     )}
-                                                    <button type="button" onClick={() => setWounds(wounds.filter((_old, j) => j !== i))}>Remove</button>
+                                                    <button type="button" onClick={() => clearWound(i)}>Remove</button>
                                                 </div>
                                             </div>
                                         ))}
