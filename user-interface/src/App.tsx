@@ -112,7 +112,7 @@ const savedPdf = (() => {
     }
 })()
 
-type Wound = {part: string, treated: boolean, rounds: number}
+type Wound = {part: string, treated: boolean, rounds: number, damage: number, healed: number}
 
 type Cond = {name: string, value?: number, part?: string, fresh?: boolean, auto?: boolean, why?: string}
 
@@ -499,6 +499,7 @@ function App() {
     const [woundPart, setWoundPart] = useState("")
     const [woundSide, setWoundSide] = useState("")
     const [woundShockPassed, setWoundShockPassed] = useState(true)
+    const [woundDamage, setWoundDamage] = useState("")
     const [woundLines, setWoundLines] = useState<string[]>([])
     const [popout, setPopout] = useState<string | null>(null)
     const [restLines, setRestLines] = useState<string[] | null>(null)
@@ -842,7 +843,7 @@ function App() {
         // wounds are tracked as their own things now, so only the named ones come across
         setWounds([parsed.get("Wounds 1"), parsed.get("Wounds 2"), parsed.get("Wounds 3")]
             .filter(w => w)
-            .map(w => ({part: String(w), treated: false, rounds: 5})))
+            .map(w => ({part: String(w), treated: false, rounds: 5, damage: 0, healed: 0})))
 
         // the shield ended up in a language field on the sheet, written as br / type / enc
         const shieldBits = String(parsed.get("Languages 2") ?? "").split("/")
@@ -970,7 +971,7 @@ function App() {
             said.push("Until this wound is fully healed you take -20 to all tests and -2 to future initiative rolls, and you have 5 rounds before blood loss drops you to 0 HP.")
 
             // the wound itself is written down with its own five round clock
-            setWounds([...wounds, {part: woundTarget, treated: false, rounds: 5}])
+            setWounds([...wounds, {part: woundTarget, treated: false, rounds: 5, damage: Number(woundDamage) || 0, healed: 0}])
 
             // a part can only be crippled or lost once, so drop any that are already there
             const parts = conditions.filter(c => conditionTypes[c.name].kind === "part").map(c => c.part)
@@ -1069,6 +1070,26 @@ function App() {
                 healed = heal
                 const hp = topUp(next, "Current HP", "Max HP", heal)
                 lines.push(hp > 0 ? "Healed " + hp + " Hit Points" + (focused ? " (natural healing doubled)" : "") + (organs ? " (halved by organ damage)" : "") + "." : "Hit Points were already full.")
+            }
+
+            // a treated wound cures itself once it has been healed for what it cost
+            if (healed > 0) {
+                const healedWounds: Wound[] = []
+                wounds.forEach(w => {
+                    if (!w.treated) {
+                        healedWounds.push(w)
+                        return
+                    }
+                    const total = w.healed + healed
+                    // a wound with no damage written down has to be cured by hand
+                    if (w.damage > 0 && total >= w.damage) {
+                        lines.push("The wound on your " + w.part + " has healed and is cured.")
+                        return
+                    }
+                    if (w.damage > 0) lines.push("The wound on your " + w.part + " has healed " + total + " of the " + w.damage + " it needs to cure.")
+                    healedWounds.push({...w, healed: total})
+                })
+                setWounds(healedWounds)
             }
 
             // any hp regained comes straight off the bleeding value, overheal included
@@ -2052,7 +2073,9 @@ function App() {
                                             <div className="condCard" key={w.part + i}>
                                                 <b>{w.part}</b>
                                                 <span className="condLvl">{w.treated ? "treated" : "untreated"}</span>
-                                                <span className="condNote">{w.treated ? "ready to cure once you heal the damage that caused it" : "-20 to all tests, -2 initiative, " + w.rounds + " rounds to blood loss"}</span>
+                                                <span className="condNote">{w.treated
+                                                    ? (w.damage > 0 ? "treated, healed " + w.healed + " of the " + w.damage + " needed to cure" : "treated, cure it by hand once the damage is healed")
+                                                    : "-20 to all tests, -2 initiative, " + w.rounds + " rounds to blood loss"}</span>
                                                 <div className="condTools">
                                                     {/* first aid stops the bleeding, curing takes healing on top of that */}
                                                     {!w.treated && (
@@ -2066,6 +2089,14 @@ function App() {
                                             </div>
                                         ))}
                                     </div>
+
+                                    <button type="button" className="addCond" onClick={() => {
+                                        setWoundPart("")
+                                        setWoundSide("")
+                                        setWoundShockPassed(true)
+                                        setWoundDamage("")
+                                        setPopout("wound1")
+                                    }}>+ Add Wound</button>
                                 </div>
 
                                 <div className="condBox">
@@ -2268,12 +2299,6 @@ function App() {
                                                         )}
                                                     </div>
                                                 ))}
-                                                <button type="button" className="takeAction" onClick={() => {
-                                                    setWoundPart("")
-                                                    setWoundSide("")
-                                                    setWoundShockPassed(true)
-                                                    setPopout("wound1")
-                                                }}>Add Wound</button>
                                             </div>
                                         )}
                                     </div>
@@ -2468,6 +2493,8 @@ function App() {
                             <div className="pophead">Add Wound</div>
                             <div className="popbody">
                                 <p>Did you take damage from a single attack (including enchantments and poisons) that exceeded {Number(charInfo.get("WT") ?? 0) + wtMod}?</p>
+                                <p className="fineprint">How much damage was it? The wound cures itself once you have healed this much after treating it.</p>
+                                <input type="text" className="popInput" value={woundDamage} onChange={e => setWoundDamage(e.target.value)} placeholder="damage"/>
                             </div>
                             <div className="popfoot">
                                 <button type="button" onClick={() => setPopout(null)}>Cancel</button>
