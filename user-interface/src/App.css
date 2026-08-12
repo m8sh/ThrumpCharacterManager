@@ -958,6 +958,8 @@ body:has(#center > .nameRow){display:block}
 #center .condCard:last-child{border-bottom:0}
 #center .condCard b{font-weight:700}
 #center .condCard .condLvl{font-weight:400;opacity:.6}
+/* the clock reads in the accent so a condition on its way out is obvious */
+#center .condCard .condClock{font-weight:700;color:var(--accent);white-space:nowrap}
 #center .condCard .condNote{
   flex:1;
   min-width:0;

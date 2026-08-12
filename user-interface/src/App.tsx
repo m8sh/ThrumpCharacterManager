@@ -114,7 +114,7 @@ const savedPdf = (() => {
 
 type Wound = {part: string, treated: boolean, rounds: number, damage: number, healed: number, caused?: {name: string, part?: string}[]}
 
-type Cond = {name: string, value?: number, part?: string, fresh?: boolean, auto?: boolean, why?: string}
+type Cond = {name: string, value?: number, part?: string, fresh?: boolean, auto?: boolean, why?: string, rounds?: number}
 
 const bodyParts = ["Left Eye", "Right Eye", "Left Ear", "Right Ear", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Body"]
 
@@ -170,11 +170,18 @@ const conditionTypes: Record<string, {
     zeroSpeed?: (c: Cond) => boolean,
     shortOf?: (c: Cond) => string,
     recap?: (c: Cond) => string,
+    // these two run their own number up or down so a round clock would only fight them
+    ownClock?: boolean,
+    // what happens the moment the condition lands
+    onApply?: string,
+    // nothing comes back at the start of the round while this is on you
+    blocksApRefresh?: boolean,
 }> = {
     "Bleeding": {
         kind: "value",
         max: 99,
         note: "X damage a round, then X drops by 1",
+        ownClock: true,
         wtMod: () => -1,
         detail: (c) => c.fresh ? "starts next round" : "",
     },
@@ -187,6 +194,7 @@ const conditionTypes: Record<string, {
         kind: "value",
         max: 99,
         note: "X fire damage a round, then X grows by 1",
+        ownClock: true,
     },
     "Chameleon": {
         kind: "value",
@@ -233,6 +241,7 @@ const conditionTypes: Record<string, {
     },
     "Frenzied": {
         kind: "flag",
+        onApply: "gainSp",
         note: "+3 WT, +1 SB, -20 to non physical tests",
         wtMod: () => 3,
         sbMod: () => 1,
@@ -284,6 +293,8 @@ const conditionTypes: Record<string, {
     "Stunned": {
         kind: "flag",
         note: "no Action Points, and none come back",
+        onApply: "zeroAp",
+        blocksApRefresh: true,
         recap: () => "You are Stunned and do not regain Action Points at the start of the round.",
     },
     "Unconscious": {
@@ -944,7 +955,8 @@ function App() {
             } else if (isHead) {
                 // a blow to the head stuns instead of crippling
                 said.push("You suffered a wound to the " + woundTarget + " and are stunned for 1 round.")
-                if (!conditions.some(c => c.name === "Stunned")) added.push({name: "Stunned"})
+                if (!conditions.some(c => c.name === "Stunned")) added.push({name: "Stunned", rounds: 1})
+                next.set("Current AP", "0")
                 if (!woundShockPassed) {
                     added.push({name: "Lost", part: woundTarget})
                     said.push("Since you failed your Shock Test, you are also suffering from the Lost (" + woundTarget + ") condition.")
@@ -993,6 +1005,22 @@ function App() {
             const undo = (gone.caused ?? []).filter(c => c.name !== "Lost")
             if (undo.length > 0) {
                 setConditions(prev => prev.filter(c => !undo.some(u => u.name === c.name && u.part === c.part)))
+            }
+        }
+
+        // adding a condition anywhere goes through here so its arrival is handled once
+        const addCondition = (name: string, rounds?: number) => {
+            if (conditions.some(c => c.name === name)) return
+            const fresh: Cond = {name: name, value: 1, fresh: name === "Bleeding"}
+            if (rounds !== undefined) fresh.rounds = rounds
+            setConditions(prev => [...prev, fresh])
+            // being stunned costs whatever action points are left the moment it lands
+            if (conditionTypes[name].onApply === "zeroAp") {
+                setCharInfo(prev => new Map(prev).set("Current AP", "0"))
+            }
+            // the rage grants a stamina point that is allowed to sit above the maximum
+            if (conditionTypes[name].onApply === "gainSp") {
+                setCharInfo(prev => new Map(prev).set("Current SP", String(Number(prev?.get("Current SP") ?? 0) + 1)))
             }
         }
 
@@ -2125,19 +2153,34 @@ function App() {
                                             <div className="condCard" key={c.name + (c.part ?? "")}>
                                                 <b>{nameOf(c)}</b>
                                                 {detailOf(c) !== "" && <span className="condLvl">{detailOf(c)}</span>}
+                                                {c.rounds !== undefined && <span className="condClock">{c.rounds} round{c.rounds === 1 ? "" : "s"} left</span>}
                                                 <span className="condNote">{conditionTypes[c.name].shortOf ? conditionTypes[c.name].shortOf!(c) : conditionTypes[c.name].note}</span>
                                                 <div className="condTools">
                                                     {(conditionTypes[c.name].kind === "levels" || conditionTypes[c.name].kind === "value") && (
                                                         <button type="button" onClick={() => {
                                                             // stepping below 1 means the condition is simply gone
-                                                            if ((c.value ?? 1) > 1) setConditions(conditions.map((old, j) => j === i ? {...old, value: (old.value ?? 1) - 1} : old))
-                                                            else setConditions(conditions.filter((_old, j) => j !== i))
+                                                            if ((c.value ?? 1) > 1) setConditions(prev => prev.map((old, j) => j === i ? {...old, value: (old.value ?? 1) - 1} : old))
+                                                            else setConditions(prev => prev.filter((_old, j) => j !== i))
                                                         }}>&#8722;</button>
                                                     )}
                                                     {(conditionTypes[c.name].kind === "levels" || conditionTypes[c.name].kind === "value") && (
                                                         <button type="button" onClick={() => {
-                                                            if ((c.value ?? 1) < (conditionTypes[c.name].max ?? 99)) setConditions(conditions.map((old, j) => j === i ? {...old, value: (old.value ?? 1) + 1} : old))
+                                                            if ((c.value ?? 1) < (conditionTypes[c.name].max ?? 99)) setConditions(prev => prev.map((old, j) => j === i ? {...old, value: (old.value ?? 1) + 1} : old))
                                                         }}>+</button>
+                                                    )}
+                                                    {/* a condition that works its own number has no business with a round clock */}
+                                                    {!c.auto && !conditionTypes[c.name].ownClock && c.rounds === undefined && (
+                                                        <button type="button" onClick={() => setConditions(prev => prev.map((old, j) => j === i ? {...old, rounds: 1} : old))}>Set Rounds</button>
+                                                    )}
+                                                    {!c.auto && !conditionTypes[c.name].ownClock && c.rounds !== undefined && (
+                                                        <button type="button" onClick={() => {
+                                                            // taking the clock below one means it has no set length any more
+                                                            if ((c.rounds ?? 1) > 1) setConditions(prev => prev.map((old, j) => j === i ? {...old, rounds: (old.rounds ?? 1) - 1} : old))
+                                                            else setConditions(prev => prev.map((old, j) => j === i ? {...old, rounds: undefined} : old))
+                                                        }}>&#8722; round</button>
+                                                    )}
+                                                    {!c.auto && !conditionTypes[c.name].ownClock && c.rounds !== undefined && (
+                                                        <button type="button" onClick={() => setConditions(prev => prev.map((old, j) => j === i ? {...old, rounds: (old.rounds ?? 1) + 1} : old))}>+ round</button>
                                                     )}
                                                     {/* an automatic condition leaves when its cause does, so there is nothing to press */}
                                                     {!c.auto && (
@@ -2165,7 +2208,7 @@ function App() {
 
                         <button type="button" className="roundOver" onClick={() => {
                             const next = new Map(charInfo)
-                            const stunned = allConditions.some(c => c.name === "Stunned")
+                            const stunned = allConditions.some(c => conditionTypes[c.name].blocksApRefresh)
                             if (!stunned) next.set("Current AP", String(shownApMax))
                             setApRefreshed(!stunned)
 
@@ -2221,9 +2264,25 @@ function App() {
                                 if (say) lines.push(say(c) + (c.why ? " This is because " + c.why + "." : ""))
                             })
 
+                            // every round clock ticks down and anything that runs out says goodbye
+                            const ticked: Cond[] = []
+                            kept.forEach(c => {
+                                if (c.rounds === undefined) {
+                                    ticked.push(c)
+                                    return
+                                }
+                                const left = c.rounds - 1
+                                if (left <= 0) {
+                                    lines.push(nameOf(c) + " has run its course and is gone.")
+                                    return
+                                }
+                                lines.push(nameOf(c) + " has " + left + " round" + (left === 1 ? "" : "s") + " left.")
+                                ticked.push({...c, rounds: left})
+                            })
+
                             next.set("Current HP", String(hp))
                             setCharInfo(next)
-                            setConditions(kept)
+                            setConditions(ticked)
                             setRecap(lines)
                             setPopout("roundOver")
                         }}>Round Over &#8212; refresh Action Points</button>
@@ -2469,9 +2528,7 @@ function App() {
                                                 setPopout("part " + name)
                                                 return
                                             }
-                                            setConditions([...conditions, {name: name, value: 1, fresh: name === "Bleeding"}])
-                                            // the rage grants a stamina point that is allowed to sit above the maximum
-                                            if (name === "Frenzied") setCharInfo(new Map(charInfo).set("Current SP", String(Number(charInfo.get("Current SP") ?? 0) + 1)))
+                                            addCondition(name)
                                             setPopout(null)
                                         }}>
                                             <b>{conditionTypes[name].kind === "part" ? name + " Body Part" : name}{taken ? " \u2014 already applied" : ""}</b>
@@ -2616,7 +2673,7 @@ function App() {
                             <div className="popfoot">
                                 <button type="button" className="go" onClick={() => setPopout(null)}>I passed</button>
                                 <button type="button" className="go" onClick={() => {
-                                    if (!conditions.some(c => c.name === "Burning")) setConditions([...conditions, {name: "Burning", value: 1}])
+                                    addCondition("Burning")
                                     setPopout(null)
                                 }}>I failed</button>
                             </div>
