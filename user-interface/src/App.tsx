@@ -2208,13 +2208,30 @@ function App() {
 
                         <button type="button" className="roundOver" onClick={() => {
                             const next = new Map(charInfo)
-                            const stunned = allConditions.some(c => conditionTypes[c.name].blocksApRefresh)
-                            if (!stunned) next.set("Current AP", String(shownApMax))
+                            const lines: string[] = []
+                            let hp = Number(next.get("Current HP")) || 0
+
+                            // work out what expires this round before anything reads a modifier,
+                            // otherwise a one round stun would cost two rounds of action points
+                            const expiring = conditions.filter(c => c.rounds !== undefined && c.rounds - 1 <= 0)
+                            const surviving = allConditions.filter(c => !expiring.includes(c))
+
+                            const stillMods = (which: "apMaxMod") => {
+                                let total = 0
+                                surviving.forEach(c => {
+                                    const fn = conditionTypes[c.name][which]
+                                    if (fn) total += fn(c)
+                                })
+                                return total
+                            }
+
+                            // a character never drops below one action point no matter how dazed they are
+                            const refreshTo = Math.max(1, Number(charInfo.get("Max AP") ?? 0) + stillMods("apMaxMod"))
+                            const stunned = surviving.some(c => conditionTypes[c.name].blocksApRefresh)
+                            if (!stunned) next.set("Current AP", String(refreshTo))
                             setApRefreshed(!stunned)
 
-                            const lines: string[] = []
                             const kept: Cond[] = []
-                            let hp = Number(next.get("Current HP")) || 0
 
                             // an untreated wound bleeds, and after five rounds it drops you
                             const woundsAfter = wounds.map(w => {
@@ -2231,6 +2248,11 @@ function App() {
                             setWounds(woundsAfter)
 
                             conditions.forEach(c => {
+                                // anything whose clock runs out now is already gone, it does not act again
+                                if (expiring.includes(c)) {
+                                    lines.push(nameOf(c) + " has run its course and is gone.")
+                                    return
+                                }
                                 // bleeding does nothing the round it lands, it starts at the end of the next one
                                 if (c.name === "Bleeding" && c.fresh) {
                                     kept.push({...c, fresh: false})
@@ -2254,6 +2276,13 @@ function App() {
                                     lines.push("Burning (" + dmg + ") \u2014 you have taken " + dmg + " fire damage, leaving you with " + hp + " HP. The fire grows to " + (dmg + 1) + ".")
                                     return
                                 }
+                                // everything else just loses a round off its clock if it has one
+                                if (c.rounds !== undefined) {
+                                    const left = c.rounds - 1
+                                    kept.push({...c, rounds: left})
+                                    lines.push(nameOf(c) + " has " + left + " round" + (left === 1 ? "" : "s") + " left.")
+                                    return
+                                }
                                 kept.push(c)
                                 const say = conditionTypes[c.name].recap
                                 if (say) lines.push(say(c))
@@ -2264,25 +2293,9 @@ function App() {
                                 if (say) lines.push(say(c) + (c.why ? " This is because " + c.why + "." : ""))
                             })
 
-                            // every round clock ticks down and anything that runs out says goodbye
-                            const ticked: Cond[] = []
-                            kept.forEach(c => {
-                                if (c.rounds === undefined) {
-                                    ticked.push(c)
-                                    return
-                                }
-                                const left = c.rounds - 1
-                                if (left <= 0) {
-                                    lines.push(nameOf(c) + " has run its course and is gone.")
-                                    return
-                                }
-                                lines.push(nameOf(c) + " has " + left + " round" + (left === 1 ? "" : "s") + " left.")
-                                ticked.push({...c, rounds: left})
-                            })
-
                             next.set("Current HP", String(hp))
                             setCharInfo(next)
-                            setConditions(ticked)
+                            setConditions(kept)
                             setRecap(lines)
                             setPopout("roundOver")
                         }}>Round Over &#8212; refresh Action Points</button>
