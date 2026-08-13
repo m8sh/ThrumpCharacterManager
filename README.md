@@ -7,6 +7,7 @@ For example: Wound rules are very annoying to implement, so I never bothered to 
 
 
 TODO:
+- Bug fixes and testing that everything works as intended
 - Add traits
 - Keep track of helplessness
 - Add talents (while allowing custom)
