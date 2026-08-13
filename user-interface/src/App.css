@@ -1024,6 +1024,10 @@ body:has(#center > .nameRow){display:block}
 /* a table inside a fold out gets its own line and room for the wording */
 #center .actBody .dtable{margin:.5em 0 .2em}
 #center .dtable.wide{grid-template-columns:max-content minmax(0,1fr);max-width:34em}
+/* a roll table gives the effect column all the room it needs to read */
+#center .dtable.roll{grid-template-columns:max-content minmax(0,1fr);margin:.4em 0 .2em}
+#center .dtable.roll > div{padding:.3em .5em;align-content:start}
+#center .dtable.roll b{font-weight:700}
 
 /* the popout window sits over everything so the sheet underneath never moves */
 

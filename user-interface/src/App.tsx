@@ -114,7 +114,7 @@ const savedPdf = (() => {
 
 type Wound = {part: string, treated: boolean, rounds: number, damage: number, healed: number, caused?: {name: string, part?: string}[]}
 
-type Cond = {name: string, value?: number, part?: string, fresh?: boolean, auto?: boolean, why?: string, rounds?: number}
+type Cond = {name: string, value?: number, part?: string, fresh?: boolean, auto?: boolean, why?: string, rounds?: number, snapped?: boolean}
 
 const bodyParts = ["Left Eye", "Right Eye", "Left Ear", "Right Ear", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Body"]
 
@@ -176,6 +176,8 @@ const conditionTypes: Record<string, {
     onApply?: string,
     // nothing comes back at the start of the round while this is on you
     blocksApRefresh?: boolean,
+    // a willpower test at the end of your turn can shake this one off
+    canSnapOut?: boolean,
 }> = {
     "Bleeding": {
         kind: "value",
@@ -270,7 +272,7 @@ const conditionTypes: Record<string, {
         kind: "flag",
         note: "frozen, speech and motion free spells only",
         zeroSpeed: () => true,
-        recap: () => "You are Paralyzed, unable to move any part of your body, and may only cast spells that do not require speech or motion.",
+        recap: () => "You are Paralyzed, frozen and unable to move any part of your body. You may only cast spells that need neither speech nor motion.",
     },
     "Prone": {
         kind: "flag",
@@ -282,7 +284,7 @@ const conditionTypes: Record<string, {
         kind: "flag",
         note: "cannot move, attack or defend",
         zeroSpeed: () => true,
-        recap: () => "You are Restrained and cannot move, attack or defend yourself, and may only cast spells that do not require motion.",
+        recap: () => "You are Restrained. You cannot move, attack, or defend yourself, and may only cast spells that do not require motion.",
     },
     "Silenced": {
         kind: "flag",
@@ -301,7 +303,7 @@ const conditionTypes: Record<string, {
         kind: "flag",
         note: "knocked out, cannot act",
         zeroSpeed: () => true,
-        recap: () => "You are Unconscious and may not take actions. Gaining a level of fatigue now would kill you.",
+        recap: () => "You are Unconscious and may not take actions. You fall prone if the circumstances allow, and gaining a level of fatigue now would kill you.",
     },
     "Invisible": {
         kind: "flag",
@@ -315,6 +317,84 @@ const conditionTypes: Record<string, {
         spMaxMod: (c) => partInfo[c.part ?? ""].spMaxMod ?? 0,
         shortOf: (c) => partInfo[c.part ?? ""].note,
         recap: (c) => "You have Lost (" + c.part + ") and " + partInfo[c.part ?? ""].note + ".",
+    },
+    "Catatonic": {
+        kind: "flag",
+        note: "out for 1d4 hours, cannot be roused",
+        zeroSpeed: () => true,
+        recap: () => "You are Catatonic for 1d4 hours and cannot be roused by normal means. The sheet counts rounds rather than hours, so take this one off by hand when the time is up.",
+    },
+    "Despairing": {
+        kind: "flag",
+        note: "on the ground babbling, shut out from everything",
+        zeroSpeed: () => true,
+        recap: () => "You are Hopeless and Despairing, on the ground babbling and shutting out all other sounds. You lose 1d4 Stamina when you come out of it.",
+    },
+    "Frightened": {
+        kind: "flag",
+        note: "-10 to all tests, cannot approach your fear",
+        testMod: () => -10,
+        recap: () => "You are Frightened. You take -10 to all tests and cannot willingly approach the object of your fear, and this lasts until the end of the encounter.",
+    },
+    "Lost Composure": {
+        kind: "flag",
+        note: "frozen, no actions until you snap out",
+        // frozen at first, and once you snap out of it the nerves stay for the encounter
+        testMod: (c) => c.snapped ? -10 : 0,
+        zeroSpeed: (c) => !c.snapped,
+        canSnapOut: true,
+        shortOf: (c) => c.snapped ? "-10 to all tests for the rest of the encounter" : "frozen, no actions until you snap out",
+        recap: (c) => c.snapped
+            ? "You have snapped out of losing your composure, but you still make all tests at -10 for the rest of the encounter."
+            : "You have Lost Composure and may take no actions until you snap out of it.",
+    },
+    "Manic Terror": {
+        kind: "flag",
+        note: "attacking the nearest living thing",
+        canSnapOut: true,
+        recap: () => "You are in a Manic Terror and must keep attacking the closest friend or foe with whatever is in your hands. You may try to snap out of it at the start of your first Turn each round, or someone must knock you unconscious to stop the rampage.",
+    },
+    "Mind Broken": {
+        kind: "flag",
+        note: "cannot attack or approach the source of horror",
+        canSnapOut: true,
+        recap: () => "Your mind is broken. You cannot attack or approach the source of the horror until you snap out of it or the encounter ends.",
+    },
+    "Momentary Blackout": {
+        kind: "flag",
+        note: "-10 to all actions for the rest of the encounter",
+        testMod: () => -10,
+        recap: () => "After your Momentary Blackout you take -10 to all actions for the rest of the encounter.",
+    },
+    "Spooked": {
+        kind: "flag",
+        note: "-10 to all tests for the rest of the encounter",
+        testMod: () => -10,
+        canSnapOut: true,
+        recap: () => "You are Spooked, fretting and full of doubt, taking -10 to all tests for the rest of the encounter unless you snap out of it.",
+    },
+    "Startled": {
+        kind: "flag",
+        note: "no reactions until your next Turn",
+        recap: () => "You are Startled and may not make any reactions at all until the beginning of your next Turn.",
+    },
+    "Running and Screaming": {
+        kind: "flag",
+        note: "-20 to all tests, fleeing your fear",
+        testMod: () => -20,
+        canSnapOut: true,
+        recap: () => "You are Running and Screaming. You must flee directly away from your fear as fast as you can, ditching anything that slows you down, at -20 to all tests. Only snapping out of it or the end of the encounter gives you back control.",
+    },
+    "Unnerved": {
+        kind: "flag",
+        note: "-20 to tests needing concentration",
+        recap: () => "You are Unnerved and take -20 to any test that requires concentration while you remain near the object of your fear.",
+    },
+    "Vomiting": {
+        kind: "flag",
+        note: "helpless while it lasts",
+        zeroSpeed: () => true,
+        recap: () => "You are vomiting uncontrollably and count as helpless, so anyone attacking you is free to do as they like.",
     },
     "Slowed": {
         kind: "flag",
@@ -472,6 +552,35 @@ const healingRules: RuleBlock[] = [
     {head: "Curing Wounds", text: "Once a wound has been treated it can be properly healed. After treatment if a character regenerates HP (by magical or natural means) equal to or in excess of the damage that caused the wound, then the wound and all of its effects are removed. The one exception is that characters cannot heal lost limbs in this fashion."},
 ]
 
+const fearIntro: RuleBlock[] = [
+    {text: "When a character is confronted by an excessively frightening event or adversary, they must make a Fear Test. There are two types of fear tests: panic and horror tests. If the character fails the test, they succumb to the effects of fear."},
+    {text: "Your GM may call on you to make a Panic Test when you are confronted by mundane shock or horror. This is represented by the Panic (+/- X) notation, which is simply a Willpower test with a +/- X modifier."},
+    {text: "Your GM may call on you to make a Horror Test when you are confronted by supernatural terrors. This is represented by the Horror (+/- X) notation, which is simply a Willpower test with a +/- X modifier. In general, horror tests with any sort of penalty should be reserved for the most terrifying monsters and mind melting terrors."},
+    {head: "Fear Effects", text: "If in combat a character fails a fear test, they must immediately roll a d100 on the appropriate table on the next page. The effects listed are applied immediately to the character."},
+    {text: "If in a non-combat situation the character fails a fear test, the character becomes unnerved and suffers a -20 penalty to any tests that requires concentration on their part. This penalty lasts while the character remains in the vicinity of the object of their fear."},
+    {text: "Characters may be able to shake off some of the effects of fear after the initial shock has worn off. The table below will specify certain cases where a character can make a Willpower test when it is their next Turn to \u201csnap out\u201d of their fear. \u201cSnapping out\u201d of the fear always happens at the end of their Turn."},
+    {text: "If this succeeds, then they regain their senses, shrug off the effects, and may act normally from then on. If they fail this test, the effect continues, and they may try again when it is their next Turn."},
+]
+
+// the two tables, kept as data so the roll can look its own result up
+const horrorTable: {range: string, low: number, high: number, name: string, text: string}[] = [
+    {range: "1-40", low: 1, high: 40, name: "Momentary Blackout", text: "The character is so overcome with horror that their mind fails them for a few precious seconds in the face of this horror. The character drops to the ground unconscious for 1 round and has a -10 penalty to all actions afterwards for the rest of the encounter."},
+    {range: "41-60", low: 41, high: 60, name: "Uncontrollable Vomiting", text: "The character\u2019s own body reacts with a gut wrenching sound as the character\u2019s innards empty themselves, and they start vomiting uncontrollably. The character bends over and vomits for 1 round and is considered helpless during this time. Afterwards the character is still nauseous and loses 1 Stamina point immediately."},
+    {range: "61-80", low: 61, high: 80, name: "Manic Terror", text: "The Character\u2019s mind cracks like a fragile glass sculpture, and they begin to laugh maniacally. Turning upon the closest nearby friend or foe they start attacking them with whatever weapon they have in their hands at the moment. The character can attempt to snap out of it at the start of their first Turn each round or be knocked unconscious to stop their manic rampage. Afterwards the character loses 1d4 Stamina points immediately."},
+    {range: "81-90", low: 81, high: 90, name: "Hopeless and Despairing", text: "The character falls to the ground and cries out in despair and terror while shutting out all other sounds, babbling and mumbling to themselves for comfort for 1d6 rounds. When they regain their senses they immediately lose 1d4 Stamina."},
+    {range: "91-95", low: 91, high: 95, name: "Blackout", text: "The character\u2019s mind snaps like a twig, unable to truly process the horror of the situation and collapsing instead. The character goes catatonic for 1d4 hours and cannot be roused by normal means during this time."},
+    {range: "96-99", low: 96, high: 99, name: "Mind Break", text: "The character\u2019s will bends as their mind shatters. They drop to the ground while stuttering and mumbling incomprehensibly for 1d6 rounds. The character\u2019s mind is irrepressibly damaged, and they lose either 1d8 Willpower or Personality (player\u2019s choice) permanently from the harrowing experience. Afterwards, the character cannot attack or approach the source of horror until they snap out of the effect or for the rest of the encounter."},
+    {range: "100", low: 100, high: 100, name: "Scared to Death", text: "The character is so immeasurably overcome with terror and horror that their heart stops beating; they must make an Endurance test or die on the spot. Should they succeed, they instead fall catatonic for 1d4 hours as with Blackout."},
+]
+
+const panicTable: {range: string, low: number, high: number, name: string, text: string}[] = [
+    {range: "01-30", low: 1, high: 30, name: "Startled", text: "The character is startled by the source of panic. They jump in their boots and pause for a brief moment as they struggle to reassess the situation. They may not make any reactions until the beginning of their next Turn."},
+    {range: "31-60", low: 31, high: 60, name: "Spooked", text: "The character gets the shakes from the source of their panic. Fretting, nervous, and full of doubt, they suffer a -10 penalty to all tests for the rest of the encounter unless they snap out of it."},
+    {range: "61-90", low: 61, high: 90, name: "Frightened", text: "The character is taken aback, and their teeth clatter in their skull as they inch back from the source of their panic. The character cannot willingly approach the object of their fear, and they suffer a \u201310 penalty to all tests until the end of the encounter."},
+    {range: "91-95", low: 91, high: 95, name: "Lost Composure", text: "The character loses their nerve and freezes in place. Their will to act is decimated by the stress on their mind from the source of their Panic. The character may take no actions until they snap out of it. After snapping out of it, the character will make all tests at a \u201310 penalty for the rest of the encounter."},
+    {range: "96-100", low: 96, high: 100, name: "Running and Screaming", text: "The character breaks down with fear and flees. They must immediately flee directly away from the source of their fear as fast as they can, which includes ditching equipment slowing them down. They must do everything in their power to accomplish this and is at a -20 penalty to all tests. Once away from the danger, they must successfully snap out of it to regain control, or the encounter must end."},
+]
+
 // a characteristic bonus is the tens digit of the score
 function bonusFrom(info: CharInfo, key: string) {
     return Math.floor((Number(info.get(key)) || 0) / 10)
@@ -511,6 +620,11 @@ function App() {
     const [woundSide, setWoundSide] = useState("")
     const [woundShockPassed, setWoundShockPassed] = useState(true)
     const [woundDamage, setWoundDamage] = useState("")
+
+    // which row of the fear table was rolled, and any number it still needs
+    const [fearRow, setFearRow] = useState<{range: string, low: number, high: number, name: string, text: string} | null>(null)
+    const [fearNum, setFearNum] = useState("")
+    const [fearNum2, setFearNum2] = useState("")
     const [woundLines, setWoundLines] = useState<string[]>([])
     const [popout, setPopout] = useState<string | null>(null)
     const [restLines, setRestLines] = useState<string[] | null>(null)
@@ -1022,6 +1136,78 @@ function App() {
             if (conditionTypes[name].onApply === "gainSp") {
                 setCharInfo(prev => new Map(prev).set("Current SP", String(Number(prev?.get("Current SP") ?? 0) + 1)))
             }
+        }
+
+        // each roll leaves its own mix of conditions, lost stamina and follow up rolls
+        const applyFear = (row: {name: string}, num: number, choice: string) => {
+            const next = new Map(charInfo)
+            const add: Cond[] = []
+            const said: string[] = []
+
+            const loseSp = (amount: number, why: string) => {
+                if (amount <= 0) return
+                next.set("Current SP", String((Number(next.get("Current SP")) || 0) - amount))
+                said.push("You lose " + amount + " Stamina " + (amount === 1 ? "point" : "points") + " " + why + ".")
+            }
+
+            if (row.name === "Startled") {
+                add.push({name: "Startled", rounds: 1})
+                said.push("You may not make any reactions until the beginning of your next Turn.")
+            } else if (row.name === "Spooked") {
+                add.push({name: "Spooked"})
+                said.push("You take -10 to all tests for the rest of the encounter, unless you snap out of it.")
+            } else if (row.name === "Frightened") {
+                add.push({name: "Frightened"})
+                said.push("You take -10 to all tests until the end of the encounter and cannot willingly approach the object of your fear.")
+            } else if (row.name === "Lost Composure") {
+                add.push({name: "Lost Composure"})
+                said.push("You may take no actions until you snap out of it. Use Snap Out on the card when you pass a Willpower test, and you will still make all tests at -10 for the rest of the encounter.")
+            } else if (row.name === "Running and Screaming") {
+                add.push({name: "Running and Screaming"})
+                said.push("You flee directly away from your fear as fast as you can, ditching anything that slows you down, at -20 to all tests. You must snap out of it to regain control, or the encounter must end.")
+            } else if (row.name === "Momentary Blackout") {
+                add.push({name: "Unconscious", rounds: 1})
+                add.push({name: "Momentary Blackout"})
+                said.push("You drop to the ground unconscious for 1 round, then carry a -10 penalty to all actions for the rest of the encounter.")
+            } else if (row.name === "Uncontrollable Vomiting") {
+                add.push({name: "Vomiting", rounds: 1})
+                loseSp(1, "from the nausea afterwards")
+                said.push("You bend over and vomit for 1 round, helpless while it lasts.")
+            } else if (row.name === "Manic Terror") {
+                add.push({name: "Manic Terror"})
+                loseSp(num, "once the rampage ends")
+                said.push("You attack the closest friend or foe with whatever is in your hands. You may try to snap out of it at the start of your first Turn each round, or be knocked unconscious to stop it.")
+            } else if (row.name === "Hopeless and Despairing") {
+                add.push({name: "Despairing", rounds: num > 0 ? num : 1})
+                said.push("You fall to the ground babbling for " + (num > 0 ? num : 1) + " rounds, shutting out all other sounds.")
+                said.push("When the rounds run out you lose 1d4 Stamina. Take that off by hand, since it is rolled after the fact.")
+            } else if (row.name === "Blackout") {
+                add.push({name: "Catatonic"})
+                said.push("You go catatonic for " + (num > 0 ? num : 1) + " hours and cannot be roused by normal means. The card has no clock on it since the sheet counts rounds, not hours.")
+            } else if (row.name === "Mind Break") {
+                add.push({name: "Mind Broken", rounds: num > 0 ? num : 1})
+                const key = choice === "Personality" ? "Prs" : "Wp"
+                const drop = Number(fearNum2) || 0
+                said.push("You drop to the ground stuttering for " + (num > 0 ? num : 1) + " rounds.")
+                if (drop > 0) {
+                    next.set(key, String((Number(next.get(key)) || 0) - drop))
+                    said.push("Your " + choice + " falls permanently by " + drop + ", from " + (Number(charInfo.get(key)) || 0) + " to " + ((Number(charInfo.get(key)) || 0) - drop) + ".")
+                }
+                said.push("Afterwards you cannot attack or approach the source of the horror until you snap out of it or the encounter ends.")
+            } else if (row.name === "Scared to Death") {
+                if (choice === "died") {
+                    next.set("Current HP", "0")
+                    said.push("Your heart stops. The character dies on the spot.")
+                } else {
+                    add.push({name: "Catatonic"})
+                    said.push("Your heart holds. You instead fall catatonic for 1d4 hours as with Blackout.")
+                }
+            }
+
+            setCharInfo(next)
+            setConditions(prev => [...prev, ...add.filter(a => !prev.some(p => p.name === a.name))])
+            setRecap(said)
+            setPopout("fearDone")
         }
 
         const nameOf = (c: Cond) => {
@@ -2182,6 +2368,14 @@ function App() {
                                                     {!c.auto && !conditionTypes[c.name].ownClock && c.rounds !== undefined && (
                                                         <button type="button" onClick={() => setConditions(prev => prev.map((old, j) => j === i ? {...old, rounds: (old.rounds ?? 1) + 1} : old))}>+ round</button>
                                                     )}
+                                                    {/* a willpower test at the end of your turn shakes some fears off */}
+                                                    {conditionTypes[c.name].canSnapOut && !c.snapped && (
+                                                        <button type="button" onClick={() => {
+                                                            // some fears leave something behind rather than lifting entirely
+                                                            if (c.name === "Lost Composure") setConditions(prev => prev.map((old, j) => j === i ? {...old, snapped: true} : old))
+                                                            else setConditions(prev => prev.filter((_old, j) => j !== i))
+                                                        }}>Snap Out</button>
+                                                    )}
                                                     {/* an automatic condition leaves when its cause does, so there is nothing to press */}
                                                     {!c.auto && (
                                                         <button type="button" onClick={() => {
@@ -2232,6 +2426,7 @@ function App() {
                             setApRefreshed(!stunned)
 
                             const kept: Cond[] = []
+                            let bledOut = false
 
                             // an untreated wound bleeds, and after five rounds it drops you
                             const woundsAfter = wounds.map(w => {
@@ -2239,7 +2434,8 @@ function App() {
                                 const left = w.rounds - 1
                                 if (left <= 0) {
                                     hp = 0
-                                    lines.push("Your untreated wound on your " + w.part + " has bled you out. You are at 0 HP.")
+                                    bledOut = true
+                                    lines.push("Your untreated wound on your " + w.part + " has bled you out. You are at 0 HP and fall Unconscious.")
                                 } else {
                                     lines.push("You currently have an untreated wound on your " + w.part + " so you will pass out from blood loss after " + left + " more round" + (left === 1 ? "" : "s") + ".")
                                 }
@@ -2280,13 +2476,19 @@ function App() {
                                 if (c.rounds !== undefined) {
                                     const left = c.rounds - 1
                                     kept.push({...c, rounds: left})
-                                    lines.push(nameOf(c) + " has " + left + " round" + (left === 1 ? "" : "s") + " left.")
+                                    const still = conditionTypes[c.name].recap
+                                    lines.push((still ? still(c) + " " : nameOf(c) + " is still on you. ")
+                                        + left + " round" + (left === 1 ? "" : "s") + " left.")
                                     return
                                 }
                                 kept.push(c)
                                 const say = conditionTypes[c.name].recap
                                 if (say) lines.push(say(c))
                             })
+
+                            if (bledOut && !kept.some(c => c.name === "Unconscious")) {
+                                kept.push({name: "Unconscious", value: 1})
+                            }
 
                             derived.forEach(c => {
                                 const say = conditionTypes[c.name].recap
@@ -2405,6 +2607,51 @@ function App() {
                                                         {block.text && <p>{block.text}</p>}
                                                     </div>
                                                 ))}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="act">
+                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Fear") ? openActions.filter(n => n !== "group Fear") : [...openActions, "group Fear"])}>
+                                            <span>Fear and Horror</span>
+                                        </div>
+                                        {openActions.includes("group Fear") && (
+                                            <div className="actBody">
+                                                {fearIntro.map((block, i) => (
+                                                    <div key={i}>
+                                                        {block.head && <div className="subHead">{block.head}</div>}
+                                                        {block.text && <p>{block.text}</p>}
+                                                    </div>
+                                                ))}
+
+                                                <div className="subHead">Combat Horror Test Results</div>
+                                                <div className="dtable roll">
+                                                    <div className="dh">Roll</div><div className="dh">Effect</div>
+                                                    {horrorTable.map(row => (
+                                                        <Fragment key={row.range}>
+                                                            <div>{row.range}</div>
+                                                            <div><b>{row.name}:</b> {row.text}</div>
+                                                        </Fragment>
+                                                    ))}
+                                                </div>
+
+                                                <div className="subHead">Combat Panic Test Results</div>
+                                                <div className="dtable roll">
+                                                    <div className="dh">Roll</div><div className="dh">Effect</div>
+                                                    {panicTable.map(row => (
+                                                        <Fragment key={row.range}>
+                                                            <div>{row.range}</div>
+                                                            <div><b>{row.name}:</b> {row.text}</div>
+                                                        </Fragment>
+                                                    ))}
+                                                </div>
+
+                                                <button type="button" className="takeAction" onClick={() => {
+                                                    setFearRow(null)
+                                                    setFearNum("")
+                                                    setFearNum2("")
+                                                    setPopout("fear1")
+                                                }}>I Failed My Fear/Horror Test</button>
                                             </div>
                                         )}
                                     </div>
@@ -2570,6 +2817,131 @@ function App() {
                                         </button>
                                     )
                                 })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "fear1" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Fear or Horror?</div>
+                            <div className="popbody">
+                                <p className="fineprint">Panic covers mundane shock. Horror covers supernatural terrors.</p>
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout("fearRoll")}>Fear</button>
+                                <button type="button" className="go" onClick={() => setPopout("horrorRoll")}>Horror</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {(popout === "fearRoll" || popout === "horrorRoll") && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Roll a d100. What did you get?</div>
+                            <div className="popbody" style={{padding: 0}}>
+                                {(popout === "fearRoll" ? panicTable : horrorTable).map(row => (
+                                    <button type="button" key={row.range} className="pickRow" onClick={() => {
+                                        setFearRow(row)
+                                        setFearNum("")
+                                        setFearNum2("")
+                                        // some results need a second roll or a choice before they land
+                                        const needsMore = ["Manic Terror", "Hopeless and Despairing", "Blackout", "Mind Break", "Scared to Death"]
+                                        setPopout(needsMore.includes(row.name) ? "fearMore" : "fearApply")
+                                    }}><b>{row.range}</b><span>{row.name}</span></button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "fearApply" && fearRow && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">{fearRow.name}</div>
+                            <div className="popbody">
+                                <p>{fearRow.text}</p>
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" onClick={() => setPopout(null)}>Cancel</button>
+                                <button type="button" className="go" onClick={() => applyFear(fearRow, 0, "")}>Apply</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "fearMore" && fearRow && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">{fearRow.name}</div>
+                            <div className="popbody">
+                                <p>{fearRow.text}</p>
+
+                                {fearRow.name === "Manic Terror" && (
+                                    <>
+                                        <p className="fineprint">Roll 1d4 for the Stamina you lose once the rampage ends.</p>
+                                        <input type="text" className="popInput" value={fearNum} onChange={e => setFearNum(e.target.value)} placeholder="1d4"/>
+                                    </>
+                                )}
+                                {fearRow.name === "Hopeless and Despairing" && (
+                                    <>
+                                        <p className="fineprint">Roll 1d6 for how many rounds you spend on the ground.</p>
+                                        <input type="text" className="popInput" value={fearNum} onChange={e => setFearNum(e.target.value)} placeholder="1d6"/>
+                                    </>
+                                )}
+                                {fearRow.name === "Blackout" && (
+                                    <>
+                                        <p className="fineprint">Roll 1d4 for how many hours you are out.</p>
+                                        <input type="text" className="popInput" value={fearNum} onChange={e => setFearNum(e.target.value)} placeholder="1d4"/>
+                                    </>
+                                )}
+                                {fearRow.name === "Mind Break" && (
+                                    <>
+                                        <p className="fineprint">Roll 1d6 for how many rounds you spend stuttering on the ground.</p>
+                                        <input type="text" className="popInput" value={fearNum} onChange={e => setFearNum(e.target.value)} placeholder="1d6"/>
+                                        <p className="fineprint">Roll 1d8. That much comes permanently off whichever characteristic you pick below.</p>
+                                        <input type="text" className="popInput" value={fearNum2} onChange={e => setFearNum2(e.target.value)} placeholder="1d8"/>
+                                    </>
+                                )}
+                                {fearRow.name === "Scared to Death" && (
+                                    <p className="fineprint">Make the Endurance test now.</p>
+                                )}
+                            </div>
+                            <div className="popfoot">
+                                {fearRow.name === "Mind Break" && (
+                                    <>
+                                        <button type="button" className="go" onClick={() => applyFear(fearRow, Number(fearNum) || 1, "Willpower")}>Lose Willpower</button>
+                                        <button type="button" className="go" onClick={() => applyFear(fearRow, Number(fearNum) || 1, "Personality")}>Lose Personality</button>
+                                    </>
+                                )}
+                                {fearRow.name === "Scared to Death" && (
+                                    <>
+                                        <button type="button" className="go" onClick={() => applyFear(fearRow, Number(fearNum) || 1, "survived")}>I passed</button>
+                                        <button type="button" className="go" onClick={() => applyFear(fearRow, 0, "died")}>I failed</button>
+                                    </>
+                                )}
+                                {fearRow.name !== "Mind Break" && fearRow.name !== "Scared to Death" && (
+                                    <>
+                                        <button type="button" onClick={() => setPopout(null)}>Cancel</button>
+                                        <button type="button" className="go" onClick={() => applyFear(fearRow, Number(fearNum) || 1, "")}>Apply</button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "fearDone" && fearRow && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">{fearRow.name}</div>
+                            <div className="popbody">
+                                {recap.map((line, i) => <p key={i}>{line}</p>)}
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
                             </div>
                         </div>
                     </div>
