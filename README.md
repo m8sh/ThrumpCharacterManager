@@ -7,7 +7,10 @@ For example: Wound rules are very annoying to implement, so I never bothered to 
 
 
 TODO:
-- Finish adding all of the conditions
+- Bug fixes and testing that everything works as intended
+- Add traits
+- Keep track of helplessness
+- Add talents (while allowing custom)
 
 Stretch Goals:
 - To put a login/out
