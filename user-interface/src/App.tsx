@@ -5,14 +5,28 @@ import {useState, useEffect, Fragment, type ChangeEvent} from "react";
 
 type CharInfo = Map<string, string | boolean | undefined>
 
-// the pdf shortens the ranks and an empty rank means untrained
-const rankNames: Record<string, string> = {
-    "": "Untrained", "Novi.": "Novice", "Appr.": "Apprentice",
-    "Jour.": "Journeyman", "Adep.": "Adept", "Expe.": "Expert", "Mast.": "Master",
-}
-
 // the three characteristics a frenzy does not get in the way of
 const physicalChars = ["Str", "Ag", "End"]
+
+const rankLadder = [
+    {abbr: "", name: "Untrained", bonus: -20},
+    {abbr: "Novi.", name: "Novice", bonus: 0},
+    {abbr: "Appr.", name: "Apprentice", bonus: 10},
+    {abbr: "Jour.", name: "Journeyman", bonus: 20},
+    {abbr: "Adep.", name: "Adept", bonus: 30},
+    {abbr: "Expe.", name: "Expert", bonus: 40},
+    {abbr: "Mast.", name: "Master", bonus: 50},
+]
+
+// changing a rank writes the matching bonus too, so every target number follows along
+function setRank(info: CharInfo, skill: string, abbr: string) {
+    const step = rankLadder.find(r => r.abbr === abbr)
+    const bonus = step ? step.bonus : 0
+    const next = new Map(info)
+    next.set(skill + " Rank", abbr)
+    next.set(skill + " Bonus", (bonus >= 0 ? "+" : "") + bonus)
+    return next
+}
 
 const charNames: Record<string, string> = {
     Str: "Strength", End: "Endurance", Ag: "Agility", Int: "Intelligence",
@@ -1455,7 +1469,7 @@ function App() {
                     </div>
                     <div className="srow">
                         <div className="sname">Alteration</div>
-                        <div>{rankNames[String(charInfo.get("Alteration Rank") ?? "")] ?? "Untrained"}</div>
+                        <div className="rankCell"><select value={String(charInfo.get("Alteration Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Alteration", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                         <div>{charInfo.get("Alteration Rank") ? String(charInfo.get("Alteration Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
                             <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Alteration Rank") ? Number(charInfo.get("Alteration Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
@@ -1463,7 +1477,7 @@ function App() {
                     </div>
                     <div className="srow">
                         <div className="sname">Conjuration</div>
-                        <div>{rankNames[String(charInfo.get("Conjuration Rank") ?? "")] ?? "Untrained"}</div>
+                        <div className="rankCell"><select value={String(charInfo.get("Conjuration Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Conjuration", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                         <div>{charInfo.get("Conjuration Rank") ? String(charInfo.get("Conjuration Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
                             <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Conjuration Rank") ? Number(charInfo.get("Conjuration Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
@@ -1471,7 +1485,7 @@ function App() {
                     </div>
                     <div className="srow">
                         <div className="sname">Destruction</div>
-                        <div>{rankNames[String(charInfo.get("Destruction Rank") ?? "")] ?? "Untrained"}</div>
+                        <div className="rankCell"><select value={String(charInfo.get("Destruction Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Destruction", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                         <div>{charInfo.get("Destruction Rank") ? String(charInfo.get("Destruction Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
                             <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Destruction Rank") ? Number(charInfo.get("Destruction Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
@@ -1479,7 +1493,7 @@ function App() {
                     </div>
                     <div className="srow">
                         <div className="sname">Illusion</div>
-                        <div>{rankNames[String(charInfo.get("Illusion Rank") ?? "")] ?? "Untrained"}</div>
+                        <div className="rankCell"><select value={String(charInfo.get("Illusion Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Illusion", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                         <div>{charInfo.get("Illusion Rank") ? String(charInfo.get("Illusion Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
                             <span>Intelligence <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Illusion Rank") ? Number(charInfo.get("Illusion Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
@@ -1487,7 +1501,7 @@ function App() {
                     </div>
                     <div className="srow">
                         <div className="sname">Mysticism</div>
-                        <div>{rankNames[String(charInfo.get("Mysticism Rank") ?? "")] ?? "Untrained"}</div>
+                        <div className="rankCell"><select value={String(charInfo.get("Mysticism Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Mysticism", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                         <div>{charInfo.get("Mysticism Rank") ? String(charInfo.get("Mysticism Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
                             <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Mysticism Rank") ? Number(charInfo.get("Mysticism Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
@@ -1495,7 +1509,7 @@ function App() {
                     </div>
                     <div className="srow">
                         <div className="sname">Necromancy</div>
-                        <div>{rankNames[String(charInfo.get("Necromancy Rank") ?? "")] ?? "Untrained"}</div>
+                        <div className="rankCell"><select value={String(charInfo.get("Necromancy Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Necromancy", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                         <div>{charInfo.get("Necromancy Rank") ? String(charInfo.get("Necromancy Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
                             <span>Intelligence <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Necromancy Rank") ? Number(charInfo.get("Necromancy Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
@@ -1503,7 +1517,7 @@ function App() {
                     </div>
                     <div className="srow">
                         <div className="sname">Restoration</div>
-                        <div>{rankNames[String(charInfo.get("Restoration Rank") ?? "")] ?? "Untrained"}</div>
+                        <div className="rankCell"><select value={String(charInfo.get("Restoration Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Restoration", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                         <div>{charInfo.get("Restoration Rank") ? String(charInfo.get("Restoration Bonus") ?? "0") : "-20"}</div>
                         <div className="stests">
                             <span>Willpower <b className={testMod + frenzyMod + magicMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Wp")) + (charInfo.get("Restoration Rank") ? Number(charInfo.get("Restoration Bonus") ?? 0) : -20) + testMod + frenzyMod + magicMod}</b></span>
@@ -1928,7 +1942,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Acrobatics</div>
-                                    <div>{rankNames[String(charInfo.get("Acrobatics Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Acrobatics Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Acrobatics", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Acrobatics Rank") ? String(charInfo.get("Acrobatics Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Strength <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Str")) + (charInfo.get("Acrobatics Rank") ? Number(charInfo.get("Acrobatics Bonus") ?? 0) : -20) + testMod}</b></span>
@@ -1937,7 +1951,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Alchemy</div>
-                                    <div>{rankNames[String(charInfo.get("Alchemy Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Alchemy Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Alchemy", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Alchemy Rank") ? String(charInfo.get("Alchemy Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Alchemy Rank") ? Number(charInfo.get("Alchemy Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -1945,7 +1959,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Athletics</div>
-                                    <div>{rankNames[String(charInfo.get("Athletics Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Athletics Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Athletics", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Athletics Rank") ? String(charInfo.get("Athletics Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Strength <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Str")) + (charInfo.get("Athletics Rank") ? Number(charInfo.get("Athletics Bonus") ?? 0) : -20) + testMod}</b></span>
@@ -1954,7 +1968,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Command</div>
-                                    <div>{rankNames[String(charInfo.get("Command Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Command Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Command", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Command Rank") ? String(charInfo.get("Command Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Strength <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Str")) + (charInfo.get("Command Rank") ? Number(charInfo.get("Command Bonus") ?? 0) : -20) + testMod}</b></span>
@@ -1964,7 +1978,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Commerce</div>
-                                    <div>{rankNames[String(charInfo.get("Commerce Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Commerce Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Commerce", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Commerce Rank") ? String(charInfo.get("Commerce Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Commerce Rank") ? Number(charInfo.get("Commerce Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -1973,7 +1987,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Deceive</div>
-                                    <div>{rankNames[String(charInfo.get("Deceive Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Deceive Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Deceive", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Deceive Rank") ? String(charInfo.get("Deceive Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Deceive Rank") ? Number(charInfo.get("Deceive Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -1982,7 +1996,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Enchant</div>
-                                    <div>{rankNames[String(charInfo.get("Enchant Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Enchant Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Enchant", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Enchant Rank") ? String(charInfo.get("Enchant Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Enchant Rank") ? Number(charInfo.get("Enchant Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -1990,7 +2004,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Evade</div>
-                                    <div>{rankNames[String(charInfo.get("Evade Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Evade Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Evade", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Evade Rank") ? String(charInfo.get("Evade Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Evade Rank") ? Number(charInfo.get("Evade Bonus") ?? 0) : -20) + testMod}</b></span>
@@ -1998,7 +2012,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Investigate</div>
-                                    <div>{rankNames[String(charInfo.get("Investigate Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Investigate Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Investigate", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Investigate Rank") ? String(charInfo.get("Investigate Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Investigate Rank") ? Number(charInfo.get("Investigate Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -2007,7 +2021,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Logic</div>
-                                    <div>{rankNames[String(charInfo.get("Logic Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Logic Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Logic", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Logic Rank") ? String(charInfo.get("Logic Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Logic Rank") ? Number(charInfo.get("Logic Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -2022,7 +2036,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Lore</div>
-                                    <div>{rankNames[String(charInfo.get("Lore Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Lore Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Lore", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Lore Rank") ? String(charInfo.get("Lore Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Lore Rank") ? Number(charInfo.get("Lore Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -2030,7 +2044,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Navigate</div>
-                                    <div>{rankNames[String(charInfo.get("Navigate Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Navigate Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Navigate", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Navigate Rank") ? String(charInfo.get("Navigate Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Navigate Rank") ? Number(charInfo.get("Navigate Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -2039,7 +2053,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Observe</div>
-                                    <div>{rankNames[String(charInfo.get("Observe Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Observe Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Observe", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Observe Rank") ? String(charInfo.get("Observe Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Perception <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Observe Rank") ? Number(charInfo.get("Observe Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -2047,7 +2061,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Persuade</div>
-                                    <div>{rankNames[String(charInfo.get("Persuade Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Persuade Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Persuade", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Persuade Rank") ? String(charInfo.get("Persuade Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Strength <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Str")) + (charInfo.get("Persuade Rank") ? Number(charInfo.get("Persuade Bonus") ?? 0) : -20) + testMod}</b></span>
@@ -2056,7 +2070,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Ride</div>
-                                    <div>{rankNames[String(charInfo.get("Ride Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Ride Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Ride", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Ride Rank") ? String(charInfo.get("Ride Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Ride Rank") ? Number(charInfo.get("Ride Bonus") ?? 0) : -20) + testMod}</b></span>
@@ -2064,7 +2078,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Stealth</div>
-                                    <div>{rankNames[String(charInfo.get("Stealth Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Stealth Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Stealth", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Stealth Rank") ? String(charInfo.get("Stealth Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Stealth Rank") ? Number(charInfo.get("Stealth Bonus") ?? 0) : -20) + testMod}</b></span>
@@ -2073,7 +2087,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Subterfuge</div>
-                                    <div>{rankNames[String(charInfo.get("Subterfuge Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Subterfuge Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Subterfuge", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Subterfuge Rank") ? String(charInfo.get("Subterfuge Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Subterfuge Rank") ? Number(charInfo.get("Subterfuge Bonus") ?? 0) : -20) + testMod}</b></span>
@@ -2082,7 +2096,7 @@ function App() {
                                 </div>
                                 <div className="srow">
                                     <div className="sname">Survival</div>
-                                    <div>{rankNames[String(charInfo.get("Survival Rank") ?? "")] ?? "Untrained"}</div>
+                                    <div className="rankCell"><select value={String(charInfo.get("Survival Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Survival", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Survival Rank") ? String(charInfo.get("Survival Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Survival Rank") ? Number(charInfo.get("Survival Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
@@ -2092,7 +2106,7 @@ function App() {
                                 {charInfo.get("Profession 1") && (
                                     <div className="srow">
                                         <div className="sname">{String(charInfo.get("Profession 1"))}</div>
-                                        <div>{rankNames[String(charInfo.get("Profession 1 Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div className="rankCell"><select value={String(charInfo.get("Profession 1 Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Profession 1", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                         <div>{charInfo.get("Profession 1 Rank") ? String(charInfo.get("Profession 1 Bonus") ?? "0") : "-20"}</div>
                                         <div className="stests">
                                             <span>{charNames[p1Char] ?? p1Char} <b className={testMod + (physicalChars.includes(p1Char) ? 0 : frenzyMod) !== 0 ? "modded" : ""}>{Number(charInfo.get(p1Char) ?? 0) + (charInfo.get("Profession 1 Rank") ? Number(charInfo.get("Profession 1 Bonus") ?? 0) : -20) + testMod + (physicalChars.includes(p1Char) ? 0 : frenzyMod)}</b></span>
@@ -2102,7 +2116,7 @@ function App() {
                                 {charInfo.get("Profession 2") && (
                                     <div className="srow">
                                         <div className="sname">{String(charInfo.get("Profession 2"))}</div>
-                                        <div>{rankNames[String(charInfo.get("Profession 2 Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div className="rankCell"><select value={String(charInfo.get("Profession 2 Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Profession 2", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                         <div>{charInfo.get("Profession 2 Rank") ? String(charInfo.get("Profession 2 Bonus") ?? "0") : "-20"}</div>
                                         <div className="stests">
                                             <span>{charNames[p2Char] ?? p2Char} <b className={testMod + (physicalChars.includes(p2Char) ? 0 : frenzyMod) !== 0 ? "modded" : ""}>{Number(charInfo.get(p2Char) ?? 0) + (charInfo.get("Profession 2 Rank") ? Number(charInfo.get("Profession 2 Bonus") ?? 0) : -20) + testMod + (physicalChars.includes(p2Char) ? 0 : frenzyMod)}</b></span>
@@ -2112,7 +2126,7 @@ function App() {
                                 {charInfo.get("Profession 3") && (
                                     <div className="srow">
                                         <div className="sname">{String(charInfo.get("Profession 3"))}</div>
-                                        <div>{rankNames[String(charInfo.get("Profession 3 Rank") ?? "")] ?? "Untrained"}</div>
+                                        <div className="rankCell"><select value={String(charInfo.get("Profession 3 Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Profession 3", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                         <div>{charInfo.get("Profession 3 Rank") ? String(charInfo.get("Profession 3 Bonus") ?? "0") : "-20"}</div>
                                         <div className="stests">
                                             <span>{charNames[p3Char] ?? p3Char} <b className={testMod + (physicalChars.includes(p3Char) ? 0 : frenzyMod) !== 0 ? "modded" : ""}>{Number(charInfo.get(p3Char) ?? 0) + (charInfo.get("Profession 3 Rank") ? Number(charInfo.get("Profession 3 Bonus") ?? 0) : -20) + testMod + (physicalChars.includes(p3Char) ? 0 : frenzyMod)}</b></span>
@@ -2316,7 +2330,7 @@ function App() {
                                 <div className="csBlock">
                                     <div className="csTop">
                                         <b><input type="text" value={String(charInfo.get("Combat Style") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Combat Style", e.target.value))}/></b>
-                                        <span>{rankNames[String(charInfo.get("Combat Style Rank") ?? "")] ?? "Untrained"}</span>
+                                        <span className="rankCell"><select value={String(charInfo.get("Combat Style Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Combat Style", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></span>
                                         <span>{String(charInfo.get("Combat Style Bonus") ?? "")}</span>
                                         <div className="stests">
                                             <span>Strength <b className={testMod + csMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Str")) + (charInfo.get("Combat Style Rank") ? Number(charInfo.get("Combat Style Bonus") ?? 0) : -20) + testMod + csMod}</b></span>

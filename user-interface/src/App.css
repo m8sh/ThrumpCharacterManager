@@ -519,6 +519,27 @@ body:has(#center > .nameRow){display:block}
 
 #center .srow .sname{background:var(--band);font-weight:400}
 
+/* the rank picker reads as plain text until you use it, and its list draws over
+   the page rather than pushing anything aside */
+#center .rankCell{padding:0}
+#center .rankCell select{
+  font:inherit;
+  font-weight:inherit;
+  width:100%;
+  padding:.28em .55em;
+  color:inherit;
+  background:none;
+  border:0;
+  border-radius:0;
+  cursor:pointer;
+  appearance:none;
+}
+#center .rankCell select:hover{background:rgba(255,255,255,.06)}
+#center .rankCell select:focus{outline:0;background:rgba(255,255,255,.1)}
+#center .rankCell select option{background:var(--tile);color:var(--text)}
+#center .csTop .rankCell{display:inline-block}
+#center .csTop .rankCell select{width:auto;padding:0}
+
 #center .srow.head > *{background:var(--band);font-weight:400}
 
 #center .stests{display:flex;gap:.8em;font-weight:400;overflow:hidden;text-overflow:ellipsis}
