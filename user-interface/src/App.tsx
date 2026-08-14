@@ -114,7 +114,7 @@ const savedPdf = (() => {
 
 type Wound = {part: string, treated: boolean, rounds: number, damage: number, healed: number, caused?: {name: string, part?: string}[]}
 
-type Cond = {name: string, value?: number, part?: string, fresh?: boolean, auto?: boolean, why?: string, rounds?: number, snapped?: boolean}
+type Cond = {name: string, value?: number, part?: string, result?: string, fresh?: boolean, auto?: boolean, why?: string, rounds?: number, snapped?: boolean}
 
 const bodyParts = ["Left Eye", "Right Eye", "Left Ear", "Right Ear", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Body"]
 
@@ -230,6 +230,32 @@ const conditionTypes: Record<string, {
         halfSpeed: () => true,
         recap: () => "You are Entangled, taking -20 on Combat Style tests at half movement speed.",
     },
+    "Fear": {
+        kind: "fear",
+        note: "a failed panic test",
+        label: (c) => "Fear - " + c.result,
+        testMod: (c) => panicResults[c.result ?? ""]?.testMod?.(c) ?? 0,
+        zeroSpeed: (c) => panicResults[c.result ?? ""]?.zeroSpeed?.(c) === true,
+        shortOf: (c) => {
+            const r = panicResults[c.result ?? ""]
+            if (!r) return ""
+            return r.shortOf ? r.shortOf(c) : r.note
+        },
+        recap: (c) => panicResults[c.result ?? ""]?.recap(c) ?? "",
+    },
+    "Horror": {
+        kind: "fear",
+        note: "a failed horror test",
+        label: (c) => "Horror - " + c.result,
+        testMod: (c) => horrorResults[c.result ?? ""]?.testMod?.(c) ?? 0,
+        zeroSpeed: (c) => horrorResults[c.result ?? ""]?.zeroSpeed?.(c) === true,
+        shortOf: (c) => {
+            const r = horrorResults[c.result ?? ""]
+            if (!r) return ""
+            return r.shortOf ? r.shortOf(c) : r.note
+        },
+        recap: (c) => horrorResults[c.result ?? ""]?.recap(c) ?? "",
+    },
     "Fatigued": {
         kind: "levels",
         max: 5,
@@ -318,26 +344,43 @@ const conditionTypes: Record<string, {
         shortOf: (c) => partInfo[c.part ?? ""].note,
         recap: (c) => "You have Lost (" + c.part + ") and " + partInfo[c.part ?? ""].note + ".",
     },
-    "Catatonic": {
+    "Slowed": {
         kind: "flag",
-        note: "out for 1d4 hours, cannot be roused",
-        zeroSpeed: () => true,
-        recap: () => "You are Catatonic for 1d4 hours and cannot be roused by normal means. The sheet counts rounds rather than hours, so take this one off by hand when the time is up.",
+        note: "Speed reduced by half",
+        halfSpeed: () => true,
+        recap: () => "You are Slowed and your Speed is reduced by half, rounding up.",
     },
-    "Despairing": {
-        kind: "flag",
-        note: "on the ground babbling, shut out from everything",
-        zeroSpeed: () => true,
-        recap: () => "You are Hopeless and Despairing, on the ground babbling and shutting out all other sounds. You lose 1d4 Stamina when you come out of it.",
+}
+
+// a fear result carries its own penalties and reminder, and the Fear or Horror
+// condition holding it just hands every question through
+type FearResult = {
+    note: string,
+    testMod?: (c: Cond) => number,
+    zeroSpeed?: (c: Cond) => boolean,
+    canSnapOut?: boolean,
+    shortOf?: (c: Cond) => string,
+    recap: (c: Cond) => string,
+}
+
+// what a failed panic test leaves behind
+const panicResults: Record<string, FearResult> = {
+    "Startled": {
+        note: "no reactions until your next Turn",
+        recap: () => "You are Startled and may not make any reactions at all until the beginning of your next Turn.",
+    },
+    "Spooked": {
+        note: "-10 to all tests for the rest of the encounter",
+        testMod: () => -10,
+        canSnapOut: true,
+        recap: () => "You are Spooked, fretting and full of doubt, taking -10 to all tests for the rest of the encounter unless you snap out of it.",
     },
     "Frightened": {
-        kind: "flag",
         note: "-10 to all tests, cannot approach your fear",
         testMod: () => -10,
         recap: () => "You are Frightened. You take -10 to all tests and cannot willingly approach the object of your fear, and this lasts until the end of the encounter.",
     },
     "Lost Composure": {
-        kind: "flag",
         note: "frozen, no actions until you snap out",
         // frozen at first, and once you snap out of it the nerves stay for the encounter
         testMod: (c) => c.snapped ? -10 : 0,
@@ -348,60 +391,59 @@ const conditionTypes: Record<string, {
             ? "You have snapped out of losing your composure, but you still make all tests at -10 for the rest of the encounter."
             : "You have Lost Composure and may take no actions until you snap out of it.",
     },
-    "Manic Terror": {
-        kind: "flag",
-        note: "attacking the nearest living thing",
-        canSnapOut: true,
-        recap: () => "You are in a Manic Terror and must keep attacking the closest friend or foe with whatever is in your hands. You may try to snap out of it at the start of your first Turn each round, or someone must knock you unconscious to stop the rampage.",
-    },
-    "Mind Broken": {
-        kind: "flag",
-        note: "cannot attack or approach the source of horror",
-        canSnapOut: true,
-        recap: () => "Your mind is broken. You cannot attack or approach the source of the horror until you snap out of it or the encounter ends.",
-    },
-    "Momentary Blackout": {
-        kind: "flag",
-        note: "-10 to all actions for the rest of the encounter",
-        testMod: () => -10,
-        recap: () => "After your Momentary Blackout you take -10 to all actions for the rest of the encounter.",
-    },
-    "Spooked": {
-        kind: "flag",
-        note: "-10 to all tests for the rest of the encounter",
-        testMod: () => -10,
-        canSnapOut: true,
-        recap: () => "You are Spooked, fretting and full of doubt, taking -10 to all tests for the rest of the encounter unless you snap out of it.",
-    },
-    "Startled": {
-        kind: "flag",
-        note: "no reactions until your next Turn",
-        recap: () => "You are Startled and may not make any reactions at all until the beginning of your next Turn.",
-    },
     "Running and Screaming": {
-        kind: "flag",
         note: "-20 to all tests, fleeing your fear",
         testMod: () => -20,
         canSnapOut: true,
         recap: () => "You are Running and Screaming. You must flee directly away from your fear as fast as you can, ditching anything that slows you down, at -20 to all tests. Only snapping out of it or the end of the encounter gives you back control.",
     },
     "Unnerved": {
-        kind: "flag",
         note: "-20 to tests needing concentration",
         recap: () => "You are Unnerved and take -20 to any test that requires concentration while you remain near the object of your fear.",
     },
-    "Vomiting": {
-        kind: "flag",
+}
+
+// what a failed horror test leaves behind
+const horrorResults: Record<string, FearResult> = {
+    "Momentary Blackout": {
+        note: "-10 to all actions for the rest of the encounter",
+        testMod: () => -10,
+        recap: () => "After your Momentary Blackout you take -10 to all actions for the rest of the encounter.",
+    },
+    "Uncontrollable Vomiting": {
         note: "helpless while it lasts",
         zeroSpeed: () => true,
         recap: () => "You are vomiting uncontrollably and count as helpless, so anyone attacking you is free to do as they like.",
     },
-    "Slowed": {
-        kind: "flag",
-        note: "Speed reduced by half",
-        halfSpeed: () => true,
-        recap: () => "You are Slowed and your Speed is reduced by half, rounding up.",
+    "Manic Terror": {
+        note: "attacking the nearest living thing",
+        canSnapOut: true,
+        recap: () => "You are in a Manic Terror and must keep attacking the closest friend or foe with whatever is in your hands. You may try to snap out of it at the start of your first Turn each round, or someone must knock you unconscious to stop the rampage.",
     },
+    "Hopeless and Despairing": {
+        note: "on the ground babbling, shut out from everything",
+        zeroSpeed: () => true,
+        recap: () => "You are Hopeless and Despairing, on the ground babbling and shutting out all other sounds. You lose 1d4 Stamina when you come out of it.",
+    },
+    "Blackout": {
+        note: "catatonic for 1d4 hours, cannot be roused",
+        zeroSpeed: () => true,
+        recap: () => "You are Catatonic for 1d4 hours and cannot be roused by normal means. The sheet counts rounds rather than hours, so take this one off by hand when the time is up.",
+    },
+    "Mind Break": {
+        note: "cannot attack or approach the source of horror",
+        canSnapOut: true,
+        recap: () => "Your mind is broken. You cannot attack or approach the source of the horror until you snap out of it or the encounter ends.",
+    },
+    "Unnerved": {
+        note: "-20 to tests needing concentration",
+        recap: () => "You are Unnerved and take -20 to any test that requires concentration while you remain near the object of your fear.",
+    },
+}
+
+// whichever list the condition draws its result from
+function resultsFor(name: string): Record<string, FearResult> {
+    return name === "Horror" ? horrorResults : panicResults
 }
 
 // the rules text shown in the conditions and rules panel, worded exactly as the
@@ -625,6 +667,8 @@ function App() {
     const [fearRow, setFearRow] = useState<{range: string, low: number, high: number, name: string, text: string} | null>(null)
     const [fearNum, setFearNum] = useState("")
     const [fearNum2, setFearNum2] = useState("")
+    const [shrugged, setShrugged] = useState("")
+    const [fearKind, setFearKind] = useState("Fear")
     const [woundLines, setWoundLines] = useState<string[]>([])
     const [popout, setPopout] = useState<string | null>(null)
     const [restLines, setRestLines] = useState<string[] | null>(null)
@@ -803,6 +847,7 @@ function App() {
 
             // conditions are written out the way they read on the card
             const condLines = conditions.map(c => {
+                if (c.result) return c.name + " - " + c.result
                 if (c.part) return c.name + " (" + c.part + ")"
                 if (conditionTypes[c.name].kind === "value") return c.name + " (" + c.value + ")"
                 if (c.name === "Fatigued") return fatigueSteps[(c.value ?? 1) - 1].label
@@ -1015,9 +1060,11 @@ function App() {
         const bonusOf = (key: string) => bonusFrom(charInfo, key)
 
         // an untreated wound is -20 to everything and -2 initiative until it is seen to
+        const frenzied = conditions.some(c => c.name === "Frenzied")
         const untreated = wounds.filter(w => !w.treated)
-        const woundTestMod = untreated.length * -20
-        const woundIrMod = untreated.length * -2
+        // the rage makes a character immune to the passive effects of wounds
+        const woundTestMod = frenzied ? 0 : untreated.length * -20
+        const woundIrMod = frenzied ? 0 : untreated.length * -2
 
         const testMod = modOf("testMod") + woundTestMod
         const csMod = modOf("csMod")
@@ -1027,8 +1074,8 @@ function App() {
         const spMaxMod = modOf("spMaxMod")
         const frenzyMod = modOf("frenzyMod")
         const sbMod = modOf("sbMod")
-        const halfSpeed = allConditions.some(c => conditionTypes[c.name].halfSpeed !== undefined)
-        const zeroSpeed = allConditions.some(c => conditionTypes[c.name].zeroSpeed !== undefined)
+        const halfSpeed = allConditions.some(c => conditionTypes[c.name].halfSpeed?.(c) === true)
+        const zeroSpeed = allConditions.some(c => conditionTypes[c.name].zeroSpeed?.(c) === true)
 
         // a character never drops below one action point no matter how dazed they are
         const shownApMax = Math.max(1, Number(charInfo.get("Max AP") ?? 0) + apMaxMod)
@@ -1039,8 +1086,8 @@ function App() {
                 : String(charInfo.get("Current Speed") ?? "")
 
         // an ear or eye wound needs a side, everything else already names its part
-        const woundTarget = woundPart === "Head (Ear)" ? woundSide + " Ear"
-            : woundPart === "Head (Eye)" ? woundSide + " Eye"
+        const woundTarget = woundPart === "Head (Ear)" ? (woundSide === "" ? "Head" : woundSide + " Ear")
+            : woundPart === "Head (Eye)" ? (woundSide === "" ? "Head" : woundSide + " Eye")
                 : woundPart
 
         const needsSide = woundPart === "Head (Ear)" || woundPart === "Head (Eye)"
@@ -1069,8 +1116,12 @@ function App() {
             } else if (isHead) {
                 // a blow to the head stuns instead of crippling
                 said.push("You suffered a wound to the " + woundTarget + " and are stunned for 1 round.")
-                if (!conditions.some(c => c.name === "Stunned")) added.push({name: "Stunned", rounds: 1})
-                next.set("Current AP", "0")
+                if (frenzied) {
+                    said.push("The blow would stun you, but the rage carries you through it.")
+                } else if (!conditions.some(c => c.name === "Stunned")) {
+                    added.push({name: "Stunned", rounds: 1})
+                    next.set("Current AP", "0")
+                }
                 if (!woundShockPassed) {
                     added.push({name: "Lost", part: woundTarget})
                     said.push("Since you failed your Shock Test, you are also suffering from the Lost (" + woundTarget + ") condition.")
@@ -1123,8 +1174,14 @@ function App() {
         }
 
         // adding a condition anywhere goes through here so its arrival is handled once
+        // the rage also makes a character immune to stunning and to fear
         const addCondition = (name: string, rounds?: number) => {
             if (conditions.some(c => c.name === name)) return
+            if (frenzied && (name === "Stunned" || name === "Fear" || name === "Horror")) {
+                setShrugged(name)
+                setPopout("shrugged")
+                return
+            }
             const fresh: Cond = {name: name, value: 1, fresh: name === "Bleeding"}
             if (rounds !== undefined) fresh.rounds = rounds
             setConditions(prev => [...prev, fresh])
@@ -1140,6 +1197,11 @@ function App() {
 
         // each roll leaves its own mix of conditions, lost stamina and follow up rolls
         const applyFear = (row: {name: string}, num: number, choice: string) => {
+            if (frenzied) {
+                setShrugged(fearKind)
+                setPopout("shrugged")
+                return
+            }
             const next = new Map(charInfo)
             const add: Cond[] = []
             const said: string[] = []
@@ -1150,42 +1212,34 @@ function App() {
                 said.push("You lose " + amount + " Stamina " + (amount === 1 ? "point" : "points") + " " + why + ".")
             }
 
+            // every roll leaves the one Fear condition, named for whichever result it was
+            add.push({name: fearKind, result: row.name})
+
             if (row.name === "Startled") {
-                add.push({name: "Startled", rounds: 1})
                 said.push("You may not make any reactions until the beginning of your next Turn.")
             } else if (row.name === "Spooked") {
-                add.push({name: "Spooked"})
                 said.push("You take -10 to all tests for the rest of the encounter, unless you snap out of it.")
             } else if (row.name === "Frightened") {
-                add.push({name: "Frightened"})
                 said.push("You take -10 to all tests until the end of the encounter and cannot willingly approach the object of your fear.")
             } else if (row.name === "Lost Composure") {
-                add.push({name: "Lost Composure"})
                 said.push("You may take no actions until you snap out of it. Use Snap Out on the card when you pass a Willpower test, and you will still make all tests at -10 for the rest of the encounter.")
             } else if (row.name === "Running and Screaming") {
-                add.push({name: "Running and Screaming"})
                 said.push("You flee directly away from your fear as fast as you can, ditching anything that slows you down, at -20 to all tests. You must snap out of it to regain control, or the encounter must end.")
             } else if (row.name === "Momentary Blackout") {
                 add.push({name: "Unconscious", rounds: 1})
-                add.push({name: "Momentary Blackout"})
                 said.push("You drop to the ground unconscious for 1 round, then carry a -10 penalty to all actions for the rest of the encounter.")
             } else if (row.name === "Uncontrollable Vomiting") {
-                add.push({name: "Vomiting", rounds: 1})
                 loseSp(1, "from the nausea afterwards")
                 said.push("You bend over and vomit for 1 round, helpless while it lasts.")
             } else if (row.name === "Manic Terror") {
-                add.push({name: "Manic Terror"})
                 loseSp(num, "once the rampage ends")
                 said.push("You attack the closest friend or foe with whatever is in your hands. You may try to snap out of it at the start of your first Turn each round, or be knocked unconscious to stop it.")
             } else if (row.name === "Hopeless and Despairing") {
-                add.push({name: "Despairing", rounds: num > 0 ? num : 1})
                 said.push("You fall to the ground babbling for " + (num > 0 ? num : 1) + " rounds, shutting out all other sounds.")
                 said.push("When the rounds run out you lose 1d4 Stamina. Take that off by hand, since it is rolled after the fact.")
             } else if (row.name === "Blackout") {
-                add.push({name: "Catatonic"})
                 said.push("You go catatonic for " + (num > 0 ? num : 1) + " hours and cannot be roused by normal means. The card has no clock on it since the sheet counts rounds, not hours.")
             } else if (row.name === "Mind Break") {
-                add.push({name: "Mind Broken", rounds: num > 0 ? num : 1})
                 const key = choice === "Personality" ? "Prs" : "Wp"
                 const drop = Number(fearNum2) || 0
                 said.push("You drop to the ground stuttering for " + (num > 0 ? num : 1) + " rounds.")
@@ -1196,16 +1250,31 @@ function App() {
                 said.push("Afterwards you cannot attack or approach the source of the horror until you snap out of it or the encounter ends.")
             } else if (row.name === "Scared to Death") {
                 if (choice === "died") {
+                    add.length = 0
                     next.set("Current HP", "0")
                     said.push("Your heart stops. The character dies on the spot.")
                 } else {
-                    add.push({name: "Catatonic"})
+                    add.length = 0
+                    add.push({name: "Horror", result: "Blackout"})
                     said.push("Your heart holds. You instead fall catatonic for 1d4 hours as with Blackout.")
                 }
             }
 
+            // a few results run for a set number of rounds
+            const clocks: Record<string, number> = {
+                "Startled": 1,
+                "Uncontrollable Vomiting": 1,
+                "Hopeless and Despairing": num > 0 ? num : 1,
+                "Mind Break": num > 0 ? num : 1,
+            }
+            if (clocks[row.name] !== undefined) {
+                add.forEach(a => {
+                    if (a.name === fearKind) a.rounds = clocks[row.name]
+                })
+            }
+
             setCharInfo(next)
-            setConditions(prev => [...prev, ...add.filter(a => !prev.some(p => p.name === a.name))])
+            setConditions(prev => [...prev, ...add.filter(a => !prev.some(p => p.name === a.name && p.result === a.result))])
             setRecap(said)
             setPopout("fearDone")
         }
@@ -1213,6 +1282,7 @@ function App() {
         const nameOf = (c: Cond) => {
             const type = conditionTypes[c.name]
             if (type.label) return type.label(c)
+            if (type.kind === "fear") return c.name + " - " + c.result
             if (type.kind === "part") return c.name + " (" + c.part + ")"
             if (type.kind === "value") return c.name + " (" + c.value + ")"
             return c.name
@@ -1720,7 +1790,7 @@ function App() {
                                    onChange={e => setCharInfo(new Map(charInfo).set("Max HP", e.target.value))}/>
                         </div>
                         <div className="bar">
-                            <span style={{width: Math.min(100, 100 * Number(charInfo.get("Current HP")) / Number(charInfo.get("Max HP")) || 0) + "%"}}></span>
+                            <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current HP")) / Number(charInfo.get("Max HP")) || 0)) + "%"}}></span>
                         </div>
                     </div>
                     <div className="tile">
@@ -1735,7 +1805,7 @@ function App() {
                                    onChange={e => setCharInfo(new Map(charInfo).set("Max MP", e.target.value))}/>
                         </div>
                         <div className="bar">
-                            <span style={{width: Math.min(100, 100 * Number(charInfo.get("Current MP")) / Number(charInfo.get("Max MP")) || 0) + "%"}}></span>
+                            <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current MP")) / Number(charInfo.get("Max MP")) || 0)) + "%"}}></span>
                         </div>
                     </div>
                     <div className="tile">
@@ -1751,7 +1821,7 @@ function App() {
                                    onChange={e => setCharInfo(new Map(charInfo).set("Max SP", e.target.value))}/>
                         </div>
                         <div className="bar">
-                            <span style={{width: Math.min(100, 100 * Number(charInfo.get("Current SP")) / shownSpMax || 0) + "%"}}></span>
+                            <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current SP")) / shownSpMax || 0)) + "%"}}></span>
                         </div>
                     </div>
                     <div className="tile">
@@ -1766,7 +1836,7 @@ function App() {
                                    onChange={e => setCharInfo(new Map(charInfo).set("Max LP", e.target.value))}/>
                         </div>
                         <div className="bar">
-                            <span style={{width: Math.min(100, 100 * Number(charInfo.get("Current LP")) / Number(charInfo.get("Max LP")) || 0) + "%"}}></span>
+                            <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current LP")) / Number(charInfo.get("Max LP")) || 0)) + "%"}}></span>
                         </div>
                     </div>
                     <div className="tile">
@@ -1782,7 +1852,7 @@ function App() {
                                    onChange={e => setCharInfo(new Map(charInfo).set("Max AP", e.target.value))}/>
                         </div>
                         <div className="bar">
-                            <span style={{width: Math.min(100, 100 * Number(charInfo.get("Current AP")) / shownApMax || 0) + "%"}}></span>
+                            <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current AP")) / shownApMax || 0)) + "%"}}></span>
                         </div>
                     </div>
                     <div className="tile">
@@ -2369,10 +2439,10 @@ function App() {
                                                         <button type="button" onClick={() => setConditions(prev => prev.map((old, j) => j === i ? {...old, rounds: (old.rounds ?? 1) + 1} : old))}>+ round</button>
                                                     )}
                                                     {/* a willpower test at the end of your turn shakes some fears off */}
-                                                    {conditionTypes[c.name].canSnapOut && !c.snapped && (
+                                                    {(conditionTypes[c.name].canSnapOut || (c.result !== undefined && resultsFor(c.name)[c.result]?.canSnapOut)) && !c.snapped && (
                                                         <button type="button" onClick={() => {
                                                             // some fears leave something behind rather than lifting entirely
-                                                            if (c.name === "Lost Composure") setConditions(prev => prev.map((old, j) => j === i ? {...old, snapped: true} : old))
+                                                            if (c.result === "Lost Composure") setConditions(prev => prev.map((old, j) => j === i ? {...old, snapped: true} : old))
                                                             else setConditions(prev => prev.filter((_old, j) => j !== i))
                                                         }}>Snap Out</button>
                                                     )}
@@ -2780,12 +2850,16 @@ function App() {
                             <div className="popbody" style={{padding: 0}}>
                                 {Object.keys(conditionTypes).sort().map(name => {
                                     // a body part condition can be taken again and again as long as the part differs
-                                    const taken = conditionTypes[name].kind !== "part" && allConditions.some(c => c.name === name)
+                                    const taken = conditionTypes[name].kind !== "part" && conditionTypes[name].kind !== "fear" && allConditions.some(c => c.name === name)
                                     return (
                                         <button type="button" key={name} className={taken ? "pickRow taken" : "pickRow"} onClick={() => {
                                             if (taken) return
                                             if (conditionTypes[name].kind === "part") {
                                                 setPopout("part " + name)
+                                                return
+                                            }
+                                            if (conditionTypes[name].kind === "fear") {
+                                                setPopout("pick " + name)
                                                 return
                                             }
                                             addCondition(name)
@@ -2822,6 +2896,44 @@ function App() {
                     </div>
                 )}
 
+                {popout !== null && popout.startsWith("pick ") && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">{popout.slice(5)}</div>
+                            <div className="popbody" style={{padding: 0}}>
+                                {Object.keys(resultsFor(popout.slice(5))).map(result => {
+                                    const kind = popout.slice(5)
+                                    const held = conditions.some(c => c.name === kind && c.result === result)
+                                    return (
+                                        <button type="button" key={result} className={held ? "pickRow taken" : "pickRow"} onClick={() => {
+                                            if (held) return
+                                            setConditions(prev => [...prev, {name: kind, result: result}])
+                                            setPopout(null)
+                                        }}>
+                                            <b>{result}{held ? " \u2014 already applied" : ""}</b>
+                                            <span>{resultsFor(kind)[result].note}</span>
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "shrugged" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Shrugged Off</div>
+                            <div className="popbody">
+                                <p>You are Frenzied, so {shrugged} does not take hold. The rage carries you straight through it.</p>
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {popout === "fear1" && (
                     <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
                         <div className="popout">
@@ -2830,8 +2942,8 @@ function App() {
                                 <p className="fineprint">Panic covers mundane shock. Horror covers supernatural terrors.</p>
                             </div>
                             <div className="popfoot">
-                                <button type="button" className="go" onClick={() => setPopout("fearRoll")}>Fear</button>
-                                <button type="button" className="go" onClick={() => setPopout("horrorRoll")}>Horror</button>
+                                <button type="button" className="go" onClick={() => {setFearKind("Fear"); setPopout("fearRoll")}}>Fear</button>
+                                <button type="button" className="go" onClick={() => {setFearKind("Horror"); setPopout("horrorRoll")}}>Horror</button>
                             </div>
                         </div>
                     </div>
