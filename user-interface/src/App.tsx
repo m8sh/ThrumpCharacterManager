@@ -2,6 +2,8 @@ import './App.css'
 import {fileHandler} from './index.ts'
 import {PDFDocument} from 'pdf-lib'
 import {useState, useEffect, Fragment, type ChangeEvent} from "react";
+import {publishSheet, leaveRoom, fetchRoom, watchRoom, newRoomCode, sweepOldRooms, type RoomRow} from './supabase.ts'
+
 
 type CharInfo = Map<string, string | boolean | undefined>
 
@@ -88,6 +90,8 @@ const notTurnActions: {name: string, text: string, bullets?: {label: string, tex
 
 // the whole sheet is kept under one key in the browsers own storage
 const saveKey = "thrump-character"
+const roleKey = "thrump-role"
+const roomKey = "thrump-room"
 const pdfKey = "thrump-pdf"
 
 // this runs once when the page loads rather than on every render
@@ -683,6 +687,18 @@ function App() {
     const [fearNum2, setFearNum2] = useState("")
     const [shrugged, setShrugged] = useState("")
     const [fearKind, setFearKind] = useState("Fear")
+
+    // rooms. the sheet still lives in this browser, the room is only a copy being shown
+    const [role, setRole] = useState<string>(() => {
+        try { return localStorage.getItem(roleKey) ?? "" } catch { return "" }
+    })
+    const [room, setRoom] = useState<string>(() => {
+        try { return localStorage.getItem(roomKey) ?? "" } catch { return "" }
+    })
+    const [roomInput, setRoomInput] = useState("")
+    const [roster, setRoster] = useState<RoomRow[]>([])
+    // set while the dm is looking at somebody else's sheet, which turns off saving
+    const [viewing, setViewing] = useState<string>("")
     const [woundLines, setWoundLines] = useState<string[]>([])
     const [popout, setPopout] = useState<string | null>(null)
     const [restLines, setRestLines] = useState<string[] | null>(null)
@@ -690,20 +706,55 @@ function App() {
     // anything in this list being edited saves the sheet again
     useEffect(() => {
         if (!charInfo) return
+        // while the dm is looking at somebody else's sheet this state belongs to them,
+        // so saving it here would write their character over the dm's own
+        if (viewing !== "") return
+
+        const snapshot = JSON.stringify({
+            // a Map does not survive being turned into text so store it as pairs
+            charInfo: Array.from(charInfo),
+            languages, mode, panel, inventory, ttp, specializations,
+            rituals, spells, melee, ranged, openActions, conditions,
+            woundList: wounds, shield, armorNotes,
+        })
+
         try {
-            localStorage.setItem(saveKey, JSON.stringify({
-                // a Map does not survive being turned into text so store it as pairs
-                charInfo: Array.from(charInfo),
-                languages, mode, panel, inventory, ttp, specializations,
-                rituals, spells, melee, ranged, openActions, conditions,
-                woundList: wounds, shield, armorNotes,
-            }))
+            localStorage.setItem(saveKey, snapshot)
         } catch {
             // running out of space or private browsing should not break the sheet
         }
+
+        // the same snapshot goes to the room, so the dm sees exactly this sheet
+        if (room !== "") publishSheet(room, String(charInfo.get("Name") ?? "unnamed"), snapshot)
     }, [charInfo, languages, mode, panel, inventory, ttp, specializations,
         rituals, spells, melee, ranged, openActions, conditions, wounds,
-        shield, armorNotes])
+        shield, armorNotes, room, viewing])
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(roleKey, role)
+            localStorage.setItem(roomKey, room)
+        } catch {
+            // storage switched off, the choice simply will not survive a refresh
+        }
+    }, [role, room])
+
+    // the list of who is in the room, kept up to date as the players play
+    useEffect(() => {
+        if (room === "") return
+        let stopped = false
+        const refresh = () => {
+            fetchRoom(room).then(rows => {
+                if (!stopped) setRoster(rows)
+            })
+        }
+        refresh()
+        const stopWatching = watchRoom(room, refresh)
+        return () => {
+            stopped = true
+            stopWatching()
+        }
+    }, [room])
 
     // stamina can be spent that the character does not have. landing exactly on zero
     // is free, but every point spent past empty is a level of fatigue. this hands back
@@ -892,6 +943,10 @@ function App() {
 
     // the only way back to the upload screen, and the only thing that clears the save
     function startOver() {
+        if (room !== "") leaveRoom(room)
+        setRoom("")
+        setRoster([])
+        setViewing("")
         try {
             localStorage.removeItem(saveKey)
             localStorage.removeItem(pdfKey)
@@ -1038,6 +1093,113 @@ function App() {
         })
 
         setArmorNotes(String(parsed.get("Armor Notes") ?? parsed.get("Armor Notes 1") ?? "") + String(parsed.get("Armor Notes 2") ?? ""))
+    }
+
+    // pours a snapshot into the sheet. used for looking at another player's
+    // character, and for putting our own back when we are done looking
+    const loadSnapshot = (text: string) => {
+        const s = JSON.parse(text)
+        setCharInfo(new Map(s.charInfo))
+        setLanguages(s.languages ?? [])
+        setMode(s.mode ?? null)
+        setPanel(s.panel ?? null)
+        setInventory(s.inventory ?? [])
+        setTtp(s.ttp ?? [])
+        setSpecializations(s.specializations ?? [])
+        setRituals(s.rituals ?? [])
+        setSpells(s.spells ?? [])
+        setMelee(s.melee ?? [])
+        setRanged(s.ranged ?? [])
+        setOpenActions(s.openActions ?? [])
+        setConditions(s.conditions ?? [])
+        setWounds(s.woundList ?? [])
+        setShield(s.shield ?? {br: "", type: "", enc: ""})
+        setArmorNotes(s.armorNotes ?? "")
+    }
+
+    const stopViewing = () => {
+        setViewing("")
+        try {
+            const mine = localStorage.getItem(saveKey)
+            if (mine) loadSnapshot(mine)
+        } catch {
+            // nothing saved to come back to, the upload screen will handle it
+        }
+    }
+
+    // nobody has said which side of the table they are on yet
+    if (role === "") {
+        return (
+            <section id="center">
+                <h1>Thrump's Character Manager</h1>
+                <div className="ways">
+                    <button type="button" className="wayPlayer" onClick={() => setRole("player")}>PLAYER</button>
+                    <button type="button" className="wayGm" onClick={() => setRole("gm")}>GM</button>
+                </div>
+            </section>
+        )
+    }
+
+    // the gm, when they are not looking at somebody's character
+    if (role === "gm" && viewing === "") {
+        return (
+            <section id="center">
+                {room === "" && (
+                    <>
+                        <div>
+                            <h1>Thrump's Character Manager</h1>
+                            <p>Host a room and read the code out to your table, or join one that is already running.</p>
+                        </div>
+
+                        <button type="button" className="hostRoom" onClick={() => {
+                            sweepOldRooms()
+                            setRoom(newRoomCode())
+                        }}>Host a New Room</button>
+
+                        <div className="joinRow">
+                            <input type="text" className="roomInput" value={roomInput} placeholder="Room code"
+                                   onChange={e => setRoomInput(e.target.value)}/>
+                            <button type="button" onClick={() => {
+                                if (roomInput.trim() === "") return
+                                sweepOldRooms()
+                                setRoom(roomInput.trim())
+                                setRoomInput("")
+                            }}>Join Room</button>
+                        </div>
+
+                        <button type="button" className="backLink" onClick={() => setRole("")}>back</button>
+                    </>
+                )}
+
+                {room !== "" && (
+                    <>
+                        <div className="codeBox">
+                            <div className="cap">Room code</div>
+                            <div className="code">{room}</div>
+                        </div>
+
+                        <div className="roster">
+                            <div className="rhead">Characters</div>
+                            {roster.length === 0 && (
+                                <div className="empty">Nobody has joined yet. Read the code out and they will appear here.</div>
+                            )}
+                            {roster.map(entry => (
+                                <button type="button" key={entry.player_id} className="who" onClick={() => {
+                                    // looking at somebody else's sheet, so saving is off from here
+                                    setViewing(entry.name)
+                                    loadSnapshot(entry.sheet)
+                                }}><b>{entry.name}</b></button>
+                            ))}
+                        </div>
+
+                        <button type="button" className="hostRoom" onClick={() => {
+                            setRoom("")
+                            setRoster([])
+                        }}>Leave Room</button>
+                    </>
+                )}
+            </section>
+        )
     }
 
     if (charInfo) {
@@ -1654,7 +1816,7 @@ function App() {
         )
 
         return (
-            <section id='center'>
+            <section id='center' className={viewing !== "" ? "viewOnly" : ""}>
                 <div className="nameRow">
                     <div className="upload">
                         <button type="button" className="newChar" onClick={() => setPopout("newChar")}>Upload New Character</button>
@@ -1666,6 +1828,14 @@ function App() {
                         <button type="button" className="longRest" onClick={() => {setRestLines(null); setPopout("longRest")}}>Long Rest</button>
                     </div>
                 </div>
+
+                {viewing !== "" && (
+                    <div className="viewBar">
+                        <b>Viewing {viewing}</b>
+                        <span>read only</span>
+                        <button type="button" onClick={stopViewing}>Back</button>
+                    </div>
+                )}
 
                 <div className="top">
                     <div className="tile">
@@ -2797,6 +2967,32 @@ function App() {
                 )}
 
                 <div className="foot">
+                    {viewing === "" && (
+                        <div className="roomLine">
+                            {room === "" && (
+                                <>
+                                    <input type="text" className="roomInput" value={roomInput} placeholder="Room code"
+                                           onChange={e => setRoomInput(e.target.value)}/>
+                                    <button type="button" className="leave" onClick={() => {
+                                        if (roomInput.trim() === "") return
+                                        sweepOldRooms()
+                                        setRoom(roomInput.trim())
+                                        setRoomInput("")
+                                    }}>Join Room</button>
+                                </>
+                            )}
+                            {room !== "" && (
+                                <>
+                                    <span>Room <b>{room}</b></span>
+                                    <button type="button" className="leave" onClick={() => {
+                                        leaveRoom(room)
+                                        setRoom("")
+                                        setRoster([])
+                                    }}>Leave Room</button>
+                                </>
+                            )}
+                        </div>
+                    )}
                     <a href="https://github.com/m8sh/ThrumpCharacterManager" target="_blank">github</a>
                     <span>&#183;</span>
                     <span>thrump's character manager</span>
@@ -2929,6 +3125,31 @@ function App() {
                                         </button>
                                     )
                                 })}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "roster" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Room {room}</div>
+                            <div className="popbody" style={{padding: 0}}>
+                                {roster.length === 0 && <p style={{padding: ".6em .7em"}}>Nobody has published a character to this room yet.</p>}
+                                {roster.map(entry => (
+                                    <button type="button" key={entry.player_id} className="pickRow" onClick={() => {
+                                        // looking at somebody else's sheet, so stop saving before loading it
+                                        setViewing(entry.name)
+                                        loadSnapshot(entry.sheet)
+                                        setPopout(null)
+                                    }}>
+                                        <b>{entry.name}</b>
+                                        <span>last updated {new Date(entry.updated_at).toLocaleString()}</span>
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
                             </div>
                         </div>
                     </div>
@@ -3300,6 +3521,19 @@ function App() {
                 </div>
 
                 <input type="file" id="charPDF" name="charPDF" accept=".pdf" onChange={handleFile}/>
+
+                <div className="joinRow">
+                    <input type="text" className="roomInput" value={roomInput} placeholder="Room code"
+                           onChange={e => setRoomInput(e.target.value)}/>
+                    <button type="button" onClick={() => {
+                        if (roomInput.trim() === "") return
+                        sweepOldRooms()
+                        setRoom(roomInput.trim())
+                        setRoomInput("")
+                    }}>Join Room</button>
+                </div>
+
+                <button type="button" className="backLink" onClick={() => setRole("")}>back</button>
             </section>
         </>
     )

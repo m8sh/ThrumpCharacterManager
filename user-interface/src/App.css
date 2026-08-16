@@ -1154,6 +1154,175 @@ body:has(#center > .nameRow){display:block}
 .popout .result{border-top:1px solid var(--line);padding:.6em .7em;font-weight:400}
 .popout .result b{color:var(--accent)}
 
+/* rooms */
+
+/* the two ways in, on the very first screen */
+#center .ways{display:flex;gap:1.1em;width:100%;max-width:30em}
+#center .ways button{
+  flex:1;
+  font:inherit;
+  font-size:1.05em;
+  font-weight:700;
+  letter-spacing:.06em;
+  padding:1.1em;
+  color:#e7e7e6;
+  background:#1e2127;
+  border:2px solid #31363e;
+  border-radius:0;
+  cursor:pointer;
+}
+#center .ways .wayPlayer:hover{border-color:#5cc98a;color:#5cc98a}
+#center .ways .wayGm:hover{border-color:#5c86c9;color:#5c86c9}
+
+#center .joinRow{display:flex;gap:.5em;align-items:center}
+#center .roomInput{
+  font:inherit;
+  width:9em;
+  padding:.25em .5em;
+  text-align:center;
+  color:#e7e7e6;
+  background:#181b20;
+  border:1px solid #31363e;
+  border-radius:0;
+}
+#center .roomInput:focus{outline:0;border-color:#c96a5c}
+#center .joinRow button,
+#center .hostRoom{
+  font:inherit;
+  padding:.25em .8em;
+  color:#e7e7e6;
+  background:#181b20;
+  border:1px solid #31363e;
+  border-radius:0;
+  cursor:pointer;
+}
+#center .hostRoom{padding:.5em 1.2em}
+#center .joinRow button:hover,
+#center .hostRoom:hover{border-color:#c96a5c;color:#c96a5c}
+#center .backLink{
+  font:inherit;
+  color:#e7e7e6;
+  background:none;
+  border:0;
+  opacity:.5;
+  cursor:pointer;
+}
+#center .backLink:hover{opacity:1;color:#c96a5c}
+
+/* the code the gm reads out to the table */
+#center .codeBox{
+  padding:1.1em 1.6em;
+  background:#1e2127;
+  border:2px solid #5c86c9;
+  text-align:center;
+}
+#center .codeBox .cap{
+  font-size:.85em;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  opacity:.55;
+}
+#center .codeBox .code{
+  margin-top:.15em;
+  font-size:2.6em;
+  font-weight:700;
+  letter-spacing:.18em;
+  font-variant-numeric:tabular-nums;
+}
+
+/* who has turned up so far */
+#center .roster{
+  width:100%;
+  max-width:34em;
+  background:#1e2127;
+  border:1px solid #31363e;
+  text-align:left;
+}
+#center .roster .rhead{
+  padding:.3em .6em;
+  background:#181b20;
+  border-bottom:1px solid #31363e;
+  font-weight:700;
+}
+#center .roster .empty{padding:.6em;opacity:.5}
+#center .roster .who{
+  display:block;
+  width:100%;
+  padding:.45em .6em;
+  font:inherit;
+  text-align:left;
+  color:#e7e7e6;
+  background:none;
+  border:0;
+  border-bottom:1px solid #31363e;
+  cursor:pointer;
+}
+#center .roster .who:last-child{border-bottom:0}
+#center .roster .who:hover{background:#181b20}
+#center .roster .who b{font-weight:700}
+
+/* the strip that says whose sheet the gm is looking at */
+#center .viewBar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.7em;
+  margin-bottom:1.1em;
+  padding:.35em .6em;
+  background:var(--tile);
+  border:1px solid var(--accent);
+  font-weight:400;
+}
+#center .viewBar b{font-weight:700}
+#center .viewBar span{opacity:.7}
+#center .viewBar button{
+  font:inherit;
+  margin-left:auto;
+  padding:.2em .7em;
+  color:var(--text);
+  background:var(--band);
+  border:1px solid var(--accent);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .viewBar button:hover{color:var(--accent)}
+
+/* the room sits in the footer beside the github line */
+#center .foot .roomLine{
+  display:flex;
+  align-items:center;
+  gap:.6em;
+  margin-right:auto;
+}
+#center .foot .roomLine b{font-weight:700;opacity:1}
+#center .foot .roomInput{width:7em;padding:.1em .4em}
+#center .foot .leave{
+  font:inherit;
+  padding:.1em .6em;
+  color:var(--text);
+  background:none;
+  border:1px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .foot .leave:hover{border-color:var(--accent);color:var(--accent)}
+
+/* somebody else's character is on screen, so nothing here can be touched */
+#center.viewOnly input,
+#center.viewOnly select,
+#center.viewOnly textarea{pointer-events:none;opacity:.9}
+#center.viewOnly .rests,
+#center.viewOnly .upload,
+#center.viewOnly .roundOver,
+#center.viewOnly .addCond,
+#center.viewOnly .addSpell,
+#center.viewOnly .takeAction,
+#center.viewOnly .condTools,
+#center.viewOnly .spTools,
+#center.viewOnly .wdel,
+#center.viewOnly .foot{display:none}
+
 /* narrow screens */
 
 @media (max-width:1100px){
