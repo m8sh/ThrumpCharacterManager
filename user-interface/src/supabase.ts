@@ -109,7 +109,9 @@ export async function fetchRoom(room: string) {
     return (data ?? []) as RoomRow[]
 }
 
-// call whenever anything in the room changes, and call the returned function to stop
+// call whenever anything in the room changes, and call the returned function to stop.
+// the live channel is the quick path, and a slow repeat check underneath it means the
+// list still keeps up if the websocket cannot get through
 export function watchRoom(room: string, onChange: () => void) {
     const channel = supabase
         .channel("room-" + room)
@@ -119,9 +121,15 @@ export function watchRoom(room: string, onChange: () => void) {
             table: "characters",
             filter: "room=eq." + room,
         }, onChange)
-        .subscribe()
+        .subscribe(status => {
+            console.log("room channel is", status)
+        })
+
+    // every few seconds regardless, so a blocked websocket only costs a little delay
+    const timer = setInterval(onChange, 5000)
 
     return () => {
+        clearInterval(timer)
         supabase.removeChannel(channel)
     }
 }

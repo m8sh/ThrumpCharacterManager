@@ -745,7 +745,13 @@ function App() {
         let stopped = false
         const refresh = () => {
             fetchRoom(room).then(rows => {
-                if (!stopped) setRoster(rows)
+                if (stopped) return
+                setRoster(rows)
+                // if a sheet is open, keep it moving with whatever the player is doing
+                if (viewing !== "") {
+                    const open = rows.find(r => r.name === viewing)
+                    if (open) loadSnapshot(open.sheet, true)
+                }
             })
         }
         refresh()
@@ -754,7 +760,7 @@ function App() {
             stopped = true
             stopWatching()
         }
-    }, [room])
+    }, [room, viewing])
 
     // stamina can be spent that the character does not have. landing exactly on zero
     // is free, but every point spent past empty is a level of fatigue. this hands back
@@ -1097,12 +1103,12 @@ function App() {
 
     // pours a snapshot into the sheet. used for looking at another player's
     // character, and for putting our own back when we are done looking
-    const loadSnapshot = (text: string) => {
+    const loadSnapshot = (text: string, keepView?: boolean) => {
         const s = JSON.parse(text)
         setCharInfo(new Map(s.charInfo))
         setLanguages(s.languages ?? [])
-        setMode(s.mode ?? null)
-        setPanel(s.panel ?? null)
+        if (!keepView) setMode(s.mode ?? null)
+        if (!keepView) setPanel(s.panel ?? null)
         setInventory(s.inventory ?? [])
         setTtp(s.ttp ?? [])
         setSpecializations(s.specializations ?? [])
