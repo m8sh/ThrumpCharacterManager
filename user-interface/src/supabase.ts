@@ -4,7 +4,19 @@ import {createClient} from '@supabase/supabase-js'
 const url = import.meta.env.VITE_SUPABASE_URL
 const key = import.meta.env.VITE_SUPABASE_KEY
 
-export const supabase = createClient(url, key)
+// true when the settings are actually there. without this check the client throws
+// while the page is still loading, which leaves nothing on screen at all
+export const roomsReady = typeof url === "string" && url !== "" && typeof key === "string" && key !== ""
+
+if (!roomsReady) {
+    console.log("rooms are switched off because VITE_SUPABASE_URL or VITE_SUPABASE_KEY is missing")
+}
+
+// a harmless stand in when the settings are missing, so the sheet still loads and
+// only the room buttons stop working
+export const supabase = roomsReady
+    ? createClient(url, key)
+    : createClient("https://example.supabase.co", "placeholder")
 
 // what one row in the characters table looks like
 export type RoomRow = {
@@ -16,20 +28,23 @@ export type RoomRow = {
 }
 
 // every browser gets its own id once and keeps it, so a player rejoining a room
-// lands back on their own row rather than making a second one
-export function playerId() {
-    let id = ""
+// lands back on their own row rather than making a second one. this is worked out
+// once when the page loads rather than on every call, so a browser that refuses to
+// store it still stays steady for as long as the tab is open
+const myId = (() => {
     try {
-        id = localStorage.getItem("thrump-player") ?? ""
-        if (id === "") {
-            id = Math.random().toString(36).slice(2, 10)
-            localStorage.setItem("thrump-player", id)
-        }
+        const held = localStorage.getItem("thrump-player")
+        if (held !== null && held !== "") return held
+        const made = Math.random().toString(36).slice(2, 10)
+        localStorage.setItem("thrump-player", made)
+        return made
     } catch {
-        // storage switched off, so a fresh id each visit is the best we can do
-        id = Math.random().toString(36).slice(2, 10)
+        return Math.random().toString(36).slice(2, 10)
     }
-    return id
+})()
+
+export function playerId() {
+    return myId
 }
 
 // a six digit code is easy to read out loud across a table
@@ -39,6 +54,14 @@ export function newRoomCode() {
 
 // hand the current sheet to the room, replacing whatever this player put there before
 export async function publishSheet(room: string, name: string, sheet: string) {
+    // the same character sitting under a stale id would show up as a second card
+    await supabase
+        .from("characters")
+        .delete()
+        .eq("room", room)
+        .eq("name", name)
+        .neq("player_id", playerId())
+
     const {error} = await supabase
         .from("characters")
         .upsert({

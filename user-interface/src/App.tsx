@@ -2,7 +2,7 @@ import './App.css'
 import {fileHandler} from './index.ts'
 import {PDFDocument} from 'pdf-lib'
 import {useState, useEffect, Fragment, type ChangeEvent} from "react";
-import {publishSheet, leaveRoom, fetchRoom, watchRoom, newRoomCode, sweepOldRooms, type RoomRow} from './supabase.ts'
+import {publishSheet, leaveRoom, fetchRoom, watchRoom, newRoomCode, sweepOldRooms, roomsReady, type RoomRow} from './supabase.ts'
 
 
 type CharInfo = Map<string, string | boolean | undefined>
@@ -725,7 +725,7 @@ function App() {
         }
 
         // the same snapshot goes to the room, so the dm sees exactly this sheet
-        if (room !== "") publishSheet(room, String(charInfo.get("Name") ?? "unnamed"), snapshot)
+        if (roomsReady && room !== "") publishSheet(room, String(charInfo.get("Name") ?? "unnamed"), snapshot)
     }, [charInfo, languages, mode, panel, inventory, ttp, specializations,
         rituals, spells, melee, ranged, openActions, conditions, wounds,
         shield, armorNotes, room, viewing])
@@ -741,7 +741,7 @@ function App() {
 
     // the list of who is in the room, kept up to date as the players play
     useEffect(() => {
-        if (room === "") return
+        if (!roomsReady || room === "") return
         let stopped = false
         const refresh = () => {
             fetchRoom(room).then(rows => {
@@ -1136,6 +1136,7 @@ function App() {
                     <button type="button" className="wayPlayer" onClick={() => setRole("player")}>PLAYER</button>
                     <button type="button" className="wayGm" onClick={() => setRole("gm")}>GM</button>
                 </div>
+                {!roomsReady && <p className="offline">Rooms are switched off, the connection settings are missing. Everything else works.</p>}
             </section>
         )
     }
@@ -1148,24 +1149,13 @@ function App() {
                     <>
                         <div>
                             <h1>Thrump's Character Manager</h1>
-                            <p>Host a room and read the code out to your table, or join one that is already running.</p>
+                            <p>Host a room and read the code out to your table.</p>
                         </div>
 
                         <button type="button" className="hostRoom" onClick={() => {
                             sweepOldRooms()
                             setRoom(newRoomCode())
                         }}>Host a New Room</button>
-
-                        <div className="joinRow">
-                            <input type="text" className="roomInput" value={roomInput} placeholder="Room code"
-                                   onChange={e => setRoomInput(e.target.value)}/>
-                            <button type="button" onClick={() => {
-                                if (roomInput.trim() === "") return
-                                sweepOldRooms()
-                                setRoom(roomInput.trim())
-                                setRoomInput("")
-                            }}>Join Room</button>
-                        </div>
 
                         <button type="button" className="backLink" onClick={() => setRole("")}>back</button>
                     </>
@@ -2967,7 +2957,7 @@ function App() {
                 )}
 
                 <div className="foot">
-                    {viewing === "" && (
+                    {roomsReady && viewing === "" && (
                         <div className="roomLine">
                             {room === "" && (
                                 <>
@@ -3521,17 +3511,6 @@ function App() {
                 </div>
 
                 <input type="file" id="charPDF" name="charPDF" accept=".pdf" onChange={handleFile}/>
-
-                <div className="joinRow">
-                    <input type="text" className="roomInput" value={roomInput} placeholder="Room code"
-                           onChange={e => setRoomInput(e.target.value)}/>
-                    <button type="button" onClick={() => {
-                        if (roomInput.trim() === "") return
-                        sweepOldRooms()
-                        setRoom(roomInput.trim())
-                        setRoomInput("")
-                    }}>Join Room</button>
-                </div>
 
                 <button type="button" className="backLink" onClick={() => setRole("")}>back</button>
             </section>
