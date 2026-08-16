@@ -146,7 +146,7 @@ const partInfo: Record<string, {note: string, wtMod?: number, spMaxMod?: number,
     "Right Arm": {note: "-20 to tests relying on two hands"},
     "Left Leg": {note: "-20 to tests relying on two legs"},
     "Right Leg": {note: "-20 to tests relying on two legs"},
-    "Body": {note: "organ damage, half healing, -1 SP max and WT", wtMod: -1, spMaxMod: -1, halfHealing: true},
+    "Body": {note: "Organ damage, half healing, -1 SP max and WT", wtMod: -1, spMaxMod: -1, halfHealing: true},
 }
 
 // losing a matched pair pulls a second condition along with it
@@ -232,7 +232,7 @@ const conditionTypes: Record<string, {
     },
     "Dazed": {
         kind: "flag",
-        note: "one less Action Point each round",
+        note: "One less Action Point each round",
         apMaxMod: () => -1,
         recap: () => "You are Dazed and gain one less Action Point each round.",
     },
@@ -250,7 +250,7 @@ const conditionTypes: Record<string, {
     },
     "Fear": {
         kind: "fear",
-        note: "a failed panic test",
+        note: "A failed panic test",
         label: (c) => "Fear - " + c.result,
         testMod: (c) => panicResults[c.result ?? ""]?.testMod?.(c) ?? 0,
         zeroSpeed: (c) => panicResults[c.result ?? ""]?.zeroSpeed?.(c) === true,
@@ -263,7 +263,7 @@ const conditionTypes: Record<string, {
     },
     "Horror": {
         kind: "fear",
-        note: "a failed horror test",
+        note: "A failed horror test",
         label: (c) => "Horror - " + c.result,
         testMod: (c) => horrorResults[c.result ?? ""]?.testMod?.(c) ?? 0,
         zeroSpeed: (c) => horrorResults[c.result ?? ""]?.zeroSpeed?.(c) === true,
@@ -297,12 +297,12 @@ const conditionTypes: Record<string, {
     },
     "Hidden": {
         kind: "flag",
-        note: "movement costs double, cannot Dash",
+        note: "Movement costs double, cannot Dash",
         recap: () => "You are Hidden, so check the movement and line of sight rules.",
     },
     "Immobilized": {
         kind: "flag",
-        note: "cannot move at all",
+        note: "Cannot move at all",
         zeroSpeed: () => true,
         recap: () => "You are Immobilized and cannot move, though you can still attack and defend.",
     },
@@ -314,7 +314,7 @@ const conditionTypes: Record<string, {
     },
     "Paralyzed": {
         kind: "flag",
-        note: "frozen, speech and motion free spells only",
+        note: "Frozen, speech and motion free spells only",
         zeroSpeed: () => true,
         recap: () => "You are Paralyzed, frozen and unable to move any part of your body. You may only cast spells that need neither speech nor motion.",
     },
@@ -326,7 +326,7 @@ const conditionTypes: Record<string, {
     },
     "Restrained": {
         kind: "flag",
-        note: "cannot move, attack or defend",
+        note: "Cannot move, attack or defend",
         zeroSpeed: () => true,
         recap: () => "You are Restrained. You cannot move, attack, or defend yourself, and may only cast spells that do not require motion.",
     },
@@ -338,20 +338,20 @@ const conditionTypes: Record<string, {
     },
     "Stunned": {
         kind: "flag",
-        note: "no Action Points, and none come back",
+        note: "No Action Points, and none come back",
         onApply: "zeroAp",
         blocksApRefresh: true,
         recap: () => "You are Stunned and do not regain Action Points at the start of the round.",
     },
     "Unconscious": {
         kind: "flag",
-        note: "knocked out, cannot act",
+        note: "Knocked out, cannot act",
         zeroSpeed: () => true,
         recap: () => "You are Unconscious and may not take actions. You fall prone if the circumstances allow, and gaining a level of fatigue now would kill you.",
     },
     "Invisible": {
         kind: "flag",
-        note: "cannot be seen, attackers take -30",
+        note: "Cannot be seen, attackers take -30",
         recap: () => "You are Invisible, so check what enemies can and cannot do about it.",
     },
     "Lost": {
@@ -384,7 +384,7 @@ type FearResult = {
 // what a failed panic test leaves behind
 const panicResults: Record<string, FearResult> = {
     "Startled": {
-        note: "no reactions until your next Turn",
+        note: "No reactions until your next Turn",
         recap: () => "You are Startled and may not make any reactions at all until the beginning of your next Turn.",
     },
     "Spooked": {
@@ -399,12 +399,12 @@ const panicResults: Record<string, FearResult> = {
         recap: () => "You are Frightened. You take -10 to all tests and cannot willingly approach the object of your fear, and this lasts until the end of the encounter.",
     },
     "Lost Composure": {
-        note: "frozen, no actions until you snap out",
+        note: "Frozen, no actions until you snap out",
         // frozen at first, and once you snap out of it the nerves stay for the encounter
         testMod: (c) => c.snapped ? -10 : 0,
         zeroSpeed: (c) => !c.snapped,
         canSnapOut: true,
-        shortOf: (c) => c.snapped ? "-10 to all tests for the rest of the encounter" : "frozen, no actions until you snap out",
+        shortOf: (c) => c.snapped ? "-10 to all tests for the rest of the encounter" : "Frozen, no actions until you snap out",
         recap: (c) => c.snapped
             ? "You have snapped out of losing your composure, but you still make all tests at -10 for the rest of the encounter."
             : "You have Lost Composure and may take no actions until you snap out of it.",
@@ -429,27 +429,27 @@ const horrorResults: Record<string, FearResult> = {
         recap: () => "After your Momentary Blackout you take -10 to all actions for the rest of the encounter.",
     },
     "Uncontrollable Vomiting": {
-        note: "helpless while it lasts",
+        note: "Helpless while it lasts",
         zeroSpeed: () => true,
         recap: () => "You are vomiting uncontrollably and count as helpless, so anyone attacking you is free to do as they like.",
     },
     "Manic Terror": {
-        note: "attacking the nearest living thing",
+        note: "Attacking the nearest living thing",
         canSnapOut: true,
         recap: () => "You are in a Manic Terror and must keep attacking the closest friend or foe with whatever is in your hands. You may try to snap out of it at the start of your first Turn each round, or someone must knock you unconscious to stop the rampage.",
     },
     "Hopeless and Despairing": {
-        note: "on the ground babbling, shut out from everything",
+        note: "On the ground babbling, shut out from everything",
         zeroSpeed: () => true,
         recap: () => "You are Hopeless and Despairing, on the ground babbling and shutting out all other sounds. You lose 1d4 Stamina when you come out of it.",
     },
     "Blackout": {
-        note: "catatonic for 1d4 hours, cannot be roused",
+        note: "Catatonic for 1d4 hours, cannot be roused",
         zeroSpeed: () => true,
         recap: () => "You are Catatonic for 1d4 hours and cannot be roused by normal means. The sheet counts rounds rather than hours, so take this one off by hand when the time is up.",
     },
     "Mind Break": {
-        note: "cannot attack or approach the source of horror",
+        note: "Cannot attack or approach the source of horror",
         canSnapOut: true,
         recap: () => "Your mind is broken. You cannot attack or approach the source of the horror until you snap out of it or the encounter ends.",
     },
@@ -2555,7 +2555,7 @@ function App() {
                                                 <b>{w.part}</b>
                                                 <span className="condLvl">{w.treated ? "treated" : "untreated"}</span>
                                                 <span className="condNote">{w.treated
-                                                    ? (w.damage > 0 ? "healed " + w.healed + " of the " + w.damage + " needed to cure" : "cure it by hand once the damage is healed")
+                                                    ? (w.damage > 0 ? "Healed " + w.healed + " of the " + w.damage + " needed to cure" : "Cure it by hand once the damage is healed")
                                                     : "-20 to all tests, -2 initiative, " + w.rounds + " rounds to blood loss"}</span>
                                                 <div className="condTools">
                                                     {/* first aid stops the bleeding, curing takes healing on top of that */}
