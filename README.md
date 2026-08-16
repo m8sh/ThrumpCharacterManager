@@ -7,10 +7,8 @@ For example: Wound rules are very annoying to implement, so I never bothered to 
 
 
 TODO:
-- Bug fixes and testing that everything works as intended
+- Add rooms and a way for the GM to monitor character sheets more easily
 - Add traits
 - Keep track of helplessness
 - Add talents (while allowing custom)
 
-Stretch Goals:
-- To put a login/out
