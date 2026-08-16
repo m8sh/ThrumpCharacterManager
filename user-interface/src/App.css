@@ -1208,6 +1208,7 @@ body:has(#center > .nameRow){display:block}
   cursor:pointer;
 }
 #center .backLink:hover{opacity:1;color:#c96a5c}
+#center .offline{max-width:30em;font-size:.9em;opacity:.5}
 
 /* the code the gm reads out to the table */
 #center .codeBox{
@@ -1262,31 +1263,18 @@ body:has(#center > .nameRow){display:block}
 #center .roster .who:hover{background:#181b20}
 #center .roster .who b{font-weight:700}
 
-/* the strip that says whose sheet the gm is looking at */
-#center .viewBar{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:.7em;
-  margin-bottom:1.1em;
-  padding:.35em .6em;
-  background:var(--tile);
-  border:1px solid var(--accent);
-  font-weight:400;
-}
-#center .viewBar b{font-weight:700}
-#center .viewBar span{opacity:.7}
-#center .viewBar button{
+/* the gm's way back to the list, sitting where the rest buttons are on a real sheet */
+#center .backToList{
   font:inherit;
-  margin-left:auto;
-  padding:.2em .7em;
+  font-weight:600;
+  padding:.3em .8em;
   color:var(--text);
-  background:var(--band);
-  border:1px solid var(--accent);
+  background:var(--tile);
+  border:2px solid var(--accent);
   border-radius:0;
   cursor:pointer;
 }
-#center .viewBar button:hover{color:var(--accent)}
+#center .backToList:hover{color:var(--accent)}
 
 /* the room sits in the footer beside the github line */
 #center .foot .roomLine{
@@ -1312,7 +1300,7 @@ body:has(#center > .nameRow){display:block}
 #center.viewOnly input,
 #center.viewOnly select,
 #center.viewOnly textarea{pointer-events:none;opacity:.9}
-#center.viewOnly .rests,
+#center.viewOnly .rests:not(.backOnly),
 #center.viewOnly .upload,
 #center.viewOnly .roundOver,
 #center.viewOnly .addCond,

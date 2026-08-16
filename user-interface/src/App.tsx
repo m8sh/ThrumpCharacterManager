@@ -1107,6 +1107,8 @@ function App() {
         const s = JSON.parse(text)
         setCharInfo(new Map(s.charInfo))
         setLanguages(s.languages ?? [])
+        // mode, panel and the open fold outs belong to whoever is looking, so a refresh
+        // leaves them alone and the gm can read the rules without the player opening them
         if (!keepView) setMode(s.mode ?? null)
         if (!keepView) setPanel(s.panel ?? null)
         setInventory(s.inventory ?? [])
@@ -1116,7 +1118,7 @@ function App() {
         setSpells(s.spells ?? [])
         setMelee(s.melee ?? [])
         setRanged(s.ranged ?? [])
-        setOpenActions(s.openActions ?? [])
+        if (!keepView) setOpenActions(s.openActions ?? [])
         setConditions(s.conditions ?? [])
         setWounds(s.woundList ?? [])
         setShield(s.shield ?? {br: "", type: "", enc: ""})
@@ -1819,19 +1821,16 @@ function App() {
                         <button type="button" className="savePdf" onClick={downloadPdf}>Download PDF</button>
                     </div>
                     <h1>{charInfo.get("Name")}</h1>
+                    {viewing !== "" && (
+                        <div className="rests backOnly">
+                            <button type="button" className="backToList" onClick={stopViewing}>Back to Characters</button>
+                        </div>
+                    )}
                     <div className="rests">
                         <button type="button" className="shortRest" onClick={() => {setRestLines(null); setPopout("shortRest")}}>Short Rest</button>
                         <button type="button" className="longRest" onClick={() => {setRestLines(null); setPopout("longRest")}}>Long Rest</button>
                     </div>
                 </div>
-
-                {viewing !== "" && (
-                    <div className="viewBar">
-                        <b>Viewing {viewing}</b>
-                        <span>read only</span>
-                        <button type="button" onClick={stopViewing}>Back</button>
-                    </div>
-                )}
 
                 <div className="top">
                     <div className="tile">
