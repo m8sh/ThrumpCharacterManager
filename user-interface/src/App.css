@@ -1129,7 +1129,7 @@ body:has(#center > .nameRow){display:block}
 }
 .popout .pickRow:hover{background:var(--band)}
 .popout .pickRow b{display:block;font-weight:700}
-.popout .pickRow span{opacity:.7}
+.popout .pickRow span{display:block;opacity:.7;font-size:.9em;margin-top:.15em}
 .popout .pickRow.taken{opacity:.35;cursor:default}
 .popout .pickRow.taken:hover{background:none}
 

@@ -641,6 +641,16 @@ const panicTable: {range: string, low: number, high: number, name: string, text:
     {range: "96-100", low: 96, high: 100, name: "Running and Screaming", text: "The character breaks down with fear and flees. They must immediately flee directly away from the source of their fear as fast as they can, which includes ditching equipment slowing them down. They must do everything in their power to accomplish this and is at a -20 penalty to all tests. Once away from the danger, they must successfully snap out of it to regain control, or the encounter must end."},
 ]
 
+// the opening of the traits chapter, which sits above the list rather than inside it
+const traitIntro: RuleBlock[] = [
+    {text: "Traits are rules that reflect various natural facts about the character or certain abilities they possess. They include things such as the ability to fly, inherent physical weaknesses, personality traits, and so forth. They are typically the result of birth, upbringing, or racial circumstance but may be gained through other means later in life, though rarely by choice or without the use of magic."},
+    {text: "Traits do not stack unless otherwise specified. If traits with an X value are applied to a target with an already existing instance of that trait, apply the highest value of X unless otherwise specified."},
+]
+
+// the traits themselves, added one at a time as their rules are worked out
+const traitList: {name: string, text: string}[] = [
+]
+
 // a characteristic bonus is the tens digit of the score
 function bonusFrom(info: CharInfo, key: string) {
     return Math.floor((Number(info.get(key)) || 0) / 10)
@@ -1810,6 +1820,8 @@ function App() {
                         </div>
                     ))}
                 </div>
+
+                <button type="button" className="addCond" onClick={() => setPopout("addTtp")}>+ Add</button>
             </>
         )
 
@@ -2906,6 +2918,34 @@ function App() {
                                     </div>
 
                                     <div className="act">
+                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Traits") ? openActions.filter(n => n !== "group Traits") : [...openActions, "group Traits"])}>
+                                            <span>Traits</span>
+                                        </div>
+                                        {openActions.includes("group Traits") && (
+                                            <>
+                                                {/* the chapter opening belongs to the whole section, not to any one trait */}
+                                                <div className="actBody">
+                                                    {traitIntro.map((block, i) => (
+                                                        <p key={i}>{block.text}</p>
+                                                    ))}
+                                                </div>
+                                                <div className="actGroup">
+                                                    {traitList.map(trait => (
+                                                        <div className="act" key={trait.name}>
+                                                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("trait " + trait.name) ? openActions.filter(n => n !== "trait " + trait.name) : [...openActions, "trait " + trait.name])}>
+                                                                <span>{trait.name}</span>
+                                                            </div>
+                                                            {openActions.includes("trait " + trait.name) && (
+                                                                <div className="actBody"><p>{trait.text}</p></div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    <div className="act">
                                         <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Conditions") ? openActions.filter(n => n !== "group Conditions") : [...openActions, "group Conditions"])}>
                                             <span>Conditions</span>
                                             <span className="ap">{conditionRules.length}</span>
@@ -3145,6 +3185,48 @@ function App() {
                             </div>
                             <div className="popfoot">
                                 <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "addTtp" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Add</div>
+                            <div className="popfoot">
+                                <button type="button" className="go" onClick={() => setPopout("pickTrait")}>Add A Trait</button>
+                                <button type="button" className="go" onClick={() => {
+                                    // just a blank line to write whatever the table has agreed on
+                                    setTtp([...ttp, {name: "", note: ""}])
+                                    setPopout(null)
+                                }}>Add Other</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {popout === "pickTrait" && (
+                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                        <div className="popout">
+                            <div className="pophead">Add A Trait</div>
+                            <div className="popbody" style={{padding: 0}}>
+                                {traitList.length === 0 && (
+                                    <p style={{padding: ".6em .7em"}}>No traits have been written up yet.</p>
+                                )}
+                                {traitList.map(trait => {
+                                    const held = ttp.some(x => x.name === trait.name)
+                                    return (
+                                        <button type="button" key={trait.name} className={held ? "pickRow taken" : "pickRow"} onClick={() => {
+                                            if (held) return
+                                            setTtp([...ttp, {name: trait.name, note: trait.text}])
+                                            setPopout(null)
+                                        }}>
+                                            <b>{trait.name}{held ? " \u2014 already on the sheet" : ""}</b>
+                                            <span>{trait.text}</span>
+                                        </button>
+                                    )
+                                })}
                             </div>
                         </div>
                     </div>
