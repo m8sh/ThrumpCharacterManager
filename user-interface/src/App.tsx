@@ -1815,13 +1815,35 @@ function App() {
                                     type="text"
                                     value={trait.note}
                                     onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, note: e.target.value} : old))}
+                                    onKeyDown={e => {
+                                        // the description works the same way the name does
+                                        if (e.key === "Enter") {
+                                            e.preventDefault()
+                                            const copy = [...ttp]
+                                            copy.splice(i + 1, 0, {name: "", note: ""})
+                                            setTtp(copy)
+                                            setTimeout(() => {
+                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
+                                                rows[(i + 1) * 2]?.focus()
+                                            }, 0)
+                                        }
+                                        // and only clears the row when there is nothing in either box
+                                        if (e.key === "Backspace" && trait.name === "" && trait.note === "" && ttp.length > 1) {
+                                            e.preventDefault()
+                                            setTtp(ttp.filter((_old, j) => j !== i))
+                                            setTimeout(() => {
+                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
+                                                rows[(i - 1) * 2 + 1]?.focus()
+                                            }, 0)
+                                        }
+                                    }}
                                 />
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <button type="button" className="addCond" onClick={() => setPopout("addTtp")}>+ Add</button>
+                <button type="button" className="addRow" onClick={() => setPopout("addTtp")}>+ Add</button>
             </>
         )
 
