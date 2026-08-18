@@ -3348,7 +3348,9 @@ function App() {
                                 <button type="button" className="go" onClick={() => {
                                     const trait = traitList.find(tr => tr.base === traitPick)
                                     if (!trait || traitNum.trim() === "") return
-                                    setTtp([...ttp, {name: trait.base + " (" + traitNum.trim() + ")", note: trait.text.join(" ")}])
+                                    // the written up rule says X, the copy on the sheet says the number
+                                    const filled = trait.text.join(" ").replace(/(?<![A-Za-z])X/g, traitNum.trim())
+                                    setTtp([...ttp, {name: trait.base + " (" + traitNum.trim() + ")", note: filled}])
                                     setPopout(null)
                                 }}>Add</button>
                             </div>
