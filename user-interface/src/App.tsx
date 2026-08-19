@@ -150,7 +150,8 @@ const partInfo: Record<string, {note: string, wtMod?: number, spMaxMod?: number,
 }
 
 // losing a matched pair pulls a second condition along with it
-const derivedRules: {when: (parts: string[], conds: Cond[]) => boolean, gives: string, why: string}[] = [
+const derivedRules: {when: (parts: string[], conds: Cond[], traits: string[]) => boolean, gives: string, why: string}[] = [
+    {when: (_p, _c, tr) => tr.includes("Blind"), gives: "Blinded", why: "of the Blind trait"},
     {when: p => p.includes("Left Eye") && p.includes("Right Eye"), gives: "Blinded", why: "both eyes are gone"},
     {when: p => p.includes("Left Ear") && p.includes("Right Ear"), gives: "Deafened", why: "both ears are gone"},
     {when: p => p.includes("Left Leg") && p.includes("Right Leg"), gives: "Immobilized", why: "both legs are gone"},
@@ -648,26 +649,22 @@ const traitIntro: RuleBlock[] = [
 ]
 
 // the traits themselves, worded exactly as the rulebook has them. base is the name
-// without its value, needsX means the sheet asks for a number before adding it, and
-// blurb is the short reminder that shows up at the end of a round
-const traitList: {base: string, name: string, needsX?: boolean, text: string[], blurb: (x: string) => string}[] = [
+// without its value, and needsX means the sheet asks for a number before adding it
+const traitList: {base: string, name: string, needsX?: boolean, text: string[]}[] = [
     {
         base: "Amphibious",
         name: "Amphibious",
         text: ["The character can breathe water and ignores the skill cap placed on their combat rolls by their Athletics skill when fighting in water."],
-        blurb: () => "You can breathe water, and your Athletics skill does not cap your combat rolls while fighting in water.",
     },
     {
         base: "Bestial",
         name: "Bestial",
         text: ["The character has no need to make Survival skill tests in their natural habitat, but they must test Willpower to avoid fleeing combat if the GM feels that it\u2019s appropriate (for example, if the creature would feel intimidated by its foe)."],
-        blurb: () => "You never test Survival in your natural habitat, but the GM may call for a Willpower test to keep you from fleeing a fight.",
     },
     {
         base: "Blind",
         name: "Blind",
         text: ["The character has the blinded condition while they have this trait."],
-        blurb: () => "You have the Blinded condition for as long as you have this trait.",
     },
     {
         base: "Bound",
@@ -676,26 +673,22 @@ const traitList: {base: string, name: string, needsX?: boolean, text: string[], 
             "This creature is bound by the will of their master. They must obey the commands of their master, except they will always prioritize defending themselves. Additionally, if the bound creature's master or their master's allies intentionally take hostile or harmful action against them for any reason, they immediately turn hostile and lose the bound trait.",
             "Items with this trait use their creator\u2019s Willpower score when forced to roll any relevant test (except Combat Style). These items are practically weightless, counting as having an effective ENC rating of 0.",
         ],
-        blurb: () => "You must obey your master, though you always defend yourself first. See the rules section for what happens if they turn on you.",
     },
     {
         base: "Climber",
         name: "Climber (X)",
         needsX: true,
         text: ["The character can climb walls and ceilings as if open ground. Their Climb Speed is now set to Xm."],
-        blurb: (x) => "You climb walls and ceilings as if they were open ground, at a Climb Speed of " + x + "m.",
     },
     {
         base: "Crawler",
         name: "Crawler",
         text: ["Rather than walking, a character with this trait crawls. They halve their normal Speed (round up) and take no penalties for moving through difficult terrain."],
-        blurb: () => "You crawl rather than walk, at half your normal Speed rounded up, and difficult terrain costs you nothing.",
     },
     {
         base: "Dark Sight",
         name: "Dark Sight",
         text: ["A character with this trait can see normally even in areas with total darkness and never takes penalties for acting in areas with dim or no lighting."],
-        blurb: () => "You see normally in total darkness and never take penalties for dim or absent light.",
     },
 ]
 
@@ -705,10 +698,6 @@ function traitFor(rowName: string) {
     return traitList.find(tr => tr.base === base)
 }
 
-function traitValue(rowName: string) {
-    const inside = rowName.split("(")[1]
-    return inside ? inside.replace(")", "").trim() : ""
-}
 
 // a characteristic bonus is the tens digit of the score
 function bonusFrom(info: CharInfo, key: string) {
@@ -758,7 +747,8 @@ function App() {
     const [fearKind, setFearKind] = useState("Fear")
     const [traitPick, setTraitPick] = useState("")
     const [traitNum, setTraitNum] = useState("")
-    const [traitRecap, setTraitRecap] = useState<string[]>([])
+    // automatic conditions the player has taken off by hand, so they do not come straight back
+    const [dismissed, setDismissed] = useState<string[]>(saved?.dismissed ?? [])
 
     // rooms. the sheet still lives in this browser, the room is only a copy being shown
     const [role, setRole] = useState<string>(() => {
@@ -787,7 +777,7 @@ function App() {
             charInfo: Array.from(charInfo),
             languages, mode, panel, inventory, ttp, specializations,
             rituals, spells, melee, ranged, openActions, conditions,
-            woundList: wounds, shield, armorNotes,
+            woundList: wounds, shield, armorNotes, dismissed,
         })
 
         try {
@@ -800,7 +790,7 @@ function App() {
         if (roomsReady && room !== "") publishSheet(room, String(charInfo.get("Name") ?? "unnamed"), snapshot)
     }, [charInfo, languages, mode, panel, inventory, ttp, specializations,
         rituals, spells, melee, ranged, openActions, conditions, wounds,
-        shield, armorNotes, room, viewing])
+        shield, armorNotes, dismissed, room, viewing])
 
     useEffect(() => {
         try {
@@ -1048,6 +1038,7 @@ function App() {
         setWounds([])
         setShield({br: "", type: "", enc: ""})
         setArmorNotes("")
+        setDismissed([])
         setPopout(null)
         setRestLines(null)
         setRecap([])
@@ -1195,6 +1186,7 @@ function App() {
         setWounds(s.woundList ?? [])
         setShield(s.shield ?? {br: "", type: "", enc: ""})
         setArmorNotes(s.armorNotes ?? "")
+        setDismissed(s.dismissed ?? [])
     }
 
     const stopViewing = () => {
@@ -1286,12 +1278,28 @@ function App() {
         // again while one the player added by hand simply stays put
         const partsHit = conditions.filter(c => conditionTypes[c.name].kind === "part").map(c => c.part ?? "")
         const derived: Cond[] = []
+        // which traits are on the sheet, by their base name
+        const traitsHeld = ttp.map(row => row.name.split("(")[0].trim())
+
+        // a condition the player took off by hand stays off while its cause lasts, and
+        // becomes available again only once nothing is asking for it any more
+        const stillOwed: string[] = []
         derivedRules.forEach(rule => {
-            const owed = rule.when(partsHit, conditions)
+            const owed = rule.when(partsHit, conditions, traitsHeld)
+            if (owed) stillOwed.push(rule.gives)
             const already = conditions.some(c => c.name === rule.gives) || derived.some(c => c.name === rule.gives)
-            if (owed && !already) derived.push({name: rule.gives, value: 1, auto: true, why: rule.why})
+            if (owed && !already && !dismissed.includes(rule.gives)) {
+                derived.push({name: rule.gives, value: 1, auto: true, why: rule.why})
+            }
         })
         const allConditions = [...conditions, ...derived]
+
+        // a dismissal only lasts as long as the thing that caused it, so once nothing
+        // is asking for the condition any more the sheet forgets it was ever waved off
+        const staleDismissals = dismissed.filter(name => !stillOwed.includes(name))
+        if (staleDismissals.length > 0) {
+            setTimeout(() => setDismissed(prev => prev.filter(name => !staleDismissals.includes(name))), 0)
+        }
 
         // a condition only writes down the parts it cares about so everything else reads as zero
         const modOf = (which: "testMod" | "csMod" | "magicMod" | "wtMod" | "apMaxMod" | "spMaxMod" | "frenzyMod" | "sbMod") => {
@@ -2721,7 +2729,10 @@ function App() {
                                                             else setConditions(prev => prev.filter((_old, j) => j !== i))
                                                         }}>Snap Out</button>
                                                     )}
-                                                    {/* an automatic condition leaves when its cause does, so there is nothing to press */}
+                                                    {/* taking off an automatic condition keeps it off until its cause is gone */}
+                                                    {c.auto && (
+                                                        <button type="button" onClick={() => setDismissed(prev => prev.includes(c.name) ? prev : [...prev, c.name])}>Remove</button>
+                                                    )}
                                                     {!c.auto && (
                                                         <button type="button" onClick={() => {
                                                             let list = conditions.filter((_old, j) => j !== i)
@@ -2839,14 +2850,6 @@ function App() {
                                 const say = conditionTypes[c.name].recap
                                 if (say) lines.push(say(c) + (c.why ? " This is because " + c.why + "." : ""))
                             })
-
-                            // whatever traits the character carries, reminded once a round
-                            const traitLines: string[] = []
-                            ttp.forEach(row => {
-                                const trait = traitFor(row.name)
-                                if (trait) traitLines.push(trait.blurb(traitValue(row.name)))
-                            })
-                            setTraitRecap(traitLines)
 
                             next.set("Current HP", String(hp))
                             setCharInfo(next)
@@ -3638,8 +3641,6 @@ function App() {
                                 <p>{apRefreshed ? "Your AP is back up to full." : "You are Stunned, so your AP does not come back this round."}</p>
                                 {recap.length > 0 && <div className="recapHead">Your conditions:</div>}
                                 {recap.map((line, i) => <p key={i}>{line}</p>)}
-                                {traitRecap.length > 0 && <div className="recapHead">Traits</div>}
-                                {traitRecap.map((line, i) => <p key={i}>{line}</p>)}
                             </div>
                             <div className="popfoot">
                                 <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
