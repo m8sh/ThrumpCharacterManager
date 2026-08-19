@@ -1859,42 +1859,46 @@ function App() {
                                     value={trait.name}
                                     onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, name: e.target.value} : old))}
                                     onKeyDown={e => {
+                                        // the description is its own box now, so there is one name field
+                                        // per row rather than two inputs to count through
                                         if (e.key === "Enter") {
                                             e.preventDefault()
                                             const copy = [...ttp]
                                             copy.splice(i + 1, 0, {name: "", note: ""})
                                             setTtp(copy)
                                             setTimeout(() => {
-                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
-                                                rows[(i + 1) * 2]?.focus()
+                                                const names = document.querySelectorAll<HTMLInputElement>("#center .ttp .tname input")
+                                                names[i + 1]?.focus()
                                             }, 0)
                                         }
                                         if (e.key === "Backspace" && trait.name === "" && trait.note === "" && ttp.length > 1) {
                                             e.preventDefault()
                                             setTtp(ttp.filter((_old, j) => j !== i))
                                             setTimeout(() => {
-                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
-                                                rows[(i - 1) * 2]?.focus()
+                                                const names = document.querySelectorAll<HTMLInputElement>("#center .ttp .tname input")
+                                                names[i - 1]?.focus()
                                             }, 0)
                                         }
                                     }}
                                 />
                             </div>
                             <div className="tnote">
-                                <input
-                                    type="text"
+                                <textarea
+                                    className="tnoteBox"
+                                    rows={1}
                                     value={trait.note}
                                     onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, note: e.target.value} : old))}
                                     onKeyDown={e => {
-                                        // the description works the same way the name does
-                                        if (e.key === "Enter") {
+                                        // a long description reads over as many lines as it needs, so plain
+                                        // enter just grows the box and shift enter is what starts a new row
+                                        if (e.key === "Enter" && e.shiftKey) {
                                             e.preventDefault()
                                             const copy = [...ttp]
                                             copy.splice(i + 1, 0, {name: "", note: ""})
                                             setTtp(copy)
                                             setTimeout(() => {
-                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
-                                                rows[(i + 1) * 2]?.focus()
+                                                const names = document.querySelectorAll<HTMLInputElement>("#center .ttp .tname input")
+                                                names[i + 1]?.focus()
                                             }, 0)
                                         }
                                         // and only clears the row when there is nothing in either box
@@ -1902,8 +1906,8 @@ function App() {
                                             e.preventDefault()
                                             setTtp(ttp.filter((_old, j) => j !== i))
                                             setTimeout(() => {
-                                                const rows = document.querySelectorAll<HTMLInputElement>("#center .ttp input")
-                                                rows[(i - 1) * 2 + 1]?.focus()
+                                                const notes = document.querySelectorAll<HTMLTextAreaElement>("#center .ttp .tnoteBox")
+                                                notes[i - 1]?.focus()
                                             }, 0)
                                         }
                                     }}

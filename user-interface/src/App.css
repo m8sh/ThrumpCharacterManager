@@ -617,8 +617,28 @@ body:has(#center > .nameRow){display:block}
 #center .ttpRow .tname{background:var(--band);font-weight:400}
 #center .ttpRow .tnote{font-weight:400}
 #center .ttpRow.head > *{background:var(--band);font-weight:400}
-#center .ttpRow .tname input[type=text],
-#center .ttpRow .tnote input[type=text]{text-align:left}
+#center .ttpRow .tname input[type=text]{text-align:left}
+
+/* a long description reads over as many lines as it needs instead of running off the side */
+#center .ttpRow .tnoteBox{
+  field-sizing:content;
+  display:block;
+  width:100%;
+  min-height:1.25em;
+  resize:none;
+  font:inherit;
+  font-weight:400;
+  color:inherit;
+  background:none;
+  border:0;
+  padding:0;
+  text-align:left;
+  line-height:1.25;
+  overflow:hidden;
+}
+#center .ttpRow .tnoteBox:focus{outline:0;background:rgba(255,255,255,.06)}
+/* the two columns line up at the top once a row can be several lines tall */
+#center .ttpRow > *{align-content:start}
 
 /* crafting */
 
@@ -892,9 +912,18 @@ body:has(#center > .nameRow){display:block}
   font-weight:700;
 }
 #center .actHead:hover{background:#1d2026}
-/* the heading that folds a whole set of rules away */
-#center .actHead.groupHead{background:#1f232a;border-bottom:1px solid var(--line)}
-#center .actHead.groupHead:hover{background:#252932}
+/* the heading that folds a whole set of rules away. it reads as a heading rather than
+   as another entry in the list, so a section is never mistaken for an item inside one */
+#center .actHead.groupHead{
+  padding:.45em .55em;
+  background:#272c34;
+  border-bottom:1px solid var(--line);
+  border-left:3px solid var(--accent);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+#center .actHead.groupHead:hover{background:#2f353f}
+#center .actHead.groupHead .ap{text-transform:none;letter-spacing:0}
 #center .actGroup{border-top:1px solid var(--line)}
 #center .actGroup .act:last-child{border-bottom:0}
 #center .actHead .ap{font-weight:400;opacity:.6}
