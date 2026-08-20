@@ -931,6 +931,9 @@ body:has(#center > .nameRow){display:block}
 #center .actBody p{margin:.3em 0}
 #center .actBody ul{margin:.3em 0;padding-left:1.2em}
 #center .actBody .subHead{font-weight:700;margin:.6em 0 .2em}
+/* a bullet that carries its own bullets underneath it */
+#center .actBody ul ul{margin:.25em 0 .1em;padding-left:1.1em}
+#center .actBody ul ul li{opacity:.9}
 #center .actBody li{margin:.25em 0}
 
 #center .takeAction{

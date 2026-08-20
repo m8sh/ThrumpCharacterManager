@@ -643,6 +643,84 @@ const panicTable: {range: string, low: number, high: number, name: string, text:
     {range: "96-100", low: 96, high: 100, name: "Running and Screaming", text: "The character breaks down with fear and flees. They must immediately flee directly away from the source of their fear as fast as they can, which includes ditching equipment slowing them down. They must do everything in their power to accomplish this and is at a -20 penalty to all tests. Once away from the danger, they must successfully snap out of it to regain control, or the encounter must end."},
 ]
 
+// the opening of the combat chapter, above the four steps rather than inside them
+const combatIntro: RuleBlock[] = [
+    {text: "Combat is resolved as an exchange of blows between two characters. This exchange is simulated by the Combat Roll, in which a pair of attack and defense tests are compared."},
+]
+
+// a bullet can carry its own bullets underneath it
+type StepBullet = {text: string, subs?: string[]}
+type StepBlock = {head?: string, text?: string, bullets?: StepBullet[], table?: boolean}
+
+const combatSteps: {name: string, blocks: StepBlock[]}[] = [
+    {name: "Step 1: Attack", blocks: [
+            {text: "The attacker first chooses their target, weapon, and combat style for the attack before making the attack test and applying any relevant circumstantial modifiers. Weapons not included in the character\u2019s combat style are made at the standard untrained -20 penalty for all attack and defense tests."},
+            {bullets: [
+                    {text: "Melee Weapon Attacks: The attacker makes a Combat Style test using either Strength or Agility against a target within the range of their weapon."},
+                    {text: "Ranged Weapon Attacks: The attacker makes a Combat Style test using Agility against a target within the range of their weapon."},
+                    {text: "Cast Magic Attacks: The attacking caster makes a skill test with the skill corresponding to the school of the spell."},
+                ]},
+        ]},
+
+    {name: "Step 2: Defend", blocks: [
+            {text: "The defender then picks their method of defense and combat style before making the defense test. A character must be aware of an attack to defend against it, and must choose to defend before the attacker has rolled."},
+            {bullets: [
+                    {text: "Evade: The defender rolls an Evade test (Agility)."},
+                    {text: "Parry: Melee weapons or shields may be used to parry melee attacks. The defender makes the Combat Style test using Strength or Agility."},
+                    {text: "Block: Shields may be used to block ranged or melee attacks. The defender makes a Combat Style test using Strength."},
+                    {text: "Counter-Attack: The characters both attempt to strike the other while parrying their opponent\u2019s blows. The defender also makes a melee attack, using the rules above. Both characters count as \u201cattackers\u201d in step 3."},
+                ]},
+        ]},
+
+    {name: "Step 3: Roll Tests & Determine Result", blocks: [
+            {text: "If one character is able to gain a significant advantage over their opponent in melee, they are said to have gained an Advantage. Note that if a defender does not try to defend, or cannot do so, they are treated as having automatically failed."},
+            {bullets: [
+                    {text: "Both characters fail: Neither attack nor defense resolves."},
+                    {text: "1 character fails: The winner gains an advantage (if melee).", subs: [
+                            "Attacker wins: The attack is successful, the attacker chooses how to utilize their advantage, and resolves it.",
+                            "Defender wins: The defense is successful, the defender chooses how to utilize their advantage and resolves it.",
+                        ]},
+                    {text: "Both characters pass: No characters gain an advantage.", subs: [
+                            "Attack vs. Block: The defender blocks the attack regardless of attacker degrees of success. Resolve the block using the rules in Step 4 as if the defender won.",
+                            "Attack vs. Parry or Evade: The defense is negated if the attacker has more degrees of success. Resolve the attack.",
+                            "Counter-Attack: Whichever character achieves more degrees of success hits the other. If both characters achieve the same degrees of success, then neither the Attack nor the Counter-Attack resolve.",
+                        ]},
+                ]},
+            {head: "Critical Success/Failure", text: "If one character critically succeeded, treat it as if they succeeded with more DoS than their opponent (if their opponent succeeded at all). They also gain an advantage. If one character rolls a critical failure, and their opponent passed, then their opponent counts as having critically succeeded. If one character critically succeeds and the other fails, or one succeeds and one critically fails, then the character who succeeded gains two advantages, which can stack if applicable. If both sides roll a critical success or failure, then no advantage is gained, and neither attack nor defense resolves."},
+        ]},
+
+    {name: "Step 4: Resolve Attack & Advantages", blocks: [
+            {text: "Finally, resolve the attack based on the result."},
+            {head: "Hit Locations", table: true},
+            {head: "Attacker Won", text: "The attack hits the target and deals damage. If the target\u2019s armor values differ across hit locations, then check to see where it hit using the ones digit of the attack roll or a d10 (count 10 as 0). (You can often skip this step entirely or delay it until it is necessary)."},
+            {text: "Next, resolve any advantage gained from the combat roll. Ranged attackers and spells cannot gain or utilize advantage. Then roll the damage of the attack and subtract the Armor Rating (AR) of the hit location struck. Reduce the target\u2019s HP by the remaining amount. Some types of AR only mitigate certain types of damage. If the damage dealt after reduction exceeds the target\u2019s Wound Threshold, the attack has also caused a wound. See Physical Health for details."},
+            {head: "Defender won", text: "If the defender won an advantage, resolve it first:", bullets: [
+                    {text: "Evade: If an attack is evaded it is negated entirely. The character may move up to 1 meter in any direction for free. This movement does not provoke Attacks of Opportunity."},
+                    {text: "Parry: If an attack is parried it is negated entirely."},
+                    {text: "Block: If an attack is blocked, roll the damage of the attack. If the damage exceeds the shield\u2019s Block Rating against that damage type, then the character takes the full damage to their shield arm. Otherwise no damage is taken. Magic damage treats BR as half (round up) unless there is a magic BR."},
+                ]},
+            {text: "Should there be multiple defenders against a single attack, only one defender gains a defensive advantage."},
+            {head: "Advantage", text: "Characters with advantage may utilize it in the following ways:", bullets: [
+                    {text: "Precision Strike (attack only): Choose the hit location of the attack."},
+                    {text: "Penetrate Armor (attack only): Treat full armor as partial and partial as unarmored for the purposes of resolving an attack. This does not affect AR."},
+                    {text: "Press Advantage (attack only): Character gains a +10 to their next melee attack against the opponent within 1 round."},
+                    {text: "Forceful Impact (attack only): The character can apply the Damaged(1) quality to one armor piece or shield on the hit location of the attack."},
+                    {text: "Overextend (block/evade/parry only): The opponent\u2019s next attack test within 1 round is made at a -10 penalty."},
+                    {text: "Overwhelm: Your attack or defense engages your opponent\u2019s attention completely. The opponent cannot take attacks of opportunity until the attacking character\u2019s next Turn."},
+                    {text: "Special Advantage: Immediately take a special advantage that is listed in the character\u2019s Combat Style. Ignore the AP cost, or automatically win any opposed roll involved."},
+                ]},
+        ]},
+]
+
+const hitLocations = [
+    {roll: "1-5", where: "Body"},
+    {roll: "6", where: "Right Leg"},
+    {roll: "7", where: "Left Leg"},
+    {roll: "8", where: "Right Arm"},
+    {roll: "9", where: "Left Arm"},
+    {roll: "0", where: "Head"},
+]
+
 // the opening of the traits chapter, which sits above the list rather than inside it
 const traitIntro: RuleBlock[] = [
     {text: "Traits are rules that reflect various natural facts about the character or certain abilities they possess. They include things such as the ability to fly, inherent physical weaknesses, personality traits, and so forth. They are typically the result of birth, upbringing, or racial circumstance but may be gained through other means later in life, though rarely by choice or without the use of magic."},
@@ -2975,6 +3053,63 @@ function App() {
 
                                 <div className="actList">
                                     {/* one fold out per rules section, the same way the actions read */}
+                                    <div className="act">
+                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Combat") ? openActions.filter(n => n !== "group Combat") : [...openActions, "group Combat"])}>
+                                            <span>Attacking &amp; Defending</span>
+                                        </div>
+                                        {openActions.includes("group Combat") && (
+                                            <>
+                                                <div className="actBody">
+                                                    {combatIntro.map((block, i) => <p key={i}>{block.text}</p>)}
+                                                </div>
+                                                <div className="actGroup">
+                                                    {combatSteps.map(step => (
+                                                        <div className="act" key={step.name}>
+                                                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("step " + step.name) ? openActions.filter(n => n !== "step " + step.name) : [...openActions, "step " + step.name])}>
+                                                                <span>{step.name}</span>
+                                                            </div>
+                                                            {openActions.includes("step " + step.name) && (
+                                                                <div className="actBody">
+                                                                    {step.blocks.map((block, i) => (
+                                                                        <div key={i}>
+                                                                            {block.head && <div className="subHead">{block.head}</div>}
+                                                                            {block.text && <p>{block.text}</p>}
+                                                                            {block.table && (
+                                                                                <div className="dtable wide">
+                                                                                    <div className="dh">Result</div><div className="dh">Location Hit</div>
+                                                                                    {hitLocations.map(row => (
+                                                                                        <Fragment key={row.roll}>
+                                                                                            <div>{row.roll}</div>
+                                                                                            <div>{row.where}</div>
+                                                                                        </Fragment>
+                                                                                    ))}
+                                                                                </div>
+                                                                            )}
+                                                                            {block.bullets && (
+                                                                                <ul>
+                                                                                    {block.bullets.map((b, j) => (
+                                                                                        <li key={j}>
+                                                                                            {b.text}
+                                                                                            {b.subs && (
+                                                                                                <ul>
+                                                                                                    {b.subs.map((s, k) => <li key={k}>{s}</li>)}
+                                                                                                </ul>
+                                                                                            )}
+                                                                                        </li>
+                                                                                    ))}
+                                                                                </ul>
+                                                                            )}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+
                                     <div className="act">
                                         <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Wounds") ? openActions.filter(n => n !== "group Wounds") : [...openActions, "group Wounds"])}>
                                             <span>Wounds</span>
