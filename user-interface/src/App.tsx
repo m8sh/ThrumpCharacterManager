@@ -152,6 +152,7 @@ const partInfo: Record<string, {note: string, wtMod?: number, spMaxMod?: number,
 // losing a matched pair pulls a second condition along with it
 const derivedRules: {when: (parts: string[], conds: Cond[], traits: string[]) => boolean, gives: string, why: string}[] = [
     {when: (_p, _c, tr) => tr.includes("Blind"), gives: "Blinded", why: "of the Blind trait"},
+    {when: (_p, _c, tr) => tr.includes("Deaf"), gives: "Deafened", why: "of the Deaf trait"},
     {when: p => p.includes("Left Eye") && p.includes("Right Eye"), gives: "Blinded", why: "both eyes are gone"},
     {when: p => p.includes("Left Ear") && p.includes("Right Ear"), gives: "Deafened", why: "both ears are gone"},
     {when: p => p.includes("Left Leg") && p.includes("Right Leg"), gives: "Immobilized", why: "both legs are gone"},
@@ -689,6 +690,46 @@ const traitList: {base: string, name: string, needsX?: boolean, text: string[]}[
         base: "Dark Sight",
         name: "Dark Sight",
         text: ["A character with this trait can see normally even in areas with total darkness and never takes penalties for acting in areas with dim or no lighting."],
+    },
+    {
+        base: "Dawn-Cursed",
+        name: "Dawn-Cursed (X)",
+        needsX: true,
+        text: ["Characters with this trait are fatally sensitive to sunlight. While in direct sunlight, the character suffers X damage per round which ignores all damage mitigation. If the character covers themselves completely with clothing and a hood with sufficient coverage, this damage is reduced to X per hour in the sunlight. If the vampire is under full cover which would block out all sunlight, like a fully covered wagon or inside a building, they take no damage."],
+    },
+    {
+        base: "Deaf",
+        name: "Deaf",
+        text: ["The character has the deafened condition while they have this trait. See the Conditions section in Chapter 5 for rules on this condition."],
+    },
+    {
+        base: "Disease Resistance",
+        name: "Disease Resistance (X%)",
+        needsX: true,
+        text: ["Whenever a character with this trait would be infected by a common disease, roll a d100. If the roll is less than or equal to X, the character doesn\u2019t get the disease."],
+    },
+    {
+        base: "Diseased",
+        name: "Diseased (+/- X)",
+        needsX: true,
+        text: ["If a character with this trait deals at least 1 point of damage (after mitigation) with their natural weapons to a target without the Diseased trait, then the affected target must test Endurance +/- X or contract a common disease."],
+    },
+    {
+        base: "Flyer",
+        name: "Flyer (X)",
+        needsX: true,
+        text: ["The character can fly. They have a Speed equal to X when flying."],
+    },
+    {
+        base: "Frightening",
+        name: "Frightening (X)",
+        needsX: true,
+        text: ["Those who encounter this character must immediately make a Panic (X) test."],
+    },
+    {
+        base: "From Beyond",
+        name: "From Beyond",
+        text: ["The character is immune to the effects of disease, fear, toxins, and any mind-affecting magic (i.e. illusions)."],
     },
 ]
 
@@ -3355,9 +3396,12 @@ function App() {
                                 <button type="button" className="go" onClick={() => {
                                     const trait = traitList.find(tr => tr.base === traitPick)
                                     if (!trait || traitNum.trim() === "") return
-                                    // the written up rule says X, the copy on the sheet says the number
-                                    const filled = trait.text.join(" ").replace(/(?<![A-Za-z])X/g, traitNum.trim())
-                                    setTtp([...ttp, {name: trait.base + " (" + traitNum.trim() + ")", note: filled}])
+                                    // the written up rule says X, the copy on the sheet says the number.
+                                    // the name is filled in the same way, so a title like Disease Resistance
+                                    // (X%) keeps its percent sign and Diseased (+/- X) keeps its sign
+                                    const num = traitNum.trim()
+                                    const fill = (s: string) => s.replace(/(?<![A-Za-z])X/g, num)
+                                    setTtp([...ttp, {name: fill(trait.name), note: fill(trait.text.join(" "))}])
                                     setPopout(null)
                                 }}>Add</button>
                             </div>
