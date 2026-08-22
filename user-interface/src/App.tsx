@@ -3058,55 +3058,47 @@ function App() {
                                             <span>Attacking &amp; Defending</span>
                                         </div>
                                         {openActions.includes("group Combat") && (
-                                            <>
-                                                <div className="actBody">
-                                                    {combatIntro.map((block, i) => <p key={i}>{block.text}</p>)}
-                                                </div>
-                                                <div className="actGroup">
-                                                    {combatSteps.map(step => (
-                                                        <div className="act" key={step.name}>
-                                                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("step " + step.name) ? openActions.filter(n => n !== "step " + step.name) : [...openActions, "step " + step.name])}>
-                                                                <span>{step.name}</span>
+                                            <div className="actBody">
+                                                {combatIntro.map((block, i) => <p key={i}>{block.text}</p>)}
+
+                                                {/* the four steps read straight through rather than folding away */}
+                                                {combatSteps.map(step => (
+                                                    <div key={step.name}>
+                                                        <div className="stepHead">{step.name}</div>
+                                                        {step.blocks.map((block, i) => (
+                                                            <div key={i}>
+                                                                {block.head && <div className="subHead">{block.head}</div>}
+                                                                {block.text && <p>{block.text}</p>}
+                                                                {block.table && (
+                                                                    <div className="dtable wide">
+                                                                        <div className="dh">Result</div><div className="dh">Location Hit</div>
+                                                                        {hitLocations.map(row => (
+                                                                            <Fragment key={row.roll}>
+                                                                                <div>{row.roll}</div>
+                                                                                <div>{row.where}</div>
+                                                                            </Fragment>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                                {block.bullets && (
+                                                                    <ul>
+                                                                        {block.bullets.map((b, j) => (
+                                                                            <li key={j}>
+                                                                                {b.text}
+                                                                                {b.subs && (
+                                                                                    <ul>
+                                                                                        {b.subs.map((s, k) => <li key={k}>{s}</li>)}
+                                                                                    </ul>
+                                                                                )}
+                                                                            </li>
+                                                                        ))}
+                                                                    </ul>
+                                                                )}
                                                             </div>
-                                                            {openActions.includes("step " + step.name) && (
-                                                                <div className="actBody">
-                                                                    {step.blocks.map((block, i) => (
-                                                                        <div key={i}>
-                                                                            {block.head && <div className="subHead">{block.head}</div>}
-                                                                            {block.text && <p>{block.text}</p>}
-                                                                            {block.table && (
-                                                                                <div className="dtable wide">
-                                                                                    <div className="dh">Result</div><div className="dh">Location Hit</div>
-                                                                                    {hitLocations.map(row => (
-                                                                                        <Fragment key={row.roll}>
-                                                                                            <div>{row.roll}</div>
-                                                                                            <div>{row.where}</div>
-                                                                                        </Fragment>
-                                                                                    ))}
-                                                                                </div>
-                                                                            )}
-                                                                            {block.bullets && (
-                                                                                <ul>
-                                                                                    {block.bullets.map((b, j) => (
-                                                                                        <li key={j}>
-                                                                                            {b.text}
-                                                                                            {b.subs && (
-                                                                                                <ul>
-                                                                                                    {b.subs.map((s, k) => <li key={k}>{s}</li>)}
-                                                                                                </ul>
-                                                                                            )}
-                                                                                        </li>
-                                                                                    ))}
-                                                                                </ul>
-                                                                            )}
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </div>
                                         )}
                                     </div>
 
