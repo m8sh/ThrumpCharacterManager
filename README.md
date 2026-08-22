@@ -7,7 +7,8 @@ For example: Wound rules and how they interact with the healing mechanics are ve
 
 
 TODO:
-- Add traits
+- finish adding traits
 - Keep track of helplessness
 - Add talents (while allowing custom)
+- 
 
