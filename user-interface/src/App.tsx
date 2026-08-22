@@ -3535,7 +3535,11 @@ function App() {
                                     // the name is filled in the same way, so a title like Disease Resistance
                                     // (X%) keeps its percent sign and Diseased (+/- X) keeps its sign
                                     const num = traitNum.trim()
-                                    const fill = (s: string) => s.replace(/(?<![A-Za-z])X/g, num)
+                                    // the player types the sign themselves, so a rule written as
+                                    // +/- X takes the whole thing rather than leaving the +/- behind
+                                    const fill = (s: string) => s
+                                        .replace(/\+\/-\s*X/g, num)
+                                        .replace(/(?<![A-Za-z])X/g, num)
                                     setTtp([...ttp, {name: fill(trait.name), note: fill(trait.text.join(" "))}])
                                     setPopout(null)
                                 }}>Add</button>
