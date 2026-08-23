@@ -7,6 +7,8 @@ For example: Wound rules and how they interact with the healing mechanics are ve
 
 
 TODO:
+- dice roller
+- allow using arrow keys to change numbers
 - finish adding traits
 - Keep track of helplessness
 - Add talents (while allowing custom)
