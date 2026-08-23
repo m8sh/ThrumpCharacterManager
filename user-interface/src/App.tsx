@@ -866,6 +866,11 @@ function App() {
     const [fearKind, setFearKind] = useState("Fear")
     const [traitPick, setTraitPick] = useState("")
     const [traitNum, setTraitNum] = useState("")
+
+    // the dice tray. pool is a list of sides, so tapping d6 twice gives [6, 6]
+    const [diceOpen, setDiceOpen] = useState(false)
+    const [dicePool, setDicePool] = useState<number[]>([])
+    const [diceRolls, setDiceRolls] = useState<{sides: number, value: number}[] | null>(null)
     // automatic conditions the player has taken off by hand, so they do not come straight back
     const [dismissed, setDismissed] = useState<string[]>(saved?.dismissed ?? [])
 
@@ -3504,6 +3509,74 @@ function App() {
                                     )
                                 })}
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* the dice tray, sitting over the sheet in the corner */}
+                <button type="button" className="diceButton" onClick={() => setDiceOpen(!diceOpen)} title="Dice">
+                    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8"/>
+                        <circle cx="8" cy="8" r="1.7" fill="currentColor"/>
+                        <circle cx="16" cy="8" r="1.7" fill="currentColor"/>
+                        <circle cx="12" cy="12" r="1.7" fill="currentColor"/>
+                        <circle cx="8" cy="16" r="1.7" fill="currentColor"/>
+                        <circle cx="16" cy="16" r="1.7" fill="currentColor"/>
+                    </svg>
+                </button>
+
+                {diceOpen && (
+                    <div className="diceTray">
+                        <div className="dhead">
+                            <b>Dice</b>
+                            <button type="button" onClick={() => setDiceOpen(false)}>&#215;</button>
+                        </div>
+
+                        <div className="dpick">
+                            {[4, 6, 8, 10, 12, 20].map(sides => (
+                                <button type="button" key={sides} onClick={() => {
+                                    // tapping the same die again just adds another of it
+                                    setDicePool([...dicePool, sides])
+                                    setDiceRolls(null)
+                                }}>d{sides}</button>
+                            ))}
+                        </div>
+
+                        <div className="dpool">
+                            {dicePool.length === 0 && <span className="dnone">Nothing picked yet.</span>}
+                            {[4, 6, 8, 10, 12, 20].map(sides => {
+                                const many = dicePool.filter(d => d === sides).length
+                                if (many === 0) return null
+                                return (
+                                    <button type="button" key={sides} className="dchip" onClick={() => {
+                                        // takes one of that die back off the pile
+                                        const at = dicePool.lastIndexOf(sides)
+                                        setDicePool(dicePool.filter((_d, j) => j !== at))
+                                        setDiceRolls(null)
+                                    }}>{many}d{sides} &#215;</button>
+                                )
+                            })}
+                        </div>
+
+                        {diceRolls && (
+                            <div className="drolls">
+                                {diceRolls.map((r, i) => (
+                                    <div key={i}><span>d{r.sides}</span><b>{r.value}</b></div>
+                                ))}
+                                {diceRolls.length > 1 && (
+                                    <div className="dtotal"><span>Total</span><b>{diceRolls.reduce((sum, r) => sum + r.value, 0)}</b></div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="dfoot">
+                            <button type="button" onClick={() => {
+                                setDicePool([])
+                                setDiceRolls(null)
+                            }}>Clear</button>
+                            <button type="button" className="go" onClick={() => {
+                                setDiceRolls(dicePool.map(sides => ({sides: sides, value: Math.floor(Math.random() * sides) + 1})))
+                            }}>Roll</button>
                         </div>
                     </div>
                 )}
