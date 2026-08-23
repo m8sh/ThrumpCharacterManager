@@ -3222,7 +3222,6 @@ function App() {
                                     <div className="act">
                                         <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Conditions") ? openActions.filter(n => n !== "group Conditions") : [...openActions, "group Conditions"])}>
                                             <span>Conditions</span>
-                                            <span className="ap">{conditionRules.length}</span>
                                         </div>
                                         {openActions.includes("group Conditions") && (
                                             <div className="actGroup">
@@ -3533,7 +3532,7 @@ function App() {
                         </div>
 
                         <div className="dpick">
-                            {[4, 6, 8, 10, 12, 20].map(sides => (
+                            {[4, 6, 8, 10, 12, 20, 100].map(sides => (
                                 <button type="button" key={sides} onClick={() => {
                                     // tapping the same die again just adds another of it
                                     setDicePool([...dicePool, sides])
@@ -3544,7 +3543,7 @@ function App() {
 
                         <div className="dpool">
                             {dicePool.length === 0 && <span className="dnone">Nothing picked yet.</span>}
-                            {[4, 6, 8, 10, 12, 20].map(sides => {
+                            {[4, 6, 8, 10, 12, 20, 100].map(sides => {
                                 const many = dicePool.filter(d => d === sides).length
                                 if (many === 0) return null
                                 return (
