@@ -1462,6 +1462,11 @@ body:has(#center > .nameRow){display:block}
 #center .diceTray .dtotal{margin-top:.2em;padding-top:.25em;border-top:1px solid var(--line)}
 #center .diceTray .dtotal b{color:var(--accent)}
 
+/* a d100 that landed on one of the character's own numbers says so in the gap */
+#center .diceTray .drolls em{font-style:normal;font-weight:700;font-size:.85em}
+#center .diceTray .dlucky{color:#5cc98a;opacity:1}
+#center .diceTray .dunlucky{color:#c95c5c;opacity:1}
+
 #center .diceTray .dfoot{display:flex;gap:.4em;padding:.45em .55em;border-top:1px solid var(--line)}
 #center .diceTray .dfoot button{
   flex:1;

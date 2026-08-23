@@ -1397,6 +1397,16 @@ function App() {
         // total enc is just the sum of whatever enc numbers are filled in
         const totalEnc = inventory.reduce((sum, item) => sum + (Number(item.enc) || 0), 0)
 
+        // the sheet writes these as a list like "77, 81, 99, 59", and a d100 gets checked
+        // against them so a lucky roll announces itself
+        // the field might be written with commas, spaces, slashes or nothing much at all,
+        // so just pick out whatever numbers are in there
+        const numbersFrom = (key: string) => (String(charInfo.get(key) ?? "").match(/\d+/g) ?? [])
+            .map(n => Number(n))
+            .filter(n => n > 0)
+        const luckyNumbers = numbersFrom("Lucky Numbers")
+        const unluckyNumbers = numbersFrom("Unlucky Numbers")
+
         // a pair of lost eyes brings blindness with it. these are worked out fresh every
         // render rather than stored, so giving a part back takes the extra condition away
         // again while one the player added by hand simply stays put
@@ -3559,9 +3569,19 @@ function App() {
 
                         {diceRolls && (
                             <div className="drolls">
-                                {diceRolls.map((r, i) => (
-                                    <div key={i}><span>d{r.sides}</span><b>{r.value}</b></div>
-                                ))}
+                                {diceRolls.map((r, i) => {
+                                    // only a d100 is read against the lucky and unlucky numbers
+                                    const lucky = r.sides === 100 && luckyNumbers.includes(r.value)
+                                    const unlucky = r.sides === 100 && unluckyNumbers.includes(r.value)
+                                    return (
+                                        <div key={i}>
+                                            <span>d{r.sides}</span>
+                                            {lucky && <em className="dlucky">Lucky Number!</em>}
+                                            {unlucky && <em className="dunlucky">Unlucky Number!</em>}
+                                            <b className={lucky ? "dlucky" : unlucky ? "dunlucky" : ""}>{r.value}</b>
+                                        </div>
+                                    )
+                                })}
                                 {diceRolls.length > 1 && (
                                     <div className="dtotal"><span>Total</span><b>{diceRolls.reduce((sum, r) => sum + r.value, 0)}</b></div>
                                 )}
