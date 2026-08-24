@@ -818,6 +818,43 @@ function traitFor(rowName: string) {
 }
 
 
+// which characteristics each skill tests, used when writing the sheet back out
+const skillChars: {name: string, chars: string[]}[] = [
+    {name: "Acrobatics", chars: ["Str", "Ag"]},
+    {name: "Alchemy", chars: ["Int"]},
+    {name: "Alteration", chars: ["Wp"]},
+    {name: "Athletics", chars: ["Str", "End"]},
+    {name: "Command", chars: ["Str", "Int", "Prs"]},
+    {name: "Commerce", chars: ["Int", "Prs"]},
+    {name: "Conjuration", chars: ["Wp"]},
+    {name: "Deceive", chars: ["Int", "Prs"]},
+    {name: "Destruction", chars: ["Wp"]},
+    {name: "Enchant", chars: ["Int"]},
+    {name: "Evade", chars: ["Ag"]},
+    {name: "Illusion", chars: ["Int"]},
+    {name: "Investigate", chars: ["Int", "Prc"]},
+    {name: "Logic", chars: ["Int", "Prc"]},
+    {name: "Lore", chars: ["Int"]},
+    {name: "Mysticism", chars: ["Wp"]},
+    {name: "Navigate", chars: ["Int", "Prc"]},
+    {name: "Necromancy", chars: ["Int"]},
+    {name: "Observe", chars: ["Prc"]},
+    {name: "Persuade", chars: ["Str", "Prs"]},
+    {name: "Restoration", chars: ["Wp"]},
+    {name: "Ride", chars: ["Ag"]},
+    {name: "Stealth", chars: ["Ag", "Prc"]},
+    {name: "Subterfuge", chars: ["Ag", "Int"]},
+    {name: "Survival", chars: ["Int", "Prc"]},
+]
+
+// a skill with no rank is untrained, which is a flat -20 rather than a bonus
+function targetNumber(info: CharInfo, skill: string, char: string) {
+    const score = Number(info.get(char)) || 0
+    const ranked = info.get(skill + " Rank")
+    const bonus = ranked ? Number(info.get(skill + " Bonus") ?? 0) : -20
+    return score + bonus
+}
+
 // a characteristic bonus is the tens digit of the score
 function bonusFrom(info: CharInfo, key: string) {
     return Math.floor((Number(info.get(key)) || 0) / 10)
@@ -911,7 +948,7 @@ function App() {
         }
 
         // the same snapshot goes to the room, so the dm sees exactly this sheet
-        if (roomsReady && room !== "") publishSheet(room, String(charInfo.get("Name") ?? "unnamed"), snapshot)
+        if (roomsReady && room !== "") void publishSheet(room, String(charInfo.get("Name") ?? "unnamed"), snapshot)
     }, [charInfo, languages, mode, panel, inventory, ttp, specializations,
         rituals, spells, melee, ranged, openActions, conditions, wounds,
         shield, armorNotes, dismissed, room, viewing])
@@ -1092,6 +1129,26 @@ function App() {
             put("LB", String(bonusFrom(charInfo, "Lck")))
 
             // back into the one field the sheet keeps them in
+            // the target numbers are worked out from the score and the rank, so they go
+            // back in fresh rather than carrying over whatever the sheet was loaded with
+            skillChars.forEach(skill => {
+                skill.chars.forEach(char => {
+                    put(skill.name + " (" + char + ")", String(targetNumber(charInfo, skill.name, char)))
+                })
+            })
+
+            put("Combat Style (Str)", String(targetNumber(charInfo, "Combat Style", "Str")))
+            put("Combat Style (Ag)", String(targetNumber(charInfo, "Combat Style", "Ag")))
+
+            // a profession keeps its target number and its characteristic in one field
+            for (let i = 1; i <= 3; i++) {
+                const prof = charInfo.get("Profession " + i)
+                if (!prof) continue
+                const char = String(charInfo.get("Profession " + i + " TN") ?? "").split("(")[1]?.replace(")", "").trim() ?? ""
+                if (char === "") continue
+                put("Profession " + i + " TN", "TN: " + targetNumber(charInfo, "Profession " + i, char) + "   (" + char + ")")
+            }
+
             put("Languages 2", [shield.br, shield.type, shield.enc].join(" / "))
             put("Armor Notes", armorNotes)
             put("Armor Notes 1", armorNotes)
@@ -1135,7 +1192,7 @@ function App() {
 
     // the only way back to the upload screen, and the only thing that clears the save
     function startOver() {
-        if (room !== "") leaveRoom(room)
+        if (room !== "") void leaveRoom(room)
         setRoom("")
         setRoster([])
         setViewing("")
@@ -1349,7 +1406,7 @@ function App() {
                         </div>
 
                         <button type="button" className="hostRoom" onClick={() => {
-                            sweepOldRooms()
+                            void sweepOldRooms()
                             setRoom(newRoomCode())
                         }}>Host a New Room</button>
 
@@ -1401,7 +1458,7 @@ function App() {
         // against them so a lucky roll announces itself
         // the field might be written with commas, spaces, slashes or nothing much at all,
         // so just pick out whatever numbers are in there
-        const numbersFrom = (key: string) => (String(charInfo.get(key) ?? "").match(/\d+/g) ?? [])
+        const numbersFrom = (key: string) => (String(charInfo.get(key) ?? "").match(/\d+/g) ?? ([] as string[]))
             .map(n => Number(n))
             .filter(n => n > 0)
         const luckyNumbers = numbersFrom("Lucky Numbers")
@@ -3293,7 +3350,7 @@ function App() {
                                            onChange={e => setRoomInput(e.target.value)}/>
                                     <button type="button" className="leave" onClick={() => {
                                         if (roomInput.trim() === "") return
-                                        sweepOldRooms()
+                                        void sweepOldRooms()
                                         setRoom(roomInput.trim())
                                         setRoomInput("")
                                     }}>Join Room</button>
@@ -3303,7 +3360,7 @@ function App() {
                                 <>
                                     <span>Room <b>{room}</b></span>
                                     <button type="button" className="leave" onClick={() => {
-                                        leaveRoom(room)
+                                        void leaveRoom(room)
                                         setRoom("")
                                         setRoster([])
                                     }}>Leave Room</button>

@@ -524,7 +524,6 @@ body:has(#center > .nameRow){display:block}
 #center .rankCell{padding:0}
 #center .rankCell select{
   font:inherit;
-  font-weight:inherit;
   width:100%;
   padding:.28em .55em;
   color:inherit;
