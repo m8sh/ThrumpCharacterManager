@@ -1,7 +1,7 @@
 import './App.css'
 import {fileHandler} from './index.ts'
 import {PDFDocument} from 'pdf-lib'
-import {useState, useEffect, Fragment, type ChangeEvent} from "react";
+import {useState, useEffect, Fragment, type ChangeEvent, type KeyboardEvent} from "react";
 import {publishSheet, leaveRoom, fetchRoom, watchRoom, newRoomCode, sweepOldRooms, roomsReady, type RoomRow} from './supabase.ts'
 
 
@@ -853,6 +853,40 @@ function targetNumber(info: CharInfo, skill: string, char: string) {
     const ranked = info.get(skill + " Rank")
     const bonus = ranked ? Number(info.get(skill + " Bonus") ?? 0) : -20
     return score + bonus
+}
+
+// holding an arrow key makes the browser repeat it, and the longer it is held the
+// bigger each step gets. one number is enough since only one box has focus at a time
+let arrowHold = 0
+
+function arrowStep(repeating: boolean) {
+    if (!repeating) {
+        arrowHold = 0
+        return 1
+    }
+    arrowHold++
+    if (arrowHold > 40) return 10
+    if (arrowHold > 20) return 5
+    if (arrowHold > 8) return 2
+    return 1
+}
+
+// up and down nudge a number box. a single press can go past the ends, but holding
+// the key stops at zero and at the cap so nothing runs away on its own
+function numberArrows(value: string, apply: (next: string) => void, max?: number) {
+    return (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return
+        const now = Number(value)
+        // something like "10 - 1" is not a plain number so leave it be
+        if (value.trim() === "" || isNaN(now)) return
+        e.preventDefault()
+        let next = now + arrowStep(e.repeat) * (e.key === "ArrowUp" ? 1 : -1)
+        if (e.repeat) {
+            if (next < 0) next = 0
+            if (max !== undefined && next > max) next = max
+        }
+        apply(String(next))
+    }
 }
 
 // a characteristic bonus is the tens digit of the score
@@ -2151,9 +2185,9 @@ function App() {
                     <div className="tile">
                         <div className="band head">Experience / Total</div>
                         <div className="band val">
-                            <input type="text" className="pair" id="xp" value={String(charInfo.get("Current XP") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Current XP", e.target.value))}/>
+                            <input type="text" className="pair" id="xp" value={String(charInfo.get("Current XP") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Current XP", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Current XP") ?? ""), v => setCharInfo(new Map(charInfo).set("Current XP", v)))}/>
                             <span className="sep">/</span>
-                            <input type="text" className="pair" id="xpTotal" value={String(charInfo.get("Total XP") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Total XP", e.target.value))}/>
+                            <input type="text" className="pair" id="xpTotal" value={String(charInfo.get("Total XP") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Total XP", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Total XP") ?? ""), v => setCharInfo(new Map(charInfo).set("Total XP", v)))}/>
                         </div>
                     </div>
                     <div className="tile">
@@ -2179,14 +2213,14 @@ function App() {
                             </div>
                             <div className="crow">
                                 <div className="rl">Score</div>
-                                <div><input type="text" id="str" value={String(charInfo.get("Str") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Str", e.target.value))}/></div>
-                                <div><input type="text" id="end" value={String(charInfo.get("End") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("End", e.target.value))}/></div>
-                                <div><input type="text" id="ag" value={String(charInfo.get("Ag") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Ag", e.target.value))}/></div>
-                                <div><input type="text" id="int" value={String(charInfo.get("Int") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Int", e.target.value))}/></div>
-                                <div><input type="text" id="wp" value={String(charInfo.get("Wp") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Wp", e.target.value))}/></div>
-                                <div><input type="text" id="prc" value={String(charInfo.get("Prc") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Prc", e.target.value))}/></div>
-                                <div><input type="text" id="prs" value={String(charInfo.get("Prs") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Prs", e.target.value))}/></div>
-                                <div><input type="text" id="lck" value={String(charInfo.get("Lck") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Lck", e.target.value))}/></div>
+                                <div><input type="text" id="str" value={String(charInfo.get("Str") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Str", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Str") ?? ""), v => setCharInfo(new Map(charInfo).set("Str", v)))}/></div>
+                                <div><input type="text" id="end" value={String(charInfo.get("End") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("End", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("End") ?? ""), v => setCharInfo(new Map(charInfo).set("End", v)))}/></div>
+                                <div><input type="text" id="ag" value={String(charInfo.get("Ag") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Ag", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Ag") ?? ""), v => setCharInfo(new Map(charInfo).set("Ag", v)))}/></div>
+                                <div><input type="text" id="int" value={String(charInfo.get("Int") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Int", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Int") ?? ""), v => setCharInfo(new Map(charInfo).set("Int", v)))}/></div>
+                                <div><input type="text" id="wp" value={String(charInfo.get("Wp") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Wp", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Wp") ?? ""), v => setCharInfo(new Map(charInfo).set("Wp", v)))}/></div>
+                                <div><input type="text" id="prc" value={String(charInfo.get("Prc") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Prc", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Prc") ?? ""), v => setCharInfo(new Map(charInfo).set("Prc", v)))}/></div>
+                                <div><input type="text" id="prs" value={String(charInfo.get("Prs") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Prs", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Prs") ?? ""), v => setCharInfo(new Map(charInfo).set("Prs", v)))}/></div>
+                                <div><input type="text" id="lck" value={String(charInfo.get("Lck") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Lck", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Lck") ?? ""), v => setCharInfo(new Map(charInfo).set("Lck", v)))}/></div>
                             </div>
                             <div className="crow">
                                 <div className="rl">Favored</div>
@@ -2261,11 +2295,13 @@ function App() {
                         <div className="band val">
                             <input type="text" className="pair" id="hp"
                                    value={String(charInfo.get("Current HP") ?? "")}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Current HP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Current HP", e.target.value))}
+                                   onKeyDown={numberArrows(String(charInfo.get("Current HP") ?? ""), v => setCharInfo(new Map(charInfo).set("Current HP", v)), Number(charInfo.get("Max HP")) || undefined)}/>
                             <span className="sep">/</span>
                             <input type="text" className="pair" id="hpMax"
                                    value={String(charInfo.get("Max HP") ?? "")}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Max HP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Max HP", e.target.value))}
+                                   onKeyDown={numberArrows(String(charInfo.get("Max HP") ?? ""), v => setCharInfo(new Map(charInfo).set("Max HP", v)))}/>
                         </div>
                         <div className="bar">
                             <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current HP")) / Number(charInfo.get("Max HP")) || 0)) + "%"}}></span>
@@ -2276,11 +2312,13 @@ function App() {
                         <div className="band val">
                             <input type="text" className="pair" id="mp"
                                    value={String(charInfo.get("Current MP") ?? "")}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Current MP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Current MP", e.target.value))}
+                                   onKeyDown={numberArrows(String(charInfo.get("Current MP") ?? ""), v => setCharInfo(new Map(charInfo).set("Current MP", v)), Number(charInfo.get("Max MP")) || undefined)}/>
                             <span className="sep">/</span>
                             <input type="text" className="pair" id="mpMax"
                                    value={String(charInfo.get("Max MP") ?? "")}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Max MP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Max MP", e.target.value))}
+                                   onKeyDown={numberArrows(String(charInfo.get("Max MP") ?? ""), v => setCharInfo(new Map(charInfo).set("Max MP", v)))}/>
                         </div>
                         <div className="bar">
                             <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current MP")) / Number(charInfo.get("Max MP")) || 0)) + "%"}}></span>
@@ -2291,12 +2329,14 @@ function App() {
                         <div className="band val">
                             <input type="text" className="pair" id="sp"
                                    value={String(charInfo.get("Current SP") ?? "")}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Current SP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Current SP", e.target.value))}
+                                   onKeyDown={numberArrows(String(charInfo.get("Current SP") ?? ""), v => setCharInfo(new Map(charInfo).set("Current SP", v)), Number(charInfo.get("Max SP")) || undefined)}/>
                             <span className="sep">/</span>
                             <input type="text" className={spMaxMod !== 0 ? "pair modded" : "pair"} id="spMax"
                                    value={String(shownSpMax)}
                                    readOnly={spMaxMod !== 0}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Max SP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Max SP", e.target.value))}
+                                   onKeyDown={spMaxMod !== 0 ? undefined : numberArrows(String(charInfo.get("Max SP") ?? ""), v => setCharInfo(new Map(charInfo).set("Max SP", v)))}/>
                         </div>
                         <div className="bar">
                             <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current SP")) / shownSpMax || 0)) + "%"}}></span>
@@ -2307,11 +2347,13 @@ function App() {
                         <div className="band val">
                             <input type="text" className="pair" id="lp"
                                    value={String(charInfo.get("Current LP") ?? "")}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Current LP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Current LP", e.target.value))}
+                                   onKeyDown={numberArrows(String(charInfo.get("Current LP") ?? ""), v => setCharInfo(new Map(charInfo).set("Current LP", v)), Number(charInfo.get("Max LP")) || undefined)}/>
                             <span className="sep">/</span>
                             <input type="text" className="pair" id="lpMax"
                                    value={String(charInfo.get("Max LP") ?? "")}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Max LP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Max LP", e.target.value))}
+                                   onKeyDown={numberArrows(String(charInfo.get("Max LP") ?? ""), v => setCharInfo(new Map(charInfo).set("Max LP", v)))}/>
                         </div>
                         <div className="bar">
                             <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current LP")) / Number(charInfo.get("Max LP")) || 0)) + "%"}}></span>
@@ -2322,12 +2364,14 @@ function App() {
                         <div className="band val">
                             <input type="text" className="pair" id="ap"
                                    value={String(charInfo.get("Current AP") ?? "")}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Current AP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Current AP", e.target.value))}
+                                   onKeyDown={numberArrows(String(charInfo.get("Current AP") ?? ""), v => setCharInfo(new Map(charInfo).set("Current AP", v)), Number(charInfo.get("Max AP")) || undefined)}/>
                             <span className="sep">/</span>
                             <input type="text" className={apMaxMod !== 0 ? "pair modded" : "pair"} id="apMax"
                                    value={String(shownApMax)}
                                    readOnly={apMaxMod !== 0}
-                                   onChange={e => setCharInfo(new Map(charInfo).set("Max AP", e.target.value))}/>
+                                   onChange={e => setCharInfo(new Map(charInfo).set("Max AP", e.target.value))}
+                                   onKeyDown={apMaxMod !== 0 ? undefined : numberArrows(String(charInfo.get("Max AP") ?? ""), v => setCharInfo(new Map(charInfo).set("Max AP", v)))}/>
                         </div>
                         <div className="bar">
                             <span style={{width: Math.max(0, Math.min(100, 100 * Number(charInfo.get("Current AP")) / shownApMax || 0)) + "%"}}></span>
@@ -2349,25 +2393,27 @@ function App() {
                         <div className="band val"><input type="text" id="wt" className={wtMod !== 0 ? "modded" : ""}
                                                          value={String(Number(charInfo.get("WT") ?? 0) + wtMod)}
                                                          readOnly={wtMod !== 0}
-                                                         onChange={e => setCharInfo(new Map(charInfo).set("WT", e.target.value))}/></div>
+                                                         onChange={e => setCharInfo(new Map(charInfo).set("WT", e.target.value))}
+                                                         onKeyDown={wtMod !== 0 ? undefined : numberArrows(String(charInfo.get("WT") ?? ""), v => setCharInfo(new Map(charInfo).set("WT", v)))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Initiative Rating</div>
                         <div className="band val"><input type="text" id="ir" className={woundIrMod !== 0 ? "modded" : ""}
                                                          value={String(Number(charInfo.get("IR") ?? 0) + woundIrMod)}
                                                          readOnly={woundIrMod !== 0}
-                                                         onChange={e => setCharInfo(new Map(charInfo).set("IR", e.target.value))}/></div>
+                                                         onChange={e => setCharInfo(new Map(charInfo).set("IR", e.target.value))}
+                                                         onKeyDown={woundIrMod !== 0 ? undefined : numberArrows(String(charInfo.get("IR") ?? ""), v => setCharInfo(new Map(charInfo).set("IR", v)))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Linguistics</div>
-                        <div className="band val"><input type="text" id="linguistics" value={String(charInfo.get("Linguistics") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Linguistics", e.target.value))}/></div>
+                        <div className="band val"><input type="text" id="linguistics" value={String(charInfo.get("Linguistics") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Linguistics", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Linguistics") ?? ""), v => setCharInfo(new Map(charInfo).set("Linguistics", v)))}/></div>
                     </div>
                     <div className="tile">
                         <div className="band head">Encumbrance / Carry Rating</div>
                         <div className="band val">
-                            <input type="text" className="pair" id="enc" value={String(charInfo.get("Encumbrance") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Encumbrance", e.target.value))}/>
+                            <input type="text" className="pair" id="enc" value={String(charInfo.get("Encumbrance") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Encumbrance", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Encumbrance") ?? ""), v => setCharInfo(new Map(charInfo).set("Encumbrance", v)))}/>
                             <span className="sep">/</span>
-                            <input type="text" className="pair" id="cr" value={String(charInfo.get("Carry Rating") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Carry Rating", e.target.value))}/>
+                            <input type="text" className="pair" id="cr" value={String(charInfo.get("Carry Rating") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Carry Rating", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Carry Rating") ?? ""), v => setCharInfo(new Map(charInfo).set("Carry Rating", v)))}/>
                         </div>
                     </div>
                 </div>
@@ -2660,7 +2706,7 @@ function App() {
                                     <div className="invSide">
                                         <div className="tile">
                                             <div className="band head">Septims</div>
-                                            <div className="band val"><input type="text" value={String(charInfo.get("Drakes") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Drakes", e.target.value))}/></div>
+                                            <div className="band val"><input type="text" value={String(charInfo.get("Drakes") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Drakes", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Drakes") ?? ""), v => setCharInfo(new Map(charInfo).set("Drakes", v)))}/></div>
                                         </div>
                                         <div className="tile">
                                             <div className="band head">Total ENC</div>
