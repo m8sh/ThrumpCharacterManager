@@ -727,9 +727,13 @@ const traitIntro: RuleBlock[] = [
     {text: "Traits do not stack unless otherwise specified. If traits with an X value are applied to a target with an already existing instance of that trait, apply the highest value of X unless otherwise specified."},
 ]
 
+// a blank in a trait name or rule. token is what gets replaced, and the kind decides
+// whether the sheet asks for a number or for a few words
+type TraitField = {token: string, label: string, kind: "text" | "number"}
+
 // the traits themselves, worded exactly as the rulebook has them. base is the name
-// without its value, and needsX means the sheet asks for a number before adding it
-const traitList: {base: string, name: string, needsX?: boolean, text: string[]}[] = [
+// without its blanks, and fields are whatever the sheet has to ask for first
+const traitList: {base: string, name: string, fields?: TraitField[], text: string[]}[] = [
     {
         base: "Amphibious",
         name: "Amphibious",
@@ -756,7 +760,7 @@ const traitList: {base: string, name: string, needsX?: boolean, text: string[]}[
     {
         base: "Climber",
         name: "Climber (X)",
-        needsX: true,
+        fields: [{token: "X", label: "X", kind: "number"}],
         text: ["The character can climb walls and ceilings as if open ground. Their Climb Speed is now set to Xm."],
     },
     {
@@ -772,7 +776,7 @@ const traitList: {base: string, name: string, needsX?: boolean, text: string[]}[
     {
         base: "Dawn-Cursed",
         name: "Dawn-Cursed (X)",
-        needsX: true,
+        fields: [{token: "X", label: "X", kind: "number"}],
         text: ["Characters with this trait are fatally sensitive to sunlight. While in direct sunlight, the character suffers X damage per round which ignores all damage mitigation. If the character covers themselves completely with clothing and a hood with sufficient coverage, this damage is reduced to X per hour in the sunlight. If the vampire is under full cover which would block out all sunlight, like a fully covered wagon or inside a building, they take no damage."],
     },
     {
@@ -783,25 +787,25 @@ const traitList: {base: string, name: string, needsX?: boolean, text: string[]}[
     {
         base: "Disease Resistance",
         name: "Disease Resistance (X%)",
-        needsX: true,
+        fields: [{token: "X", label: "X", kind: "number"}],
         text: ["Whenever a character with this trait would be infected by a common disease, roll a d100. If the roll is less than or equal to X, the character doesn\u2019t get the disease."],
     },
     {
         base: "Diseased",
         name: "Diseased (+/- X)",
-        needsX: true,
+        fields: [{token: "X", label: "X", kind: "number"}],
         text: ["If a character with this trait deals at least 1 point of damage (after mitigation) with their natural weapons to a target without the Diseased trait, then the affected target must test Endurance +/- X or contract a common disease."],
     },
     {
         base: "Flyer",
         name: "Flyer (X)",
-        needsX: true,
+        fields: [{token: "X", label: "X", kind: "number"}],
         text: ["The character can fly. They have a Speed equal to X when flying."],
     },
     {
         base: "Frightening",
         name: "Frightening (X)",
-        needsX: true,
+        fields: [{token: "X", label: "X", kind: "number"}],
         text: ["Those who encounter this character must immediately make a Panic (X) test."],
     },
     {
@@ -809,7 +813,97 @@ const traitList: {base: string, name: string, needsX?: boolean, text: string[]}[
         name: "From Beyond",
         text: ["The character is immune to the effects of disease, fear, toxins, and any mind-affecting magic (i.e. illusions)."],
     },
+    {
+        base: "Immunity",
+        name: "Immunity (*)",
+        fields: [{token: "*", label: "Type of effect", kind: "text"}],
+        text: ["The character is immune to any effects of the type specified in parenthesis. The character may have multiple instances of this trait for different effects *."],
+    },
+    {
+        base: "Incorporeal",
+        name: "Incorporeal",
+        text: ["Incorporeal characters are spirits, faintly visible and capable of moving through objects. They gain the Flyer (Speed) trait and may use it to freely move through solid objects. They can be targeted by attacks, but they cannot suffer damage except from magic damage or damage from attacks with the Magic quality. Incorporeal characters do not normally affect the world, but they can use magic and make attacks that are capable of damaging non-incorporeal beings. Attacks from Incorporeal characters ignore all AR from any armor that does not have the Magic quality and cannot be blocked by shields without that quality."],
+    },
+    {
+        base: "Natural Toughness",
+        name: "Natural Toughness (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: ["The character with this trait is naturally tough and reduces incoming damage of all types by X. This functions like AR for the purposes of reducing damage, but it does not count as armor."],
+    },
+    {
+        base: "Natural Weapons",
+        name: "Natural Weapons (Type, Damage, Range)",
+        fields: [
+            {token: "Type", label: "Type", kind: "text"},
+            {token: "Damage", label: "Damage", kind: "text"},
+            {token: "Range", label: "Range", kind: "text"},
+        ],
+        text: ["The character with this trait has unique natural weapons of some kind. The Type, Damage, and Range together specify the complete profile for the character\u2019s natural weapons. This overrides the default natural weapons profile and they cannot be disarmed. Default Natural Weapons profiles can be found in Unarmed Combat on page 104. Natural Weapons cannot be enchanted."],
+    },
+    {
+        base: "Power Well",
+        name: "Power Well (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: ["Characters with this trait have more magicka than usual. The size of their Magicka Pool is increased by X. If the character would receive this trait twice, combine the X values."],
+    },
+    {
+        base: "Quadruped",
+        name: "Quadruped",
+        text: ["Characters with this trait move up to twice their speed when they use the Dash action and three times their speed when they use the Sprint stamina ability."],
+    },
+    {
+        base: "Regeneration",
+        name: "Regeneration (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: ["Characters with this trait heal very quickly. They may make an Endurance test at the start of each round to heal X HP. This does not count as magical healing unless applied by some magical source."],
+    },
+    {
+        base: "Resist Normal Weapons",
+        name: "Resist Normal Weapons (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: ["Characters with this trait are resistant to mundane weapons. If the character suffers damage from a weapon/attack without the Magic quality, reduce that damage by X after any other mitigation."],
+    },
+    {
+        base: "Resistance",
+        name: "Resistance (*, X)",
+        fields: [
+            {token: "*", label: "Type", kind: "text"},
+            {token: "X", label: "X", kind: "number"},
+        ],
+        text: [
+            "Characters with this trait reduce damage of * type by X after any other mitigation and gain a +10 bonus per X to tests made to resist non-damaging effects of the listed type.",
+            "In cases where the character is not making the * related test, but rather a * related roll is being made against one of their Characteristics, increase that characteristic by 10 times X for the purposes of resolving that roll.",
+        ],
+    },
+    {
+        base: "Running Out of Luck",
+        name: "Running Out of Luck",
+        text: ["The character\u2019s luck is running out. Whenever they would burn any amount of Luck, burn twice that amount. If the character does not have this much Luck remaining, just burn all remaining Luck."],
+    },
+    {
+        base: "Savage",
+        name: "Savage",
+        text: ["The character treats weapons that they wield (including Natural Weapons) as if they had the Proven Weapon Quality. If the Weapon has the Primitive Quality, then the character treats the weapon as having neither Quality."],
+    },
 ]
+
+// fills a trait's blanks. the X rule leaves letters alone so Xm and MAX both behave,
+// and +/- X takes the whole thing since the player types the sign themselves
+function fillTrait(s: string, fields: TraitField[], values: Record<string, string>) {
+    let out = s
+    fields.forEach(f => {
+        const v = (values[f.token] ?? "").trim()
+        if (v === "") return
+        if (f.token === "X") {
+            out = out.replace(/\+\/-\s*X/g, v).replace(/(?<![A-Za-z])X/g, v)
+        } else if (f.token === "*") {
+            out = out.split("*").join(v)
+        } else {
+            out = out.replace(new RegExp("\\b" + f.token + "\\b", "g"), v)
+        }
+    })
+    return out
+}
 
 // a row on the sheet reads like "Climber (12)", so the base name is what comes first
 function traitFor(rowName: string) {
@@ -936,7 +1030,7 @@ function App() {
     const [shrugged, setShrugged] = useState("")
     const [fearKind, setFearKind] = useState("Fear")
     const [traitPick, setTraitPick] = useState("")
-    const [traitNum, setTraitNum] = useState("")
+    const [traitValues, setTraitValues] = useState<Record<string, string>>({})
 
     // the dice tray. pool is a list of sides, so tapping d6 twice gives [6, 6]
     const [diceOpen, setDiceOpen] = useState(false)
@@ -3605,10 +3699,10 @@ function App() {
                                     return (
                                         <button type="button" key={trait.base} className={held ? "pickRow taken" : "pickRow"} onClick={() => {
                                             if (held) return
-                                            // a trait written with an X needs its number before it means anything
-                                            if (trait.needsX) {
+                                            // a trait with blanks has to be filled in before it means anything
+                                            if (trait.fields && trait.fields.length > 0) {
                                                 setTraitPick(trait.base)
-                                                setTraitNum("")
+                                                setTraitValues({})
                                                 setPopout("traitNumber")
                                                 return
                                             }
@@ -3703,37 +3797,45 @@ function App() {
                     </div>
                 )}
 
-                {popout === "traitNumber" && (
-                    <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
-                        <div className="popout">
-                            <div className="pophead">{traitPick}</div>
-                            <div className="popbody">
-                                <p>{traitList.find(tr => tr.base === traitPick)?.text[0]}</p>
-                                <p className="fineprint">What is the value of X?</p>
-                                <input type="text" className="popInput" value={traitNum}
-                                       onChange={e => setTraitNum(e.target.value)} placeholder="X"/>
-                            </div>
-                            <div className="popfoot">
-                                <button type="button" onClick={() => setPopout(null)}>Cancel</button>
-                                <button type="button" className="go" onClick={() => {
-                                    const trait = traitList.find(tr => tr.base === traitPick)
-                                    if (!trait || traitNum.trim() === "") return
-                                    // the written up rule says X, the copy on the sheet says the number.
-                                    // the name is filled in the same way, so a title like Disease Resistance
-                                    // (X%) keeps its percent sign and Diseased (+/- X) keeps its sign
-                                    const num = traitNum.trim()
-                                    // the player types the sign themselves, so a rule written as
-                                    // +/- X takes the whole thing rather than leaving the +/- behind
-                                    const fill = (s: string) => s
-                                        .replace(/\+\/-\s*X/g, num)
-                                        .replace(/(?<![A-Za-z])X/g, num)
-                                    setTtp([...ttp, {name: fill(trait.name), note: fill(trait.text.join(" "))}])
-                                    setPopout(null)
-                                }}>Add</button>
+                {popout === "traitNumber" && (() => {
+                    const trait = traitList.find(tr => tr.base === traitPick)
+                    if (!trait) return null
+                    const fields = trait.fields ?? []
+                    const ready = fields.every(f => (traitValues[f.token] ?? "").trim() !== "")
+                    return (
+                        <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                            <div className="popout">
+                                <div className="pophead">{trait.name}</div>
+                                <div className="popbody">
+                                    {trait.text.map((para, i) => <p key={i}>{para}</p>)}
+                                    {fields.map(f => (
+                                        <div key={f.token}>
+                                            <p className="fineprint">{f.label}</p>
+                                            <input
+                                                type="text"
+                                                className="popInput"
+                                                value={traitValues[f.token] ?? ""}
+                                                placeholder={f.label}
+                                                onChange={e => setTraitValues({...traitValues, [f.token]: e.target.value})}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="popfoot">
+                                    <button type="button" onClick={() => setPopout(null)}>Cancel</button>
+                                    <button type="button" className="go" onClick={() => {
+                                        if (!ready) return
+                                        setTtp([...ttp, {
+                                            name: fillTrait(trait.name, fields, traitValues),
+                                            note: fillTrait(trait.text.join(" "), fields, traitValues),
+                                        }])
+                                        setPopout(null)
+                                    }}>Add</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
+                    )
+                })()}
 
                 {popout === "shrugged" && (
                     <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
