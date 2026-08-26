@@ -7,10 +7,10 @@ For example: Wound rules and how they interact with the healing mechanics are ve
 
 
 TODO:
-- dice roller
-- allow using arrow keys to change numbers
 - finish adding traits
-- Keep track of helplessness
-- Add talents (while allowing custom)
-- 
+- Create a GM initiative tracker with all the players in the room
+- Upload all of the Inhabitants of wtv, NPC statblocks with an easy search function to check what they are doing
+- Keep track of all enemy and player HP and AP as necessary
+- Whenever it is an NPC's turn their actions are visible so that the GM can just pick out what to do
+
 
