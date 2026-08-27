@@ -20,6 +20,27 @@ const rankLadder = [
     {abbr: "Mast.", name: "Master", bonus: 50},
 ]
 
+// a sheet might spell a rank out, shorten it, shout it, or misspell it, so this pins
+// whatever it says onto one of the seven ranks. two letters is enough to tell them
+// apart, except that a bare no, none or n/a means no rank at all rather than novice
+function readRank(raw: string) {
+    const letters = raw.toLowerCase().replace(/[^a-z]/g, "")
+    if (letters === "") return ""
+    if (["none", "na", "nil", "no", "untrained", "unt", "un", "u"].includes(letters)) return ""
+
+    const byTwo: Record<string, string> = {
+        un: "", no: "Novi.", ap: "Appr.", jo: "Jour.",
+        ad: "Adep.", ex: "Expe.", ma: "Mast.",
+    }
+    const two = letters.slice(0, 2)
+    if (byTwo[two] !== undefined) return byTwo[two]
+
+    // a single letter still gives it away for everything except a and its two ranks
+    const byOne: Record<string, string> = {u: "", n: "Novi.", j: "Jour.", e: "Expe.", m: "Mast."}
+    if (byOne[letters[0]] !== undefined) return byOne[letters[0]]
+    return ""
+}
+
 // changing a rank writes the matching bonus too, so every target number follows along
 function setRank(info: CharInfo, skill: string, abbr: string) {
     const step = rankLadder.find(r => r.abbr === abbr)
@@ -1369,6 +1390,15 @@ function App() {
 
         const parsed = await fileHandler(PDFInput)
         console.log(parsed)
+
+        // tidy every rank into one of the seven the sheet knows about
+        const ranked = ["Combat Style", "Profession 1", "Profession 2", "Profession 3",
+            ...skillChars.map(s => s.name)]
+        ranked.forEach(name => {
+            const key = name + " Rank"
+            if (parsed.has(key)) parsed.set(key, readRank(String(parsed.get(key) ?? "")))
+        })
+
         setCharInfo(parsed)
         // the pdf gives all the languages as one string so split it into rows here
         setLanguages(String(parsed.get("Languages") ?? "").split(",").map(l => l.trim()))
@@ -2173,20 +2203,20 @@ function App() {
                     {ttp.map((trait, i) => (
                         <div className="ttpRow" key={i}>
                             <div className="tname">
-                                <input
-                                    type="text"
+                                <textarea
+                                    className="tnameBox"
+                                    rows={1}
                                     value={trait.name}
                                     onChange={e => setTtp(ttp.map((old, j) => j === i ? {...old, name: e.target.value} : old))}
                                     onKeyDown={e => {
-                                        // the description is its own box now, so there is one name field
-                                        // per row rather than two inputs to count through
+                                        // a title has no use for a line break, so enter still starts a row
                                         if (e.key === "Enter") {
                                             e.preventDefault()
                                             const copy = [...ttp]
                                             copy.splice(i + 1, 0, {name: "", note: ""})
                                             setTtp(copy)
                                             setTimeout(() => {
-                                                const names = document.querySelectorAll<HTMLInputElement>("#center .ttp .tname input")
+                                                const names = document.querySelectorAll<HTMLTextAreaElement>("#center .ttp .tnameBox")
                                                 names[i + 1]?.focus()
                                             }, 0)
                                         }
@@ -2194,7 +2224,7 @@ function App() {
                                             e.preventDefault()
                                             setTtp(ttp.filter((_old, j) => j !== i))
                                             setTimeout(() => {
-                                                const names = document.querySelectorAll<HTMLInputElement>("#center .ttp .tname input")
+                                                const names = document.querySelectorAll<HTMLTextAreaElement>("#center .ttp .tnameBox")
                                                 names[i - 1]?.focus()
                                             }, 0)
                                         }
@@ -2216,7 +2246,7 @@ function App() {
                                             copy.splice(i + 1, 0, {name: "", note: ""})
                                             setTtp(copy)
                                             setTimeout(() => {
-                                                const names = document.querySelectorAll<HTMLInputElement>("#center .ttp .tname input")
+                                                const names = document.querySelectorAll<HTMLTextAreaElement>("#center .ttp .tnameBox")
                                                 names[i + 1]?.focus()
                                             }, 0)
                                         }
@@ -3825,9 +3855,10 @@ function App() {
                                     <button type="button" onClick={() => setPopout(null)}>Cancel</button>
                                     <button type="button" className="go" onClick={() => {
                                         if (!ready) return
+                                        const inText = fields.filter(f => f.token === "X" || f.token === "*")
                                         setTtp([...ttp, {
                                             name: fillTrait(trait.name, fields, traitValues),
-                                            note: fillTrait(trait.text.join(" "), fields, traitValues),
+                                            note: fillTrait(trait.text.join(" "), inText, traitValues),
                                         }])
                                         setPopout(null)
                                     }}>Add</button>
