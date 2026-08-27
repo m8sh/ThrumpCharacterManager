@@ -750,11 +750,24 @@ const traitIntro: RuleBlock[] = [
 
 // a blank in a trait name or rule. token is what gets replaced, and the kind decides
 // whether the sheet asks for a number or for a few words
-type TraitField = {token: string, label: string, kind: "text" | "number"}
+type TraitField = {
+    token: string,
+    label: string,
+    kind: "text" | "number" | "choice",
+    // for a choice, the value that goes in and the wording that explains it
+    options?: {value: string, label: string}[],
+}
 
 // the traits themselves, worded exactly as the rulebook has them. base is the name
 // without its blanks, and fields are whatever the sheet has to ask for first
-const traitList: {base: string, name: string, fields?: TraitField[], text: string[]}[] = [
+const traitList: {
+    base: string,
+    name: string,
+    fields?: TraitField[],
+    text: string[],
+    // a few traits carry a small table of their own
+    table?: {head: string, cols: [string, string], rows: [string, string][]},
+}[] = [
     {
         base: "Amphibious",
         name: "Amphibious",
@@ -905,6 +918,94 @@ const traitList: {base: string, name: string, fields?: TraitField[], text: strin
         base: "Savage",
         name: "Savage",
         text: ["The character treats weapons that they wield (including Natural Weapons) as if they had the Proven Weapon Quality. If the Weapon has the Primitive Quality, then the character treats the weapon as having neither Quality."],
+    },
+    {
+        base: "Silver-Scarred",
+        name: "Silver-Scarred (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: ["Any damage inflicted on a character with this trait after mitigation by an attack from a silver weapon is increased by X before calculating the effects of the damage."],
+    },
+    {
+        base: "Skeletal",
+        name: "Skeletal",
+        text: ["Characters with this trait have purely skeletal forms. Attempts to hit them with ranged weapons suffer a -20 penalty. Characters with this trait also automatically gain the Undead trait as well and are immune to the Burning (X) condition."],
+    },
+    {
+        base: "Spell Absorption",
+        name: "Spell Absorption (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: [
+            "Characters with this trait absorb a portion of the magic directed at them to fuel their own magicka reserves. Whenever magic from another source/character affects them, roll a d10. If the value is less than or equal to X, the magic has no effect on them; instead, they regain missing MP up to the cost of the magic.",
+            "If a character with this trait would be affected by the Reflect spell, then the effects of each should be resolved in the reverse order to which they were applied.",
+            "For example, if a character with this trait has the Reflect spell effect applied to them after this trait is applied, then when the character is affected by another spell effect they would resolve Reflect against that effect first, then Spell Aborption if the effect is not reflected.",
+        ],
+    },
+    {
+        base: "Strong Jaws",
+        name: "Strong Jaws",
+        text: ["A Bite attack made by this character that deals damage automatically starts a Grapple test. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks againt a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."],
+    },
+    {
+        base: "Stunted Magicka",
+        name: "Stunted Magicka",
+        text: ["Characters with this trait do not regenerate magicka naturally and halve the benefits (round down) gained from Spell Restraint."],
+    },
+    {
+        base: "Summoned",
+        name: "Summoned",
+        text: ["This creature or item has been conjured from another plane of existence. Upon its death or destruction, it returns to where it came from immediately."],
+    },
+    {
+        base: "Sun-Scarred",
+        name: "Sun-Scarred (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: [
+            "Any damage inflicted on a character with this trait after mitigation by an attack that counts as sunlight is increased by X before calculating the effects of the damage.",
+            "If this character is exposed to normal sunlight they lose 1 SP each hour. Cloud cover or other such weather halves the rate of SP loss. The character must spend an hour in a dark place before they can remove levels of fatigue/regain SP lost in this manner.",
+        ],
+    },
+    {
+        base: "Swimmer",
+        name: "Swimmer",
+        text: ["The character\u2019s Swim Speed is doubled."],
+    },
+    {
+        base: "Telepathy",
+        name: "Telepathy (X)",
+        fields: [{token: "X", label: "Telepathic Strength", kind: "choice", options: [
+                {value: "1", label: "A single word"},
+                {value: "2", label: "A short sentence."},
+                {value: "3", label: "A full sentence."},
+                {value: "4", label: "Up to five sentences."},
+                {value: "5", label: "As many words as the character desires."},
+                {value: "6", label: "Images."},
+                {value: "7", label: "Complex feelings and concepts."},
+            ]}],
+        text: [
+            "Characters with this trait can communicate with others telepathically. They are capable of \u201cbroadcasting\u201d thoughts to a maximum number of characters equal to their WB within a number of meters equal to one hundred times their WB. They must have line of sight to the character to whom they are broadcasting, unless the target character has this trait as well.",
+            "Characters with this trait can make a Perception test as a Free Action to attempt to locate other characters with this trait within their broadcast range, though this test can be opposed by a Willpower test if a character wishes to remain hidden.",
+            "The strength X of this trait determines the complexity of the thoughts they can broadcast.",
+        ],
+        table: {head: "Telepathic Strength", cols: ["X", "Maximum Message Complexity"], rows: [
+                ["1", "A single word"],
+                ["2", "A short sentence."],
+                ["3", "A full sentence."],
+                ["4", "Up to five sentences."],
+                ["5", "As many words as the character desires."],
+                ["6", "Images."],
+                ["7+", "Complex feelings and concepts."],
+            ]},
+    },
+    {
+        base: "Thick Skull",
+        name: "Thick Skull",
+        text: ["Immune to Stun and Dazed."],
+    },
+    {
+        base: "Vicious",
+        name: "Vicious (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: ["The creature treats their SB as being X for the purposes of resolving damage. This does not effect the character's Strength Characteristic Score."],
     },
 ]
 
@@ -3447,6 +3548,21 @@ function App() {
                                                             {openActions.includes("trait " + trait.name) && (
                                                                 <div className="actBody">
                                                                     {trait.text.map((para, k) => <p key={k}>{para}</p>)}
+                                                                    {trait.table && (
+                                                                        <>
+                                                                            <div className="subHead">{trait.table.head}</div>
+                                                                            <div className="dtable wide">
+                                                                                <div className="dh">{trait.table.cols[0]}</div>
+                                                                                <div className="dh">{trait.table.cols[1]}</div>
+                                                                                {trait.table.rows.map(row => (
+                                                                                    <Fragment key={row[0]}>
+                                                                                        <div>{row[0]}</div>
+                                                                                        <div>{row[1]}</div>
+                                                                                    </Fragment>
+                                                                                ))}
+                                                                            </div>
+                                                                        </>
+                                                                    )}
                                                                 </div>
                                                             )}
                                                         </div>
@@ -3841,13 +3957,26 @@ function App() {
                                     {fields.map(f => (
                                         <div key={f.token}>
                                             <p className="fineprint">{f.label}</p>
-                                            <input
-                                                type="text"
-                                                className="popInput"
-                                                value={traitValues[f.token] ?? ""}
-                                                placeholder={f.label}
-                                                onChange={e => setTraitValues({...traitValues, [f.token]: e.target.value})}
-                                            />
+                                            {f.kind === "choice" ? (
+                                                <div className="traitChoice">
+                                                    {(f.options ?? []).map(opt => (
+                                                        <button
+                                                            type="button"
+                                                            key={opt.value}
+                                                            className={traitValues[f.token] === opt.value ? "chosen" : ""}
+                                                            onClick={() => setTraitValues({...traitValues, [f.token]: opt.value})}
+                                                        ><b>{opt.value}</b><span>{opt.label}</span></button>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="text"
+                                                    className="popInput"
+                                                    value={traitValues[f.token] ?? ""}
+                                                    placeholder={f.label}
+                                                    onChange={e => setTraitValues({...traitValues, [f.token]: e.target.value})}
+                                                />
+                                            )}
                                         </div>
                                     ))}
                                 </div>

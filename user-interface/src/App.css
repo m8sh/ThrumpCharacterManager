@@ -1207,6 +1207,30 @@ body:has(#center > .nameRow){display:block}
 .popout .pickRow.taken:hover{background:none}
 
 .popout .recapHead{font-weight:700;margin:.6em 0 .2em}
+
+/* a blank picked from a list, where each choice explains what it means */
+.popout .traitChoice{display:flex;flex-direction:column;margin-top:.3em;border:1px solid var(--line)}
+.popout .traitChoice button{
+  display:flex;
+  gap:.7em;
+  align-items:baseline;
+  width:100%;
+  padding:.3em .5em;
+  font:inherit;
+  text-align:left;
+  color:var(--text);
+  background:none;
+  border:0;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+.popout .traitChoice button:last-child{border-bottom:0}
+.popout .traitChoice button:hover{background:var(--band)}
+.popout .traitChoice button b{font-weight:700;min-width:1.2em}
+.popout .traitChoice button span{opacity:.75}
+.popout .traitChoice button.chosen{background:var(--band)}
+.popout .traitChoice button.chosen b,
+.popout .traitChoice button.chosen span{color:var(--accent);opacity:1}
 /* the aside under a question, quieter than the question itself */
 .popout .fineprint{font-size:.85em;opacity:.7}
 .popout .popInput{
