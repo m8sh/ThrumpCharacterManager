@@ -545,7 +545,7 @@ const conditionRules: {name: string, blocks: {head?: string, text?: string, bull
                     "Gain an extra SP, which can exceed their SP maximum.",
                     "Immune to the effects of the stunned condition, fear, and passive wound effects.",
                 ]},
-            {text: "Once the encounter has ended, the character snaps out of their frenzied state and loses 2 SP (this cannot kill them). The char- acter can also test Willpower at a -20 as a Secondary Action during combat to attempt to snap out of frenzy, which ends the condition."},
+            {text: "Once the encounter has ended, the character snaps out of their frenzied state and loses 2 SP (this cannot kill them). The character can also test Willpower at a -20 as a Secondary Action during combat to attempt to snap out of frenzy, which ends the condition."},
         ]},
     {name: "Hidden", blocks: [
             {text: "The character is hidden from enemies and moving stealthily. Characters must spend 2 meters of their movement for the round for each 1 meter that they actually move while hidden, and they cannot Dash. Enemies cannot attempt to defend themselves against the attacks of hidden characters, but attacking causes a character to lose this condition immediately afterwards."},
@@ -1011,15 +1011,29 @@ const traitList: {
 
 // fills a trait's blanks. the X rule leaves letters alone so Xm and MAX both behave,
 // and +/- X takes the whole thing since the player types the sign themselves
-function fillTrait(s: string, fields: TraitField[], values: Record<string, string>) {
+function fillTrait(s: string, fields: TraitField[], values: Record<string, string>, forTitle?: boolean) {
     let out = s
     fields.forEach(f => {
         const v = (values[f.token] ?? "").trim()
         if (v === "") return
         if (f.token === "X") {
             out = out.replace(/\+\/-\s*X/g, v).replace(/(?<![A-Za-z])X/g, v)
+        } else if (f.kind === "choice" && !forTitle) {
+            // the picked number goes in brackets, and what it means finishes the sentence
+            const shown = "(" + v + ")"
+            out = out.replace(new RegExp("(?<![A-Za-z])" + f.token, "g"), shown)
+            const at = out.indexOf(shown)
+            const opt = (f.options ?? []).find(o => o.value === v)
+            if (at !== -1 && opt) {
+                const stop = out.indexOf(".", at)
+                const meaning = opt.label.replace(/\.$/, "")
+                if (stop !== -1) out = out.slice(0, stop) + ": " + meaning + out.slice(stop)
+                else out = out + ": " + meaning
+            }
         } else if (f.token === "*") {
             out = out.split("*").join(v)
+        } else if (f.kind === "choice") {
+            out = out.replace(new RegExp("(?<![A-Za-z])" + f.token, "g"), v)
         } else {
             out = out.replace(new RegExp("\\b" + f.token + "\\b", "g"), v)
         }
@@ -3986,7 +4000,7 @@ function App() {
                                         if (!ready) return
                                         const inText = fields.filter(f => f.token === "X" || f.token === "*")
                                         setTtp([...ttp, {
-                                            name: fillTrait(trait.name, fields, traitValues),
+                                            name: fillTrait(trait.name, fields, traitValues, true),
                                             note: fillTrait(trait.text.join(" "), inText, traitValues),
                                         }])
                                         setPopout(null)
