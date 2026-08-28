@@ -1016,9 +1016,8 @@ function fillTrait(s: string, fields: TraitField[], values: Record<string, strin
     fields.forEach(f => {
         const v = (values[f.token] ?? "").trim()
         if (v === "") return
-        if (f.token === "X") {
-            out = out.replace(/\+\/-\s*X/g, v).replace(/(?<![A-Za-z])X/g, v)
-        } else if (f.kind === "choice" && !forTitle) {
+        // the kind is checked before the token, since a choice can also be called X
+        if (f.kind === "choice" && !forTitle) {
             // the picked number goes in brackets, and what it means finishes the sentence
             const shown = "(" + v + ")"
             out = out.replace(new RegExp("(?<![A-Za-z])" + f.token, "g"), shown)
@@ -1030,10 +1029,13 @@ function fillTrait(s: string, fields: TraitField[], values: Record<string, strin
                 if (stop !== -1) out = out.slice(0, stop) + ": " + meaning + out.slice(stop)
                 else out = out + ": " + meaning
             }
+        } else if (f.kind === "choice") {
+            // in a title the picked number stands on its own with no brackets
+            out = out.replace(new RegExp("(?<![A-Za-z])" + f.token, "g"), v)
+        } else if (f.token === "X") {
+            out = out.replace(/\+\/-\s*X/g, v).replace(/(?<![A-Za-z])X/g, v)
         } else if (f.token === "*") {
             out = out.split("*").join(v)
-        } else if (f.kind === "choice") {
-            out = out.replace(new RegExp("(?<![A-Za-z])" + f.token, "g"), v)
         } else {
             out = out.replace(new RegExp("\\b" + f.token + "\\b", "g"), v)
         }
