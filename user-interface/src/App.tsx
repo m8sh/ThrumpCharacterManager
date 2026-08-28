@@ -970,6 +970,15 @@ const traitList: {
         text: ["The character\u2019s Swim Speed is doubled."],
     },
     {
+        base: "Telekinesis",
+        name: "Telekinesis (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: [
+            "Characters with this trait can move objects with their mind within a range of 10 * X meters. This can only be used to move fairly small objects (at most a large crate or barrel) at a speed of about 1 meter per second (6 per round).",
+            "The character can also throw an object at an opponent. This is a Primary Action and a Ranged Attack, and it uses Mysticism (Willpower) for the test. Any object used in this manner counts as an improvised weapon and can only be thrown a distance of WB * 2 meters.",
+        ],
+    },
+    {
         base: "Telepathy",
         name: "Telepathy (X)",
         fields: [{token: "X", label: "Telepathic Strength", kind: "choice", options: [
@@ -997,15 +1006,65 @@ const traitList: {
             ]},
     },
     {
+        base: "Terrifying",
+        name: "Terrifying (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: ["Those who encounter this character must immediately make a Horror (X) test."],
+    },
+    {
         base: "Thick Skull",
         name: "Thick Skull",
         text: ["Immune to Stun and Dazed."],
+    },
+    {
+        base: "Tough",
+        name: "Tough (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: ["Increase Wound Threshold by X."],
+    },
+    {
+        base: "Undead",
+        name: "Undead",
+        text: ["Characters with this trait are mere walking corpses. They do not breathe or require organs to function. They are immune to things such as disease, poison, passive wound effects, aging, fatigue, and a number of conditions including but not limited to dazed, deafened, and organ damage. Use common sense when deciding what can and cannot affect characters with this trait. The character cannot spend Stamina Points if doing so would bring their current SP to below 0."],
+    },
+    {
+        base: "Undying",
+        name: "Undying",
+        text: ["Characters are free from most concerns of the living. They are immune to disease and the effects of aging."],
+    },
+    {
+        base: "Unnatural Senses",
+        name: "Unnatural Senses (*, X)",
+        fields: [
+            {token: "*", label: "Senses", kind: "text"},
+            {token: "X", label: "X", kind: "number"},
+        ],
+        text: ["The character with this trait can perceive its surroundings using additional and/or different senses than the usual. Their Senses allow them to detect the things specified by * within range of X meters (even through solid objects). If * is \u201call\u201d then their Senses have been replaced entirely, and they can simply see \u201cnormally\u201d through solid objects up to X meters away."],
     },
     {
         base: "Vicious",
         name: "Vicious (X)",
         fields: [{token: "X", label: "X", kind: "number"}],
         text: ["The creature treats their SB as being X for the purposes of resolving damage. This does not effect the character's Strength Characteristic Score."],
+    },
+    {
+        base: "Weak Bones",
+        name: "Weak Bones (X)",
+        fields: [{token: "X", label: "X", kind: "number"}],
+        text: ["Reduce Wound Threshold by X."],
+    },
+    {
+        base: "Weakness",
+        name: "Weakness (*, X)",
+        fields: [
+            {token: "*", label: "Type", kind: "text"},
+            {token: "X", label: "X", kind: "number"},
+        ],
+        text: [
+            "Characters with this trait are weak to a certain damage or effect type. They increase damage of * type by X after any other mitigation and suffer a -10 penalty per X to tests made to resist non-damaging effects of this type.",
+            "If this trait would stack for a single damage type, instead only apply the highest value of X. Different values of * damage type are considered different traits.",
+            "In cases where the character is not making the * related test, but rather a * related roll is being made against one of their Characteristics, decrease that characteristic by 10 times X for the purposes of resolving that roll.",
+        ],
     },
 ]
 
