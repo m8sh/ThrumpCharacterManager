@@ -7,7 +7,6 @@ For example: Wound rules and how they interact with the healing mechanics are ve
 
 
 TODO:
-- finish adding traits
 - Create a GM initiative tracker with all the players in the room
 - Upload all of the Inhabitants of wtv, NPC statblocks with an easy search function to check what they are doing
 - Keep track of all enemy and player HP and AP as necessary
