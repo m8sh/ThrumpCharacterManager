@@ -41,6 +41,40 @@ function readRank(raw: string) {
     return ""
 }
 
+// what each attribute works out to from the characteristics. these are used as a
+// difference rather than an answer, so if a sheet says 5 Stamina where the formula
+// says 4, raising Endurance takes it to 6 and the extra point is kept
+const derivedFormulas: {keys: string[], calc: (i: CharInfo) => number}[] = [
+    {keys: ["Max HP", "Current HP"], calc: i => Math.ceil((Number(i.get("End")) || 0) / 2)},
+    {keys: ["Max MP", "Current MP"], calc: i => Number(i.get("Int")) || 0},
+    {keys: ["Max SP", "Current SP"], calc: i => bonusFrom(i, "End")},
+    {keys: ["Max LP", "Current LP"], calc: i => bonusFrom(i, "Lck")},
+    {keys: ["WT"], calc: i => bonusFrom(i, "End") + bonusFrom(i, "Str") + bonusFrom(i, "Wp")},
+    {keys: ["Base Speed", "Current Speed"], calc: i => bonusFrom(i, "Str") + 2 * bonusFrom(i, "Ag")},
+    {keys: ["IR"], calc: i => bonusFrom(i, "Ag") + bonusFrom(i, "Int") + bonusFrom(i, "Prc")},
+    {keys: ["Carry Rating"], calc: i => 4 * bonusFrom(i, "Str") + 2 * bonusFrom(i, "End")},
+    {keys: ["Linguistics"], calc: i => Math.min(4, bonusFrom(i, "Int") - 2)},
+]
+
+// changing a characteristic shifts everything that grows from it by the same amount
+// it moved, so whatever the sheet already had is carried along rather than replaced
+function withCharChange(info: CharInfo, key: string, value: string) {
+    const next = new Map(info)
+    next.set(key, value)
+
+    derivedFormulas.forEach(f => {
+        const shift = f.calc(next) - f.calc(info)
+        if (shift === 0) return
+        f.keys.forEach(k => {
+            const now = Number(next.get(k))
+            if (isNaN(now) || String(next.get(k) ?? "").trim() === "") return
+            next.set(k, String(now + shift))
+        })
+    })
+
+    return next
+}
+
 // changing a rank writes the matching bonus too, so every target number follows along
 function setRank(info: CharInfo, skill: string, abbr: string) {
     const step = rankLadder.find(r => r.abbr === abbr)
@@ -1185,13 +1219,6 @@ function bonusFrom(info: CharInfo, key: string) {
     return Math.floor((Number(info.get(key)) || 0) / 10)
 }
 
-// speed can be written as a plain number or as a little sum like 10 - 1
-function addUp(text: string) {
-    const parts = String(text).replace(/\s+/g, "").match(/[+-]?\d+/g)
-    if (!parts) return NaN
-    return parts.reduce((a, b) => a + Number(b), 0)
-}
-
 function App() {
     const [charInfo, setCharInfo] = useState<CharInfo | null>(saved ? new Map(saved.charInfo) : null)
     const [languages, setLanguages] = useState<string[]>(saved?.languages ?? [])
@@ -1567,6 +1594,16 @@ function App() {
         const parsed = await fileHandler(PDFInput)
         console.log(parsed)
 
+        // speed comes off the sheet as a sum like "10 - 1", where the tail is the armour
+        // penalty. armour is handled on its own, so only the base number is kept
+        const firstNumber = (raw: string) => {
+            const found = String(raw).match(/-?\d+/)
+            return found ? found[0] : ""
+        }
+        for (const key of ["Current Speed", "Base Speed"]) {
+            if (parsed.has(key)) parsed.set(key, firstNumber(String(parsed.get(key) ?? "")))
+        }
+
         // tidy every rank into one of the seven the sheet knows about
         const ranked = ["Combat Style", "Profession 1", "Profession 2", "Profession 3",
             ...skillChars.map(s => s.name)]
@@ -1859,7 +1896,7 @@ function App() {
         // a character never drops below one action point no matter how dazed they are
         const shownApMax = Math.max(1, Number(charInfo.get("Max AP") ?? 0) + apMaxMod)
         const shownSpMax = Math.max(0, Number(charInfo.get("Max SP") ?? 0) + spMaxMod)
-        const baseSpeed = addUp(String(charInfo.get("Current Speed") ?? ""))
+        const baseSpeed = Number(charInfo.get("Current Speed"))
         const shownSpeed = zeroSpeed ? "0"
             : halfSpeed && !isNaN(baseSpeed) ? String(Math.ceil(baseSpeed / 2))
                 : String(charInfo.get("Current Speed") ?? "")
@@ -2513,14 +2550,14 @@ function App() {
                             </div>
                             <div className="crow">
                                 <div className="rl">Score</div>
-                                <div><input type="text" id="str" value={String(charInfo.get("Str") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Str", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Str") ?? ""), v => setCharInfo(new Map(charInfo).set("Str", v)))}/></div>
-                                <div><input type="text" id="end" value={String(charInfo.get("End") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("End", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("End") ?? ""), v => setCharInfo(new Map(charInfo).set("End", v)))}/></div>
-                                <div><input type="text" id="ag" value={String(charInfo.get("Ag") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Ag", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Ag") ?? ""), v => setCharInfo(new Map(charInfo).set("Ag", v)))}/></div>
-                                <div><input type="text" id="int" value={String(charInfo.get("Int") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Int", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Int") ?? ""), v => setCharInfo(new Map(charInfo).set("Int", v)))}/></div>
-                                <div><input type="text" id="wp" value={String(charInfo.get("Wp") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Wp", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Wp") ?? ""), v => setCharInfo(new Map(charInfo).set("Wp", v)))}/></div>
-                                <div><input type="text" id="prc" value={String(charInfo.get("Prc") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Prc", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Prc") ?? ""), v => setCharInfo(new Map(charInfo).set("Prc", v)))}/></div>
-                                <div><input type="text" id="prs" value={String(charInfo.get("Prs") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Prs", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Prs") ?? ""), v => setCharInfo(new Map(charInfo).set("Prs", v)))}/></div>
-                                <div><input type="text" id="lck" value={String(charInfo.get("Lck") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Lck", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Lck") ?? ""), v => setCharInfo(new Map(charInfo).set("Lck", v)))}/></div>
+                                <div><input type="text" id="str" value={String(charInfo.get("Str") ?? "")} onChange={e => setCharInfo(withCharChange(charInfo, "Str", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Str") ?? ""), v => setCharInfo(withCharChange(charInfo, "Str", v)))}/></div>
+                                <div><input type="text" id="end" value={String(charInfo.get("End") ?? "")} onChange={e => setCharInfo(withCharChange(charInfo, "End", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("End") ?? ""), v => setCharInfo(withCharChange(charInfo, "End", v)))}/></div>
+                                <div><input type="text" id="ag" value={String(charInfo.get("Ag") ?? "")} onChange={e => setCharInfo(withCharChange(charInfo, "Ag", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Ag") ?? ""), v => setCharInfo(withCharChange(charInfo, "Ag", v)))}/></div>
+                                <div><input type="text" id="int" value={String(charInfo.get("Int") ?? "")} onChange={e => setCharInfo(withCharChange(charInfo, "Int", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Int") ?? ""), v => setCharInfo(withCharChange(charInfo, "Int", v)))}/></div>
+                                <div><input type="text" id="wp" value={String(charInfo.get("Wp") ?? "")} onChange={e => setCharInfo(withCharChange(charInfo, "Wp", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Wp") ?? ""), v => setCharInfo(withCharChange(charInfo, "Wp", v)))}/></div>
+                                <div><input type="text" id="prc" value={String(charInfo.get("Prc") ?? "")} onChange={e => setCharInfo(withCharChange(charInfo, "Prc", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Prc") ?? ""), v => setCharInfo(withCharChange(charInfo, "Prc", v)))}/></div>
+                                <div><input type="text" id="prs" value={String(charInfo.get("Prs") ?? "")} onChange={e => setCharInfo(withCharChange(charInfo, "Prs", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Prs") ?? ""), v => setCharInfo(withCharChange(charInfo, "Prs", v)))}/></div>
+                                <div><input type="text" id="lck" value={String(charInfo.get("Lck") ?? "")} onChange={e => setCharInfo(withCharChange(charInfo, "Lck", e.target.value))} onKeyDown={numberArrows(String(charInfo.get("Lck") ?? ""), v => setCharInfo(withCharChange(charInfo, "Lck", v)))}/></div>
                             </div>
                             <div className="crow">
                                 <div className="rl">Favored</div>
