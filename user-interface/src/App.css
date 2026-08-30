@@ -817,6 +817,31 @@ body:has(#center > .nameRow){display:block}
 
 /* combat */
 
+/* the armour heading carries the weight class picker, so it costs no extra height */
+#center .armHead{display:flex;align-items:center;gap:.6em}
+#center .armHead h3{margin:0}
+#center .armHead .wcRule{flex:1;height:1px;background:var(--line)}
+#center .armHead .wcLabel{
+  font-size:.85em;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  opacity:.6;
+}
+#center .armHead .wcName{font-weight:700;white-space:nowrap}
+#center .armHead .wcName.none{font-weight:400;opacity:.55}
+#center .armHead .wcStep{
+  font:inherit;
+  font-size:.85em;
+  padding:0 .5em;
+  color:var(--text);
+  background:var(--band);
+  border:1px solid var(--line);
+  border-radius:0;
+  cursor:pointer;
+}
+#center .armHead .wcStep:hover{border-color:var(--accent);color:var(--accent)}
+
 #center .combatBand{display:flex;gap:var(--gap);align-items:start}
 #center .combatL{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--gap)}
 #center .combatR{flex:1.15;min-width:0;display:flex;flex-direction:column;gap:var(--gap)}

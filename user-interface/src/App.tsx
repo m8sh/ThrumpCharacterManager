@@ -41,6 +41,34 @@ function readRank(raw: string) {
     return ""
 }
 
+// armour weight classes, worded as the rulebook has them. the sheet is never parsed
+// for these, the player steps through them by hand and the numbers follow
+const weightClasses: {
+    name: string,
+    rules: string,
+    // the agility penalty spares combat style, which is why it is its own hook
+    agility: number,
+    acrobatics: number,
+    speed: number,
+    all: number,
+    still: boolean,
+}[] = [
+    {name: "No listed class", rules: "The armor is light enough it imposes no penalties on its user.",
+        agility: 0, acrobatics: 0, speed: 0, all: 0, still: false},
+    {name: "Light", rules: "Light armor imposes a minor penalty on a character\u2019s mobility: The character suffers a -10 penalty to Acrobatics skill tests.",
+        agility: 0, acrobatics: -10, speed: 0, all: 0, still: false},
+    {name: "Medium", rules: "Medium armor imposes a moderate penalty on a character\u2019s mobility: the character suffers a -10 penalty to Agility based tests (except Combat Style skill tests) and reduces their Speed by 1.",
+        agility: -10, acrobatics: 0, speed: -1, all: 0, still: false},
+    {name: "Heavy", rules: "Heavy armor imposes a substantial penalty on a character\u2019s mobility: the character suffers a -20 penalty to Agility based tests (except Combat Style skill tests) and reduces their Speed by 2.",
+        agility: -20, acrobatics: 0, speed: -2, all: 0, still: false},
+    {name: "Super-Heavy", rules: "Super-Heavy armor imposes a staggering penalty on a character\u2019s mobility: the character suffers a -30 penalty to Agility based tests (except Combat Style skill tests) and reduces their Speed by 3.",
+        agility: -30, acrobatics: 0, speed: -3, all: 0, still: false},
+    {name: "Crippling", rules: "Character cannot move, and suffers a -40 to all tests.",
+        agility: 0, acrobatics: 0, speed: 0, all: -40, still: true},
+]
+
+const weightIntro = "Most armors and shields have a weight class, reflected by one of the qualities below, that represents how heavy and restrictive that armor is. When wearing multiple different types of armor and/or carrying a shield, the character always uses the effects of their heaviest armor piece."
+
 // what each attribute works out to from the characteristics. these are used as a
 // difference rather than an answer, so if a sheet says 5 Stamina where the formula
 // says 4, raising Endurance takes it to 6 and the extra point is kept
@@ -1258,6 +1286,8 @@ function App() {
 
     // the dice tray. pool is a list of sides, so tapping d6 twice gives [6, 6]
     const [diceOpen, setDiceOpen] = useState(false)
+    // which weight class the armour adds up to, chosen rather than read off the sheet
+    const [weightClass, setWeightClass] = useState<number>(saved?.weightClass ?? 0)
     const [dicePool, setDicePool] = useState<number[]>([])
     const [diceRolls, setDiceRolls] = useState<{sides: number, value: number}[] | null>(null)
     // automatic conditions the player has taken off by hand, so they do not come straight back
@@ -1290,7 +1320,7 @@ function App() {
             charInfo: Array.from(charInfo),
             languages, mode, panel, inventory, ttp, specializations,
             rituals, spells, melee, ranged, openActions, conditions,
-            woundList: wounds, shield, armorNotes, dismissed,
+            woundList: wounds, shield, armorNotes, dismissed, weightClass,
         })
 
         try {
@@ -1303,7 +1333,7 @@ function App() {
         if (roomsReady && room !== "") void publishSheet(room, String(charInfo.get("Name") ?? "unnamed"), snapshot)
     }, [charInfo, languages, mode, panel, inventory, ttp, specializations,
         rituals, spells, melee, ranged, openActions, conditions, wounds,
-        shield, armorNotes, dismissed, room, viewing])
+        shield, armorNotes, dismissed, weightClass, room, viewing])
 
     useEffect(() => {
         try {
@@ -1572,6 +1602,7 @@ function App() {
         setShield({br: "", type: "", enc: ""})
         setArmorNotes("")
         setDismissed([])
+        setWeightClass(0)
         setPopout(null)
         setRestLines(null)
         setRecap([])
@@ -1739,6 +1770,7 @@ function App() {
         setShield(s.shield ?? {br: "", type: "", enc: ""})
         setArmorNotes(s.armorNotes ?? "")
         setDismissed(s.dismissed ?? [])
+        setWeightClass(s.weightClass ?? 0)
     }
 
     const stopViewing = () => {
@@ -1882,7 +1914,13 @@ function App() {
         const woundTestMod = frenzied ? 0 : untreated.length * -20
         const woundIrMod = frenzied ? 0 : untreated.length * -2
 
-        const testMod = modOf("testMod") + woundTestMod
+        // the armour penalty splits three ways: one that hits every test, one that hits
+        // agility based skills but never combat style, and one only for acrobatics
+        const armour = weightClasses[weightClass]
+        const agilityMod = armour.agility
+        const acrobaticsMod = armour.acrobatics
+
+        const testMod = modOf("testMod") + woundTestMod + armour.all
         const csMod = modOf("csMod")
         const magicMod = modOf("magicMod")
         const wtMod = modOf("wtMod")
@@ -1897,9 +1935,10 @@ function App() {
         const shownApMax = Math.max(1, Number(charInfo.get("Max AP") ?? 0) + apMaxMod)
         const shownSpMax = Math.max(0, Number(charInfo.get("Max SP") ?? 0) + spMaxMod)
         const baseSpeed = Number(charInfo.get("Current Speed"))
-        const shownSpeed = zeroSpeed ? "0"
-            : halfSpeed && !isNaN(baseSpeed) ? String(Math.ceil(baseSpeed / 2))
-                : String(charInfo.get("Current Speed") ?? "")
+        const shownSpeed = (zeroSpeed || armour.still) ? "0"
+            : halfSpeed && !isNaN(baseSpeed) ? String(Math.max(0, Math.ceil(baseSpeed / 2) + armour.speed))
+                : !isNaN(baseSpeed) ? String(Math.max(0, baseSpeed + armour.speed))
+                    : String(charInfo.get("Current Speed") ?? "")
 
         // an ear or eye wound needs a side, everything else already names its part
         const woundTarget = woundPart === "Head (Ear)" ? (woundSide === "" ? "Head" : woundSide + " Ear")
@@ -2717,9 +2756,9 @@ function App() {
                     <div className="tile">
                         <div className="band head">Speed</div>
                         <div className="band val">
-                            <input type="text" className={halfSpeed || zeroSpeed ? "pair modded" : "pair"} id="speed"
+                            <input type="text" className={halfSpeed || zeroSpeed || armour.speed !== 0 || armour.still ? "pair modded" : "pair"} id="speed"
                                    value={shownSpeed}
-                                   readOnly={halfSpeed || zeroSpeed}
+                                   readOnly={halfSpeed || zeroSpeed || armour.speed !== 0 || armour.still}
                                    onChange={e => setCharInfo(new Map(charInfo).set("Current Speed", e.target.value))}/>
                             <span className="sep">/</span>
                             <input type="text" className="pair" id="speedCalc" value={String(charInfo.get("Base Speed") ?? "")} onChange={e => setCharInfo(new Map(charInfo).set("Base Speed", e.target.value))}/>
@@ -2793,7 +2832,7 @@ function App() {
                                     <div>{charInfo.get("Acrobatics Rank") ? String(charInfo.get("Acrobatics Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
                                         <span>Strength <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Str")) + (charInfo.get("Acrobatics Rank") ? Number(charInfo.get("Acrobatics Bonus") ?? 0) : -20) + testMod}</b></span>
-                                        <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Acrobatics Rank") ? Number(charInfo.get("Acrobatics Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Agility <b className={testMod + agilityMod + acrobaticsMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Acrobatics Rank") ? Number(charInfo.get("Acrobatics Bonus") ?? 0) : -20) + testMod + agilityMod + acrobaticsMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -2854,7 +2893,7 @@ function App() {
                                     <div className="rankCell"><select value={String(charInfo.get("Evade Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Evade", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Evade Rank") ? String(charInfo.get("Evade Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Evade Rank") ? Number(charInfo.get("Evade Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Agility <b className={testMod + agilityMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Evade Rank") ? Number(charInfo.get("Evade Bonus") ?? 0) : -20) + testMod + agilityMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -2920,7 +2959,7 @@ function App() {
                                     <div className="rankCell"><select value={String(charInfo.get("Ride Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Ride", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Ride Rank") ? String(charInfo.get("Ride Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Ride Rank") ? Number(charInfo.get("Ride Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Agility <b className={testMod + agilityMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Ride Rank") ? Number(charInfo.get("Ride Bonus") ?? 0) : -20) + testMod + agilityMod}</b></span>
                                     </div>
                                 </div>
                                 <div className="srow">
@@ -2928,7 +2967,7 @@ function App() {
                                     <div className="rankCell"><select value={String(charInfo.get("Stealth Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Stealth", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Stealth Rank") ? String(charInfo.get("Stealth Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Stealth Rank") ? Number(charInfo.get("Stealth Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Agility <b className={testMod + agilityMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Stealth Rank") ? Number(charInfo.get("Stealth Bonus") ?? 0) : -20) + testMod + agilityMod}</b></span>
                                         <span>Perception <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Prc")) + (charInfo.get("Stealth Rank") ? Number(charInfo.get("Stealth Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
@@ -2937,7 +2976,7 @@ function App() {
                                     <div className="rankCell"><select value={String(charInfo.get("Subterfuge Rank") ?? "")} onChange={e => setCharInfo(setRank(charInfo, "Subterfuge", e.target.value))}>{rankLadder.map(r => <option key={r.name} value={r.abbr}>{r.name}</option>)}</select></div>
                                     <div>{charInfo.get("Subterfuge Rank") ? String(charInfo.get("Subterfuge Bonus") ?? "0") : "-20"}</div>
                                     <div className="stests">
-                                        <span>Agility <b className={testMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Subterfuge Rank") ? Number(charInfo.get("Subterfuge Bonus") ?? 0) : -20) + testMod}</b></span>
+                                        <span>Agility <b className={testMod + agilityMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Ag")) + (charInfo.get("Subterfuge Rank") ? Number(charInfo.get("Subterfuge Bonus") ?? 0) : -20) + testMod + agilityMod}</b></span>
                                         <span>Intelligence <b className={testMod + frenzyMod !== 0 ? "modded" : ""}>{Number(charInfo.get("Int")) + (charInfo.get("Subterfuge Rank") ? Number(charInfo.get("Subterfuge Bonus") ?? 0) : -20) + testMod + frenzyMod}</b></span>
                                     </div>
                                 </div>
@@ -3117,7 +3156,14 @@ function App() {
                         <div className="combatBand">
 
                             <div className="combatL">
-                                <h3>Armor</h3>
+                                <div className="armHead">
+                                    <h3>Armor</h3>
+                                    <div className="wcRule"></div>
+                                    <span className="wcLabel">Weight Class:</span>
+                                    <button type="button" className="wcStep" onClick={() => setWeightClass((weightClass + weightClasses.length - 1) % weightClasses.length)}>&#8722;</button>
+                                    <span className={weightClass === 0 ? "wcName none" : "wcName"}>{weightClasses[weightClass].name}</span>
+                                    <button type="button" className="wcStep" onClick={() => setWeightClass((weightClass + 1) % weightClasses.length)}>+</button>
+                                </div>
 
                                 <div className="armGrid">
                                     <div className="armLoc">
@@ -3551,6 +3597,23 @@ function App() {
                                                                 )}
                                                             </div>
                                                         ))}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="act">
+                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Weight") ? openActions.filter(n => n !== "group Weight") : [...openActions, "group Weight"])}>
+                                            <span>Weight Classes</span>
+                                        </div>
+                                        {openActions.includes("group Weight") && (
+                                            <div className="actBody">
+                                                <p>{weightIntro}</p>
+                                                {weightClasses.map(w => (
+                                                    <div key={w.name}>
+                                                        <div className="subHead">{w.name === "No listed class" ? "(No listed class)" : w.name === "Crippling" ? "(Crippling)" : w.name}</div>
+                                                        <p>{w.rules}</p>
                                                     </div>
                                                 ))}
                                             </div>
