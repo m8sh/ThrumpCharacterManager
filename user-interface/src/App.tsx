@@ -41,6 +41,29 @@ function readRank(raw: string) {
     return ""
 }
 
+// a creature the gm has put into the fight. players come from the room instead, so
+// only these are stored, and only these can be edited or removed here
+type Creature = {
+    id: string,
+    name: string,
+    hp: [number, number],
+    ap: [number, number],
+    sp: [number, number],
+}
+
+// pulls the pools out of a published sheet so the tracker can show them
+function poolsOf(snapshot: string) {
+    try {
+        const s = JSON.parse(snapshot)
+        const info = new Map<string, string | boolean | undefined>(s.charInfo)
+        const pair = (cur: string, max: string): [number, number] =>
+            [Number(info.get(cur)) || 0, Number(info.get(max)) || 0]
+        return {hp: pair("Current HP", "Max HP"), ap: pair("Current AP", "Max AP"), sp: pair("Current SP", "Max SP")}
+    } catch {
+        return {hp: [0, 0] as [number, number], ap: [0, 0] as [number, number], sp: [0, 0] as [number, number]}
+    }
+}
+
 // armour weight classes, worded as the rulebook has them. the sheet is never parsed
 // for these, the player steps through them by hand and the numbers follow
 const weightClasses: {
@@ -174,6 +197,7 @@ const notTurnActions: {name: string, text: string, bullets?: {label: string, tex
 // the whole sheet is kept under one key in the browsers own storage
 const saveKey = "thrump-character"
 const roleKey = "thrump-role"
+const trackerKey = "thrump-tracker"
 const roomKey = "thrump-room"
 const pdfKey = "thrump-pdf"
 
@@ -1301,6 +1325,20 @@ function App() {
         try { return localStorage.getItem(roomKey) ?? "" } catch { return "" }
     })
     const [roomInput, setRoomInput] = useState("")
+
+    // the tracker. creatures are the gm's own, everything else is keyed by who it is
+    const savedTracker = (() => {
+        try {
+            const raw = localStorage.getItem(trackerKey)
+            return raw ? JSON.parse(raw) : null
+        } catch {
+            return null
+        }
+    })()
+    const [creatures, setCreatures] = useState<Creature[]>(savedTracker?.creatures ?? [])
+    const [initBy, setInitBy] = useState<Record<string, number>>(savedTracker?.initBy ?? {})
+    const [atkBy, setAtkBy] = useState<Record<string, number>>(savedTracker?.atkBy ?? {})
+    const [orderKeys, setOrderKeys] = useState<string[]>(savedTracker?.orderKeys ?? [])
     const [roster, setRoster] = useState<RoomRow[]>([])
     // set while the dm is looking at somebody else's sheet, which turns off saving
     const [viewing, setViewing] = useState<string>("")
@@ -1334,6 +1372,14 @@ function App() {
     }, [charInfo, languages, mode, panel, inventory, ttp, specializations,
         rituals, spells, melee, ranged, openActions, conditions, wounds,
         shield, armorNotes, dismissed, weightClass, room, viewing])
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(trackerKey, JSON.stringify({creatures, initBy, atkBy, orderKeys}))
+        } catch {
+            // the tracker simply will not survive a refresh if storage is off
+        }
+    }, [creatures, initBy, atkBy, orderKeys])
 
     useEffect(() => {
         try {
@@ -1800,7 +1846,7 @@ function App() {
     // the gm, when they are not looking at somebody's character
     if (role === "gm" && viewing === "") {
         return (
-            <section id="center">
+            <section id="center" className={room === "" ? "" : "gmRoom"}>
                 {room === "" && (
                     <>
                         <div>
@@ -1824,19 +1870,176 @@ function App() {
                             <div className="code">{room}</div>
                         </div>
 
-                        <div className="roster">
-                            <div className="rhead">Characters</div>
-                            {roster.length === 0 && (
-                                <div className="empty">Nobody has joined yet. Read the code out and they will appear here.</div>
-                            )}
-                            {roster.map(entry => (
-                                <button type="button" key={entry.player_id} className="who" onClick={() => {
-                                    // looking at somebody else's sheet, so saving is off from here
-                                    setViewing(entry.name)
-                                    loadSnapshot(entry.sheet)
-                                }}><b>{entry.name}</b></button>
-                            ))}
-                        </div>
+                        {(() => {
+                            // players come from the room, creatures are the gm's own, and
+                            // both sit in one list ordered by whatever the gm has arranged
+                            type Line = {key: string, name: string, npc: boolean,
+                                hp: [number, number], ap: [number, number], sp: [number, number], sheet?: string}
+
+                            const lines: Line[] = []
+                            roster.forEach(entry => {
+                                const pools = poolsOf(entry.sheet)
+                                lines.push({key: entry.player_id, name: entry.name, npc: false,
+                                    hp: pools.hp, ap: pools.ap, sp: pools.sp, sheet: entry.sheet})
+                            })
+                            creatures.forEach(c => {
+                                lines.push({key: c.id, name: c.name, npc: true, hp: c.hp, ap: c.ap, sp: c.sp})
+                            })
+
+                            // anyone the gm has not placed yet goes on the end
+                            lines.sort((a, b) => {
+                                const ai = orderKeys.indexOf(a.key)
+                                const bi = orderKeys.indexOf(b.key)
+                                if (ai === -1 && bi === -1) return 0
+                                if (ai === -1) return 1
+                                if (bi === -1) return -1
+                                return ai - bi
+                            })
+
+                            const setCreature = (id: string, change: (c: Creature) => Creature) => {
+                                setCreatures(prev => prev.map(c => c.id === id ? change(c) : c))
+                            }
+
+                            const move = (fromKey: string, toKey: string) => {
+                                const keys = lines.map(l => l.key)
+                                const from = keys.indexOf(fromKey)
+                                const to = keys.indexOf(toKey)
+                                if (from === -1 || to === -1 || from === to) return
+                                keys.splice(to, 0, keys.splice(from, 1)[0])
+                                setOrderKeys(keys)
+                            }
+
+                            const pool = (which: "hp" | "ap" | "sp", label: string, line: Line) => {
+                                const p = line[which]
+                                const width = Math.max(0, Math.min(100, 100 * p[0] / (p[1] || 1)))
+                                return (
+                                    <div className={"tbar " + which}>
+                                        <div className="cap">
+                                            <span>{label}</span>
+                                            {line.npc ? (
+                                                <span className="edit">
+                                                    <input
+                                                        type="text"
+                                                        value={String(p[0])}
+                                                        onChange={e => setCreature(line.key, c => ({...c, [which]: [Number(e.target.value) || 0, p[1]]}))}
+                                                        onKeyDown={numberArrows(String(p[0]),
+                                                            v => setCreature(line.key, c => ({...c, [which]: [Number(v), p[1]]})), p[1])}
+                                                    />
+                                                    <span className="of">/{p[1]}</span>
+                                                </span>
+                                            ) : (
+                                                <span className="fixed">{p[0]}/{p[1]}</span>
+                                            )}
+                                        </div>
+                                        <div className="track"><span style={{width: width + "%"}}></span></div>
+                                    </div>
+                                )
+                            }
+
+                            return (
+                                <>
+                                    <div className="trackTop">
+                                        <button type="button" onClick={() => {
+                                            // blanks wait at the bottom rather than vanishing
+                                            const sorted = [...lines].sort((a, b) => {
+                                                const ai = initBy[a.key] ?? 0
+                                                const bi = initBy[b.key] ?? 0
+                                                if (!ai && !bi) return 0
+                                                if (!ai) return 1
+                                                if (!bi) return -1
+                                                return bi - ai
+                                            })
+                                            setOrderKeys(sorted.map(l => l.key))
+                                        }}>Sort</button>
+                                        <button type="button" onClick={() => setCreatures([])}>Clear All NPCs</button>
+                                    </div>
+
+                                    <div className="tracker">
+                                        <div className="trow head">
+                                            <span className="grip">&#8942;&#8942;</span>
+                                            <span className="tinit"><span className="lbl">Initiative</span></span>
+                                            <div className="tname"><span className="dot"></span><span className="lbl">Name</span></div>
+                                            <div className="tbars">
+                                                <span className="lbl">Health</span><span className="lbl">Action</span><span className="lbl">Stamina</span>
+                                            </div>
+                                            <div className="tatk"><span className="lbl">Attacks</span></div>
+                                            <div className="tdel"></div>
+                                        </div>
+
+                                        {lines.length === 0 && (
+                                            <div className="tempty">Nobody has joined yet. Read the code out and they will appear here.</div>
+                                        )}
+
+                                        {lines.map(line => (
+                                            <div
+                                                className="trow"
+                                                key={line.key}
+                                                draggable
+                                                onDragStart={e => e.dataTransfer.setData("text/plain", line.key)}
+                                                onDragOver={e => e.preventDefault()}
+                                                onDrop={e => {
+                                                    e.preventDefault()
+                                                    move(e.dataTransfer.getData("text/plain"), line.key)
+                                                }}
+                                            >
+                                                <span className="grip">&#8942;&#8942;</span>
+
+                                                <input
+                                                    type="text"
+                                                    className="tinit"
+                                                    placeholder="&#8212;"
+                                                    value={initBy[line.key] ? String(initBy[line.key]) : ""}
+                                                    onChange={e => setInitBy({...initBy, [line.key]: Number(e.target.value) || 0})}
+                                                />
+
+                                                <div className="tname">
+                                                    <span className={line.npc ? "dot npc" : "dot player"}></span>
+                                                    {line.npc ? (
+                                                        <input
+                                                            type="text"
+                                                            className="cname"
+                                                            value={line.name}
+                                                            onChange={e => setCreature(line.key, c => ({...c, name: e.target.value}))}
+                                                        />
+                                                    ) : (
+                                                        <span className="who" onClick={() => {
+                                                            setViewing(line.name)
+                                                            if (line.sheet) loadSnapshot(line.sheet)
+                                                        }}>{line.name}</span>
+                                                    )}
+                                                </div>
+
+                                                <div className="tbars">
+                                                    {pool("hp", "HP", line)}
+                                                    {pool("ap", "AP", line)}
+                                                    {pool("sp", "SP", line)}
+                                                </div>
+
+                                                <div className="tatk">
+                                                    <button type="button" onClick={() => setAtkBy({...atkBy, [line.key]: Math.max(0, (atkBy[line.key] ?? 0) - 1)})}>&#8722;</button>
+                                                    <b>{atkBy[line.key] ?? 0}</b>
+                                                    <button type="button" onClick={() => setAtkBy({...atkBy, [line.key]: (atkBy[line.key] ?? 0) + 1})}>+</button>
+                                                </div>
+
+                                                <div className="tdel">
+                                                    {/* only a creature can be taken off, a player belongs to the room */}
+                                                    {line.npc && (
+                                                        <button type="button" onClick={() => setCreatures(prev => prev.filter(c => c.id !== line.key))}>&#215;</button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <button type="button" className="addRow" onClick={() => {
+                                        const id = "c" + Math.random().toString(36).slice(2, 8)
+                                        setCreatures([...creatures, {id: id, name: "New Creature",
+                                            hp: [10, 10], ap: [3, 3], sp: [4, 4]}])
+                                        setOrderKeys([...orderKeys, id])
+                                    }}>+ Add Creature</button>
+                                </>
+                            )
+                        })()}
 
                         <button type="button" className="hostRoom" onClick={() => {
                             setRoom("")
