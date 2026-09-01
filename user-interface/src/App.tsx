@@ -857,8 +857,25 @@ const npcCommonTraits: {name: string, text: string[]}[] = [
         ]},
 ]
 
-// filled in as the special ones are written up
+const npcSpecialIntro = "The traits listed in this section are traits that are not natively added to the statblocks in this book. Instead, they represent traits which can be added in special circumstances, specific scenarios, or as desired by the GM."
+
 const npcSpecialTraits: {name: string, text: string[]}[] = [
+    {name: "Elite", text: [
+            "Elite NPCs gain the ability to use the Heroic Action stamina ability. NPCs with this trait are significant threats to the party, so GMs should make full use of the rules in their profile to reflect the character\u2019s prowess.",
+        ]},
+    {name: "Fated (X)", text: [
+            "The character has X Luck points that function just like normal Luck points except, once spent, they cannot be regained (i.e. burned). When these characters are called to make a Luck test, multiply X by 10 to calculate the base target number.",
+        ]},
+    {name: "Minion", text: [
+            "If an NPC with this trait would suffer a wound, their HP is immediately reduced to 0.",
+        ]},
+    {name: "Spellcaster", text: [
+            "This character does not track Magicka, but instead can cast each of their listed spells one time.",
+            "Give an NPC this trait when tracking magicka would provide little to no benefit to gameplay or as a general rule if tracking magicka for NPCs is too cumbersome for you or your table.",
+        ]},
+    {name: "Thrall", text: [
+            "This character has become enthralled by a supernatural master, usually a vampire or some other corrupted individual. A thrall willingly and enthusiastically follows the commands of their master. However, for as long as they are enthralled, their Intelligence is halved and they should receive direct and specific instructions lest they misinterpret the intent of their master\u2019s words. This trait can be removed by the character being targeted by a successful level 4 or higher Dispel effect or through the death of their master.",
+        ]},
 ]
 
 // the opening of the traits chapter, which sits above the list rather than inside it
@@ -2208,23 +2225,23 @@ function App() {
                                                             <span>Special Traits</span>
                                                         </div>
                                                         {openActions.includes("ref special") && (
-                                                            <div className="actGroup">
-                                                                {npcSpecialTraits.length === 0 && (
-                                                                    <div className="actBody"><p>None written up yet.</p></div>
-                                                                )}
-                                                                {npcSpecialTraits.map(tr => (
-                                                                    <div className="act" key={tr.name}>
-                                                                        <div className="actHead" onClick={() => setOpenActions(openActions.includes("npcs " + tr.name) ? openActions.filter(n => n !== "npcs " + tr.name) : [...openActions, "npcs " + tr.name])}>
-                                                                            <span>{tr.name}</span>
-                                                                        </div>
-                                                                        {openActions.includes("npcs " + tr.name) && (
-                                                                            <div className="actBody">
-                                                                                {tr.text.map((para, k) => <p key={k}>{para}</p>)}
+                                                            <>
+                                                                <div className="actBody"><p>{npcSpecialIntro}</p></div>
+                                                                <div className="actGroup">
+                                                                    {npcSpecialTraits.map(tr => (
+                                                                        <div className="act" key={tr.name}>
+                                                                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("npcs " + tr.name) ? openActions.filter(n => n !== "npcs " + tr.name) : [...openActions, "npcs " + tr.name])}>
+                                                                                <span>{tr.name}</span>
                                                                             </div>
-                                                                        )}
-                                                                    </div>
-                                                                ))}
-                                                            </div>
+                                                                            {openActions.includes("npcs " + tr.name) && (
+                                                                                <div className="actBody">
+                                                                                    {tr.text.map((para, k) => <p key={k}>{para}</p>)}
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </>
                                                         )}
                                                     </div>
                                                 </div>

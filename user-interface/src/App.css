@@ -1552,6 +1552,25 @@ body:has(#center > .nameRow){display:block}
 #center .refList .actHead.groupHead.npcHead{border-left-color:#d4756a}
 #center .refList .actHead.groupHead.pcHead{border-left-color:#6f9ee0}
 
+/* common and special sit between the section heading and the traits themselves, so
+   they read as a middle step rather than as another trait in the list */
+#center .refList .actGroup > .act > .actHead:not(.groupHead){
+  padding:.38em .55em;
+  background:#22262d;
+  border-left:3px solid var(--line);
+  font-size:1.05em;
+  letter-spacing:.03em;
+}
+#center .refList .actGroup > .act > .actHead:not(.groupHead):hover{background:#282d35}
+
+/* and a trait inside them steps in a little further */
+#center .refList .actGroup .actGroup > .act > .actHead{
+  padding-left:1.3em;
+  background:var(--band);
+  font-size:1em;
+  letter-spacing:0;
+}
+
 /* the gm's initiative tracker */
 
 /* the room screen fills the page instead of sitting centred like the way in does */
