@@ -828,6 +828,39 @@ const hitLocations = [
     {roll: "0", where: "Head"},
 ]
 
+// the traits a creature carries. these are kept apart from the player traits because
+// they are worded for the gm and a few of them differ from the player version
+const npcCommonIntro = "The traits in this section are used commonly enough that their inclusion in each profile would be redundant and hinder the GM\u2019s ability to reference the statblock\u2019s rules during play."
+
+const npcCommonTraits: {name: string, text: string[]}[] = [
+    {name: "Bestial", text: [
+            "NPCs with this trait automatically pass Survival tests in their natural habitat.",
+            "A Bestial creature\u2019s habitat is simply defined as a place where it would naturally live or reasonably adapt to. For example, a wild dog might be able to count a city as its habitat, while a wolf would likely not.",
+        ]},
+    {name: "From Beyond", text: [
+            "NPCs with this trait are immune to the effects of disease, fear, toxins, and any mind-affecting magic (i.e. illusions).",
+        ]},
+    {name: "Mechanical", text: [
+            "NPCs with this trait are immune to disease, poison, illusion spells, and any biological effects as determined by the GM. They cannot be reanimated via Necromancy and do not need to eat, sleep, or breathe to remain active.",
+        ]},
+    {name: "Quadruped", text: [
+            "The creature moves up to twice their speed when they use the Dash action and three times their speed when they use the Sprint stamina ability.",
+        ]},
+    {name: "Skeletal", text: [
+            "NPCs with this trait have purely skeletal forms. Attempts to hit them with ranged weapons suffer a -20 penalty. Characters with this trait also automatically gain the Undead trait as well and are immune to the Burning (X) condition.",
+        ]},
+    {name: "Tonal Reinforcement", text: [
+            "NPCs with this trait are immune to disintegrate item effects and spells.",
+        ]},
+    {name: "Undead", text: [
+            "NPCs with this trait are mere walking corpses. They do not breathe or require organs to function. They are immune to things such as disease, poison, passive wound effects, aging, fatigue, and a number of conditions including but not limited to dazed, deafened, and organ damage. Use common sense when deciding what can and cannot affect characters with this trait. The character cannot spend Stamina Points if doing so would bring their current SP to below 0.",
+        ]},
+]
+
+// filled in as the special ones are written up
+const npcSpecialTraits: {name: string, text: string[]}[] = [
+]
+
 // the opening of the traits chapter, which sits above the list rather than inside it
 const traitIntro: RuleBlock[] = [
     {text: "Traits are rules that reflect various natural facts about the character or certain abilities they possess. They include things such as the ability to fly, inherent physical weaknesses, personality traits, and so forth. They are typically the result of birth, upbringing, or racial circumstance but may be gained through other means later in life, though rarely by choice or without the use of magic."},
@@ -1793,6 +1826,104 @@ function App() {
         setArmorNotes(String(parsed.get("Armor Notes") ?? parsed.get("Armor Notes 1") ?? "") + String(parsed.get("Armor Notes 2") ?? ""))
     }
 
+    // the sheet writes these as a list, and a d100 gets read against them. the gm has
+    // no character, so for them a d100 is read against the critical bands instead
+    const luckyRolls = (String(charInfo?.get("Lucky Numbers") ?? "").match(/\d+/g) ?? ([] as string[]))
+        .map(n => Number(n)).filter(n => n > 0)
+    const unluckyRolls = (String(charInfo?.get("Unlucky Numbers") ?? "").match(/\d+/g) ?? ([] as string[]))
+        .map(n => Number(n)).filter(n => n > 0)
+
+    const rollNote = (sides: number, value: number) => {
+        if (sides !== 100) return null
+        if (role === "gm") {
+            if (value <= 3) return {text: "Critical Success!", good: true}
+            if (value >= 98) return {text: "Critical Failure!", good: false}
+            return null
+        }
+        if (luckyRolls.includes(value)) return {text: "Lucky Number!", good: true}
+        if (unluckyRolls.includes(value)) return {text: "Unlucky Number!", good: false}
+        return null
+    }
+
+    // the dice tray, sitting over whatever is on screen in the corner
+    const diceTray = (
+        <>
+            <button type="button" className="diceButton" onClick={() => setDiceOpen(!diceOpen)} title="Dice">
+                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8"/>
+                    <circle cx="8" cy="8" r="1.7" fill="currentColor"/>
+                    <circle cx="16" cy="8" r="1.7" fill="currentColor"/>
+                    <circle cx="12" cy="12" r="1.7" fill="currentColor"/>
+                    <circle cx="8" cy="16" r="1.7" fill="currentColor"/>
+                    <circle cx="16" cy="16" r="1.7" fill="currentColor"/>
+                </svg>
+            </button>
+
+            {diceOpen && (
+                <div className="diceTray">
+                    <div className="dhead">
+                        <b>Dice</b>
+                        <button type="button" onClick={() => setDiceOpen(false)}>&#215;</button>
+                    </div>
+
+                    <div className="dpick">
+                        {[4, 6, 8, 10, 12, 20, 100].map(sides => (
+                            <button type="button" key={sides} onClick={() => {
+                                // tapping the same die again just adds another of it
+                                setDicePool([...dicePool, sides])
+                                setDiceRolls(null)
+                            }}>d{sides}</button>
+                        ))}
+                    </div>
+
+                    <div className="dpool">
+                        {dicePool.length === 0 && <span className="dnone">Nothing picked yet.</span>}
+                        {[4, 6, 8, 10, 12, 20, 100].map(sides => {
+                            const many = dicePool.filter(d => d === sides).length
+                            if (many === 0) return null
+                            return (
+                                <button type="button" key={sides} className="dchip" onClick={() => {
+                                    // takes one of that die back off the pile
+                                    const at = dicePool.lastIndexOf(sides)
+                                    setDicePool(dicePool.filter((_d, j) => j !== at))
+                                    setDiceRolls(null)
+                                }}>{many}d{sides} &#215;</button>
+                            )
+                        })}
+                    </div>
+
+                    {diceRolls && (
+                        <div className="drolls">
+                            {diceRolls.map((r, i) => {
+                                const note = rollNote(r.sides, r.value)
+                                return (
+                                    <div key={i}>
+                                        <span>d{r.sides}</span>
+                                        {note && <em className={note.good ? "dlucky" : "dunlucky"}>{note.text}</em>}
+                                        <b className={note ? (note.good ? "dlucky" : "dunlucky") : ""}>{r.value}</b>
+                                    </div>
+                                )
+                            })}
+                            {diceRolls.length > 1 && (
+                                <div className="dtotal"><span>Total</span><b>{diceRolls.reduce((sum, r) => sum + r.value, 0)}</b></div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="dfoot">
+                        <button type="button" onClick={() => {
+                            setDicePool([])
+                            setDiceRolls(null)
+                        }}>Clear</button>
+                        <button type="button" className="go" onClick={() => {
+                            setDiceRolls(dicePool.map(sides => ({sides: sides, value: Math.floor(Math.random() * sides) + 1})))
+                        }}>Roll</button>
+                    </div>
+                </div>
+            )}
+        </>
+    )
+
     // pours a snapshot into the sheet. used for looking at another player's
     // character, and for putting our own back when we are done looking
     const loadSnapshot = (text: string, keepView?: boolean) => {
@@ -2037,6 +2168,111 @@ function App() {
                                             hp: [10, 10], ap: [3, 3], sp: [4, 4]}])
                                         setOrderKeys([...orderKeys, id])
                                     }}>+ Add Creature</button>
+
+                                    {/* the same trait reference the rules panel has, split
+                                        so the gm can reach the creature wording first */}
+                                    <div className="actList refList">
+                                        <div className="act">
+                                            <div className="actHead groupHead npcHead" onClick={() => setOpenActions(openActions.includes("ref npc") ? openActions.filter(n => n !== "ref npc") : [...openActions, "ref npc"])}>
+                                                <span>NPC Traits</span>
+                                            </div>
+                                            {openActions.includes("ref npc") && (
+                                                <div className="actGroup">
+                                                    <div className="act">
+                                                        <div className="actHead" onClick={() => setOpenActions(openActions.includes("ref common") ? openActions.filter(n => n !== "ref common") : [...openActions, "ref common"])}>
+                                                            <span>Common Traits</span>
+                                                        </div>
+                                                        {openActions.includes("ref common") && (
+                                                            <>
+                                                                <div className="actBody"><p>{npcCommonIntro}</p></div>
+                                                                <div className="actGroup">
+                                                                    {npcCommonTraits.map(tr => (
+                                                                        <div className="act" key={tr.name}>
+                                                                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("npct " + tr.name) ? openActions.filter(n => n !== "npct " + tr.name) : [...openActions, "npct " + tr.name])}>
+                                                                                <span>{tr.name}</span>
+                                                                            </div>
+                                                                            {openActions.includes("npct " + tr.name) && (
+                                                                                <div className="actBody">
+                                                                                    {tr.text.map((para, k) => <p key={k}>{para}</p>)}
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="act">
+                                                        <div className="actHead" onClick={() => setOpenActions(openActions.includes("ref special") ? openActions.filter(n => n !== "ref special") : [...openActions, "ref special"])}>
+                                                            <span>Special Traits</span>
+                                                        </div>
+                                                        {openActions.includes("ref special") && (
+                                                            <div className="actGroup">
+                                                                {npcSpecialTraits.length === 0 && (
+                                                                    <div className="actBody"><p>None written up yet.</p></div>
+                                                                )}
+                                                                {npcSpecialTraits.map(tr => (
+                                                                    <div className="act" key={tr.name}>
+                                                                        <div className="actHead" onClick={() => setOpenActions(openActions.includes("npcs " + tr.name) ? openActions.filter(n => n !== "npcs " + tr.name) : [...openActions, "npcs " + tr.name])}>
+                                                                            <span>{tr.name}</span>
+                                                                        </div>
+                                                                        {openActions.includes("npcs " + tr.name) && (
+                                                                            <div className="actBody">
+                                                                                {tr.text.map((para, k) => <p key={k}>{para}</p>)}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="act">
+                                            <div className="actHead groupHead pcHead" onClick={() => setOpenActions(openActions.includes("ref pc") ? openActions.filter(n => n !== "ref pc") : [...openActions, "ref pc"])}>
+                                                <span>Player Traits</span>
+                                            </div>
+                                            {openActions.includes("ref pc") && (
+                                                <>
+                                                    <div className="actBody">
+                                                        {traitIntro.map((block, i) => <p key={i}>{block.text}</p>)}
+                                                    </div>
+                                                    <div className="actGroup">
+                                                        {traitList.map(trait => (
+                                                            <div className="act" key={trait.name}>
+                                                                <div className="actHead" onClick={() => setOpenActions(openActions.includes("reftrait " + trait.name) ? openActions.filter(n => n !== "reftrait " + trait.name) : [...openActions, "reftrait " + trait.name])}>
+                                                                    <span>{trait.name}</span>
+                                                                </div>
+                                                                {openActions.includes("reftrait " + trait.name) && (
+                                                                    <div className="actBody">
+                                                                        {trait.text.map((para, k) => <p key={k}>{para}</p>)}
+                                                                        {trait.table && (
+                                                                            <>
+                                                                                <div className="subHead">{trait.table.head}</div>
+                                                                                <div className="dtable wide">
+                                                                                    <div className="dh">{trait.table.cols[0]}</div>
+                                                                                    <div className="dh">{trait.table.cols[1]}</div>
+                                                                                    {trait.table.rows.map(row => (
+                                                                                        <Fragment key={row[0]}>
+                                                                                            <div>{row[0]}</div>
+                                                                                            <div>{row[1]}</div>
+                                                                                        </Fragment>
+                                                                                    ))}
+                                                                                </div>
+                                                                            </>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
                                 </>
                             )
                         })()}
@@ -2045,6 +2281,8 @@ function App() {
                             setRoom("")
                             setRoster([])
                         }}>Leave Room</button>
+
+                        {diceTray}
                     </>
                 )}
             </section>
@@ -2060,15 +2298,6 @@ function App() {
         // total enc is just the sum of whatever enc numbers are filled in
         const totalEnc = inventory.reduce((sum, item) => sum + (Number(item.enc) || 0), 0)
 
-        // the sheet writes these as a list like "77, 81, 99, 59", and a d100 gets checked
-        // against them so a lucky roll announces itself
-        // the field might be written with commas, spaces, slashes or nothing much at all,
-        // so just pick out whatever numbers are in there
-        const numbersFrom = (key: string) => (String(charInfo.get(key) ?? "").match(/\d+/g) ?? ([] as string[]))
-            .map(n => Number(n))
-            .filter(n => n > 0)
-        const luckyNumbers = numbersFrom("Lucky Numbers")
-        const unluckyNumbers = numbersFrom("Unlucky Numbers")
 
         // a pair of lost eyes brings blindness with it. these are worked out fresh every
         // render rather than stored, so giving a part back takes the extra condition away
@@ -4243,83 +4472,7 @@ function App() {
                     </div>
                 )}
 
-                {/* the dice tray, sitting over the sheet in the corner */}
-                <button type="button" className="diceButton" onClick={() => setDiceOpen(!diceOpen)} title="Dice">
-                    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
-                        <rect x="3" y="3" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8"/>
-                        <circle cx="8" cy="8" r="1.7" fill="currentColor"/>
-                        <circle cx="16" cy="8" r="1.7" fill="currentColor"/>
-                        <circle cx="12" cy="12" r="1.7" fill="currentColor"/>
-                        <circle cx="8" cy="16" r="1.7" fill="currentColor"/>
-                        <circle cx="16" cy="16" r="1.7" fill="currentColor"/>
-                    </svg>
-                </button>
-
-                {diceOpen && (
-                    <div className="diceTray">
-                        <div className="dhead">
-                            <b>Dice</b>
-                            <button type="button" onClick={() => setDiceOpen(false)}>&#215;</button>
-                        </div>
-
-                        <div className="dpick">
-                            {[4, 6, 8, 10, 12, 20, 100].map(sides => (
-                                <button type="button" key={sides} onClick={() => {
-                                    // tapping the same die again just adds another of it
-                                    setDicePool([...dicePool, sides])
-                                    setDiceRolls(null)
-                                }}>d{sides}</button>
-                            ))}
-                        </div>
-
-                        <div className="dpool">
-                            {dicePool.length === 0 && <span className="dnone">Nothing picked yet.</span>}
-                            {[4, 6, 8, 10, 12, 20, 100].map(sides => {
-                                const many = dicePool.filter(d => d === sides).length
-                                if (many === 0) return null
-                                return (
-                                    <button type="button" key={sides} className="dchip" onClick={() => {
-                                        // takes one of that die back off the pile
-                                        const at = dicePool.lastIndexOf(sides)
-                                        setDicePool(dicePool.filter((_d, j) => j !== at))
-                                        setDiceRolls(null)
-                                    }}>{many}d{sides} &#215;</button>
-                                )
-                            })}
-                        </div>
-
-                        {diceRolls && (
-                            <div className="drolls">
-                                {diceRolls.map((r, i) => {
-                                    // only a d100 is read against the lucky and unlucky numbers
-                                    const lucky = r.sides === 100 && luckyNumbers.includes(r.value)
-                                    const unlucky = r.sides === 100 && unluckyNumbers.includes(r.value)
-                                    return (
-                                        <div key={i}>
-                                            <span>d{r.sides}</span>
-                                            {lucky && <em className="dlucky">Lucky Number!</em>}
-                                            {unlucky && <em className="dunlucky">Unlucky Number!</em>}
-                                            <b className={lucky ? "dlucky" : unlucky ? "dunlucky" : ""}>{r.value}</b>
-                                        </div>
-                                    )
-                                })}
-                                {diceRolls.length > 1 && (
-                                    <div className="dtotal"><span>Total</span><b>{diceRolls.reduce((sum, r) => sum + r.value, 0)}</b></div>
-                                )}
-                            </div>
-                        )}
-
-                        <div className="dfoot">
-                            <button type="button" onClick={() => {
-                                setDicePool([])
-                                setDiceRolls(null)
-                            }}>Clear</button>
-                            <button type="button" className="go" onClick={() => {
-                                setDiceRolls(dicePool.map(sides => ({sides: sides, value: Math.floor(Math.random() * sides) + 1})))
-                            }}>Roll</button>
-                        </div>
-                    </div>
-                )}
+                {diceTray}
 
                 {popout === "traitNumber" && (() => {
                     const trait = traitList.find(tr => tr.base === traitPick)

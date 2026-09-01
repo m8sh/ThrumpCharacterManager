@@ -939,7 +939,7 @@ body:has(#center > .nameRow){display:block}
 
 /* actions fold out when their name is clicked */
 
-#center .actList{background:var(--tile);border:1px solid var(--line)}
+#center .actList{background:var(--tile);border:1px solid var(--line);width:100%}
 #center .act{border-bottom:1px solid var(--line)}
 #center .act:last-child{border-bottom:0}
 #center .actHead{
@@ -1546,6 +1546,11 @@ body:has(#center > .nameRow){display:block}
 #center .diceTray .dfoot button:hover{filter:brightness(1.3)}
 #center .diceTray .dfoot .go{border-color:var(--accent)}
 #center .diceTray .dfoot .go:hover{color:var(--accent)}
+
+/* the trait reference under the tracker, in the gm's own colours */
+#center .refList{margin-top:1.2em}
+#center .refList .actHead.groupHead.npcHead{border-left-color:#d4756a}
+#center .refList .actHead.groupHead.pcHead{border-left-color:#6f9ee0}
 
 /* the gm's initiative tracker */
 
