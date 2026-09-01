@@ -41,6 +41,26 @@ function readRank(raw: string) {
     return ""
 }
 
+// the creatures the gm can drop into a fight. no numbers yet, so a new one starts
+// with something plain that the gm edits on the tracker
+const creatureLibrary: string[] = [
+    "Bandit",
+    "Bandit Hedge Mage",
+    "Bandit Marauder",
+    "Bandit Poacher",
+    "Bear",
+    "Snow Bear",
+]
+
+// bear, then bear 2, then bear 3, the way a folder names a repeated file. the first
+// free slot is taken, so deleting bear 2 and adding another bear fills that gap again
+function nextCreatureName(base: string, taken: string[]) {
+    if (!taken.includes(base)) return base
+    let n = 2
+    while (taken.includes(base + " " + n)) n++
+    return base + " " + n
+}
+
 // a creature the gm has put into the fight. players come from the room instead, so
 // only these are stored, and only these can be edited or removed here
 type Creature = {
@@ -1386,6 +1406,7 @@ function App() {
         }
     })()
     const [creatures, setCreatures] = useState<Creature[]>(savedTracker?.creatures ?? [])
+    const [creatureSearch, setCreatureSearch] = useState("")
     const [initBy, setInitBy] = useState<Record<string, number>>(savedTracker?.initBy ?? {})
     const [atkBy, setAtkBy] = useState<Record<string, number>>(savedTracker?.atkBy ?? {})
     const [orderKeys, setOrderKeys] = useState<string[]>(savedTracker?.orderKeys ?? [])
@@ -2180,10 +2201,8 @@ function App() {
                                     </div>
 
                                     <button type="button" className="addRow" onClick={() => {
-                                        const id = "c" + Math.random().toString(36).slice(2, 8)
-                                        setCreatures([...creatures, {id: id, name: "New Creature",
-                                            hp: [10, 10], ap: [3, 3], sp: [4, 4]}])
-                                        setOrderKeys([...orderKeys, id])
+                                        setCreatureSearch("")
+                                        setPopout("addCreature")
                                     }}>+ Add Creature</button>
 
                                     {/* the same trait reference the rules panel has, split
@@ -2300,6 +2319,56 @@ function App() {
                         }}>Leave Room</button>
 
                         {diceTray}
+
+                        {popout === "addCreature" && (
+                            <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                                <div className="popout big">
+                                    <div className="pophead">Add Creature</div>
+
+                                    <div className="searchRow">
+                                        <input
+                                            type="text"
+                                            className="searchBox"
+                                            value={creatureSearch}
+                                            placeholder="Search creatures"
+                                            onChange={e => setCreatureSearch(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="pickList">
+                                        {creatureLibrary
+                                            .filter(name => name.toLowerCase().includes(creatureSearch.trim().toLowerCase()))
+                                            .map(name => {
+                                                const many = creatures.filter(c =>
+                                                    c.name === name || /^\d+$/.test(c.name.slice(name.length + 1)) && c.name.startsWith(name + " ")).length
+                                                return (
+                                                    <button type="button" key={name} className="pickRow" onClick={() => {
+                                                        const id = "c" + Math.random().toString(36).slice(2, 8)
+                                                        const taken = creatures.map(c => c.name)
+                                                        setCreatures([...creatures, {
+                                                            id: id,
+                                                            name: nextCreatureName(name, taken),
+                                                            hp: [10, 10], ap: [3, 3], sp: [4, 4],
+                                                        }])
+                                                        setOrderKeys([...orderKeys, id])
+                                                    }}>
+                                                        <b>{name}</b>
+                                                        {many > 0 && <span>{many} in the fight</span>}
+                                                    </button>
+                                                )
+                                            })}
+                                        {creatureLibrary.filter(name => name.toLowerCase().includes(creatureSearch.trim().toLowerCase())).length === 0 && (
+                                            <p className="tempty">Nothing matches that.</p>
+                                        )}
+                                    </div>
+
+                                    <div className="popfoot">
+                                        {/* it stays open so a whole pack can go in without reopening it */}
+                                        <button type="button" className="go" onClick={() => setPopout(null)}>Done</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </>
                 )}
             </section>

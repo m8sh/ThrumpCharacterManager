@@ -1233,6 +1233,25 @@ body:has(#center > .nameRow){display:block}
 
 .popout .recapHead{font-weight:700;margin:.6em 0 .2em}
 
+/* a picker with a lot to scroll through wants more of the screen than a question does */
+.popout.big{width:min(34em, 100%);display:flex;flex-direction:column;max-height:80vh}
+.popout .searchRow{padding:.5em .7em;border-bottom:1px solid var(--line)}
+.popout .searchBox{
+  font:inherit;
+  width:100%;
+  padding:.35em .5em;
+  color:var(--text);
+  background:var(--band);
+  border:1px solid var(--line);
+  border-radius:0;
+}
+.popout .searchBox:focus{outline:0;border-color:var(--accent)}
+.popout .pickList{flex:1;min-height:6em;overflow-y:auto}
+.popout .pickList .pickRow{display:flex;align-items:baseline;gap:.6em}
+.popout .pickList .pickRow b{display:inline;flex:1}
+.popout .pickList .pickRow span{display:inline;font-size:.85em;opacity:.5}
+.popout .tempty{padding:.6em .7em;opacity:.45}
+
 /* a blank picked from a list, where each choice explains what it means */
 .popout .traitChoice{display:flex;flex-direction:column;margin-top:.3em;border:1px solid var(--line)}
 .popout .traitChoice button{
