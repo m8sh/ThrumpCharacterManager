@@ -1590,6 +1590,58 @@ body:has(#center > .nameRow){display:block}
   letter-spacing:0;
 }
 
+/* a creature's write up */
+#center .flavour{margin:0 0 .3em;opacity:.75;max-width:60em}
+#center .sbTags{margin:0 0 .9em;font-size:.95em;opacity:.55;max-width:60em}
+#center .sbStats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--gap);
+  align-items:start;
+  width:100%;
+  max-width:52em;
+}
+#center .sblock{background:var(--tile);border:1px solid var(--line)}
+#center .sblock .shead{
+  padding:.28em .55em;
+  background:var(--band);
+  border-bottom:1px solid var(--line);
+  font-weight:700;
+  font-size:.85em;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+#center .sblock .srow{
+  display:flex;
+  justify-content:space-between;
+  gap:.6em;
+  padding:.24em .55em;
+  border-bottom:1px solid var(--line);
+}
+#center .sblock .srow:last-child{border-bottom:0}
+#center .sblock .srow span{opacity:.65}
+#center .sblock .srow b{font-weight:700}
+#center .sblock .srow b.none{opacity:.3;font-weight:400}
+
+#center .gmRoom h2,
+#center.gmRoom h2{
+  display:flex;
+  align-items:center;
+  gap:.6em;
+  margin:1.1em 0 .3em;
+  font-size:1em;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  opacity:.75;
+}
+#center.gmRoom h2::before,
+#center.gmRoom h2::after{content:"";flex:1;height:1px;background:var(--line)}
+#center .sbList{margin:.2em 0;padding-left:1.2em;max-width:60em}
+#center .sbList li{margin:.28em 0}
+#center .sbList li b{font-weight:700}
+#center.gmRoom p{max-width:60em}
+
 /* the gm's initiative tracker */
 
 /* the room screen fills the page instead of sitting centred like the way in does */
@@ -1692,6 +1744,17 @@ body:has(#center.gmRoom){display:block}
   white-space:nowrap;
 }
 #center .tname .who:hover{color:var(--accent);text-decoration:underline}
+#center .tname .pencil{
+  font:inherit;
+  font-size:.85em;
+  flex:0 0 auto;
+  opacity:.35;
+  background:none;
+  border:0;
+  color:var(--text);
+  cursor:pointer;
+}
+#center .tname .pencil:hover{opacity:1;color:var(--accent)}
 #center .tname .cname{
   font:inherit;
   font-weight:700;

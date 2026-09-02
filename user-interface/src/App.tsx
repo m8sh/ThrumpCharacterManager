@@ -41,6 +41,67 @@ function readRank(raw: string) {
     return ""
 }
 
+// a creature's full write up, worded exactly as the book has it
+type Statblock = {
+    name: string,
+    flavour: string,
+    tags: string,
+    stats: {group: string, rows: [string, string][]}[],
+    sections: {head: string, kind: "list" | "prose", items: {name?: string, text: string}[]}[],
+}
+
+const statblocks: Record<string, Statblock> = {
+    "Bear": {
+        name: "Bear",
+        flavour: "Bears are large ursine quadrupeds that are widespread and ubiquitous in temperate and arctic regions. They are typically large and capable of crushing an armored man.",
+        tags: "Bear, Beast; Average; White Soul (250)",
+        stats: [
+            {group: "Characteristics", rows: [
+                    ["Strength", "50"], ["Endurance", "50"], ["Agility", "30"], ["Intelligence", "15"],
+                    ["Willpower", "35"], ["Perception", "30"], ["Personality", "5"], ["Morale", "35"],
+                ]},
+            {group: "Attributes", rows: [
+                    ["Hit Points", "35"], ["Wound Thr.", "13"], ["Magicka", "15"], ["Stamina", "5"],
+                    ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Large"],
+                ]},
+            {group: "Skills", rows: [
+                    ["Combat", "70"], ["Magic", "-"], ["Evade", "30"], ["Observe", "50"],
+                    ["Stealth", "40"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "70"],
+                ]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Claws", text: "1d12 Crushing or Splitting; Reach 1m"},
+                    {name: "Bite", text: "1d10 Crushing; Reach 1m"},
+                    {text: "Natural Toughness (3)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Maul (1 AP + 2 SP)", text: "The bear performs a melee attack as a Primary Action that deals 2d8 Crushing damage to a target creature within 1 meter. Additionally, all creatures within reach that are Medium or smaller must succeed on an Acrobatics or Athletics test or be knocked prone."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {text: "Bestial"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {text: "Quadruped"},
+                ]},
+            {head: "Variant: Cave Bear", kind: "list", items: [
+                    {text: "Dark Sight"},
+                    {name: "Stubborn", text: "The creature may re-roll failed Fear tests."},
+                ]},
+            {head: "Encountering Bears", kind: "prose", items: [
+                    {text: "Bears are often found in their dens or roaming in search of food. They frequent temperate or evergreen woodlands, though their adaptable nature allows them to thrive in many climates. During winter, bears will be found almost exclusively in their dens with the exception of Snow Bears which will continue to roam and hunt during the cold season, but will be far less active. Bears are sometimes accompanied by their cubs, which they will defend with their lives."},
+                    {text: "Bears will become very territorial and aggressive unless the target is obviously superior or causes Fear. If the bear wins the fight, they will typically leave their opponent alone, bleeding and battered after they are convinced the threat is subdued, and don\u2019t tend to eat humans unless desperate. Bears will relentlessly pursue their prey, and can run on all fours nearly as fast as a horse."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the bear\u2019s pelt, worth 100 drakes, over the course of a Short Rest. This pelt has an ENC of 2. Failing this test spoils the pelt, halving its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a bear pelt into two limb pieces of Full Bear Fur armor or one Full Bear Fur chest piece. Bear Fur armor is the same as regular Fur but has 4 AR. Failing spoils the pelt instead, making it useless and halving its worth."},
+                    {text: "On a +20 Simple Survival test over a Long Rest, a character can harvest DoS x 3 days\u2019 rations of bear meat. The meat will spoil within a day if not properly preserved."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can harvest and powder the bear\u2019s claws, which are a Rare Alteration ingredient. The character harvests DoS dosages."},
+                ]},
+        ],
+    },
+}
+
 // the creatures the gm can drop into a fight. no numbers yet, so a new one starts
 // with something plain that the gm edits on the tracker
 const creatureLibrary: string[] = [
@@ -66,6 +127,7 @@ function nextCreatureName(base: string, taken: string[]) {
 type Creature = {
     id: string,
     name: string,
+    from: string,
     hp: [number, number],
     ap: [number, number],
     sp: [number, number],
@@ -1407,6 +1469,10 @@ function App() {
     })()
     const [creatures, setCreatures] = useState<Creature[]>(savedTracker?.creatures ?? [])
     const [creatureSearch, setCreatureSearch] = useState("")
+    // which statblock the gm is reading, empty when they are on the tracker
+    const [statblock, setStatblock] = useState("")
+    // which creature name is being typed over, empty when none is
+    const [renaming, setRenaming] = useState("")
     const [initBy, setInitBy] = useState<Record<string, number>>(savedTracker?.initBy ?? {})
     const [atkBy, setAtkBy] = useState<Record<string, number>>(savedTracker?.atkBy ?? {})
     const [orderKeys, setOrderKeys] = useState<string[]>(savedTracker?.orderKeys ?? [])
@@ -2012,6 +2078,58 @@ function App() {
         )
     }
 
+    // a creature's write up, opened from its name on the tracker
+    if (role === "gm" && statblock !== "" && statblocks[statblock]) {
+        const sb = statblocks[statblock]
+        return (
+            <section id="center" className="gmRoom">
+                <div className="nameRow">
+                    <div className="upload">
+                        <button type="button" className="backToList" onClick={() => setStatblock("")}>Go Back</button>
+                    </div>
+                    <h1>{sb.name}</h1>
+                </div>
+
+                <p className="flavour">{sb.flavour}</p>
+                <p className="sbTags">{sb.tags}</p>
+
+                <div className="sbStats">
+                    {sb.stats.map(group => (
+                        <div className="sblock" key={group.group}>
+                            <div className="shead">{group.group}</div>
+                            {group.rows.map(row => (
+                                <div className="srow" key={row[0]}>
+                                    <span>{row[0]}</span>
+                                    {/* a dash means the creature simply does not have that one */}
+                                    <b className={row[1] === "-" ? "none" : ""}>{row[1]}</b>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+
+                {sb.sections.map(sec => (
+                    <div key={sec.head}>
+                        <h2>{sec.head}</h2>
+                        {sec.kind === "prose" ? (
+                            sec.items.map((item, i) => <p key={i}>{item.text}</p>)
+                        ) : (
+                            <ul className="sbList">
+                                {sec.items.map((item, i) => (
+                                    <li key={i}>
+                                        {item.name ? <><b>{item.name}:</b> {item.text}</> : <b>{item.text}</b>}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                ))}
+
+                {diceTray}
+            </section>
+        )
+    }
+
     // the gm, when they are not looking at somebody's character
     if (role === "gm" && viewing === "") {
         return (
@@ -2042,7 +2160,7 @@ function App() {
                         {(() => {
                             // players come from the room, creatures are the gm's own, and
                             // both sit in one list ordered by whatever the gm has arranged
-                            type Line = {key: string, name: string, npc: boolean,
+                            type Line = {key: string, name: string, npc: boolean, from?: string,
                                 hp: [number, number], ap: [number, number], sp: [number, number], sheet?: string}
 
                             const lines: Line[] = []
@@ -2052,7 +2170,7 @@ function App() {
                                     hp: pools.hp, ap: pools.ap, sp: pools.sp, sheet: entry.sheet})
                             })
                             creatures.forEach(c => {
-                                lines.push({key: c.id, name: c.name, npc: true, hp: c.hp, ap: c.ap, sp: c.sp})
+                                lines.push({key: c.id, name: c.name, npc: true, from: c.from, hp: c.hp, ap: c.ap, sp: c.sp})
                             })
 
                             // anyone the gm has not placed yet goes on the end
@@ -2163,14 +2281,24 @@ function App() {
 
                                                 <div className="tname">
                                                     <span className={line.npc ? "dot npc" : "dot player"}></span>
-                                                    {line.npc ? (
+                                                    {line.npc && renaming === line.key && (
                                                         <input
                                                             type="text"
                                                             className="cname"
+                                                            autoFocus
                                                             value={line.name}
                                                             onChange={e => setCreature(line.key, c => ({...c, name: e.target.value}))}
+                                                            onBlur={() => setRenaming("")}
+                                                            onKeyDown={e => {if (e.key === "Enter") setRenaming("")}}
                                                         />
-                                                    ) : (
+                                                    )}
+                                                    {line.npc && renaming !== line.key && (
+                                                        <>
+                                                            <span className="who" onClick={() => setStatblock(line.from ?? line.name)}>{line.name}</span>
+                                                            <button type="button" className="pencil" onClick={() => setRenaming(line.key)}>&#9998;</button>
+                                                        </>
+                                                    )}
+                                                    {!line.npc && (
                                                         <span className="who" onClick={() => {
                                                             setViewing(line.name)
                                                             if (line.sheet) loadSnapshot(line.sheet)
@@ -2348,6 +2476,7 @@ function App() {
                                                         setCreatures([...creatures, {
                                                             id: id,
                                                             name: nextCreatureName(name, taken),
+                                                            from: name,
                                                             hp: [10, 10], ap: [3, 3], sp: [4, 4],
                                                         }])
                                                         setOrderKeys([...orderKeys, id])
