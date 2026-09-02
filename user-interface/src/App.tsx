@@ -2458,7 +2458,7 @@ function App() {
                                             type="text"
                                             className="searchBox"
                                             value={creatureSearch}
-                                            placeholder="Search creatures"
+                                            placeholder="Search"
                                             onChange={e => setCreatureSearch(e.target.value)}
                                         />
                                     </div>
@@ -2466,26 +2466,21 @@ function App() {
                                     <div className="pickList">
                                         {creatureLibrary
                                             .filter(name => name.toLowerCase().includes(creatureSearch.trim().toLowerCase()))
-                                            .map(name => {
-                                                const many = creatures.filter(c =>
-                                                    c.name === name || /^\d+$/.test(c.name.slice(name.length + 1)) && c.name.startsWith(name + " ")).length
-                                                return (
-                                                    <button type="button" key={name} className="pickRow" onClick={() => {
-                                                        const id = "c" + Math.random().toString(36).slice(2, 8)
-                                                        const taken = creatures.map(c => c.name)
-                                                        setCreatures([...creatures, {
-                                                            id: id,
-                                                            name: nextCreatureName(name, taken),
-                                                            from: name,
-                                                            hp: [10, 10], ap: [3, 3], sp: [4, 4],
-                                                        }])
-                                                        setOrderKeys([...orderKeys, id])
-                                                    }}>
-                                                        <b>{name}</b>
-                                                        {many > 0 && <span>{many} in the fight</span>}
-                                                    </button>
-                                                )
-                                            })}
+                                            .map(name => (
+                                                <button type="button" key={name} className="pickRow" onClick={() => {
+                                                    const id = "c" + Math.random().toString(36).slice(2, 8)
+                                                    const taken = creatures.map(c => c.name)
+                                                    setCreatures([...creatures, {
+                                                        id: id,
+                                                        name: nextCreatureName(name, taken),
+                                                        from: name,
+                                                        hp: [10, 10], ap: [3, 3], sp: [4, 4],
+                                                    }])
+                                                    setOrderKeys([...orderKeys, id])
+                                                }}>
+                                                    <b>{name}</b>
+                                                </button>
+                                            ))}
                                         {creatureLibrary.filter(name => name.toLowerCase().includes(creatureSearch.trim().toLowerCase())).length === 0 && (
                                             <p className="tempty">Nothing matches that.</p>
                                         )}
