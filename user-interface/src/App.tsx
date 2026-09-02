@@ -102,16 +102,95 @@ const statblocks: Record<string, Statblock> = {
     },
 }
 
-// the creatures the gm can drop into a fight. no numbers yet, so a new one starts
-// with something plain that the gm edits on the tracker
-const creatureLibrary: string[] = [
-    "Bandit",
-    "Bandit Hedge Mage",
-    "Bandit Marauder",
-    "Bandit Poacher",
-    "Bear",
-    "Snow Bear",
+// every creature in the book, by chapter and category. a category holding one creature
+// adds it straight away, one holding several opens to show them. variants live inside a
+// statblock rather than here, so a cave bear is part of the bear write up
+const creatureLibrary: {chapter: string, category: string, members: string[]}[] = [
+    {chapter: "Beasts", category: "Bears", members: ["Bear", "Snow Bear"]},
+    {chapter: "Beasts", category: "Rats", members: ["Cave Rat", "Skeever"]},
+    {chapter: "Beasts", category: "Crocodile", members: ["Crocodile"]},
+    {chapter: "Beasts", category: "Dogs", members: ["Dog", "War Dog"]},
+    {chapter: "Beasts", category: "Dreughs", members: ["Dreugh", "Land Dreugh"]},
+    {chapter: "Beasts", category: "Durzog", members: ["Durzog"]},
+    {chapter: "Beasts", category: "Game Animals", members: ["Small Game", "Large Game"]},
+    {chapter: "Beasts", category: "Giant", members: ["Giant"]},
+    {chapter: "Beasts", category: "Giant Bat", members: ["Giant Bat"]},
+    {chapter: "Beasts", category: "Giant Snake", members: ["Giant Snake"]},
+    {chapter: "Beasts", category: "Giant Spider", members: ["Giant Spider"]},
+    {chapter: "Beasts", category: "Goblins", members: ["Goblin Grunt", "Goblin Berserker", "Goblin War-Chief", "Goblin Shaman"]},
+    {chapter: "Beasts", category: "Harpy", members: ["Harpy"]},
+    {chapter: "Beasts", category: "Horker", members: ["Horker"]},
+    {chapter: "Beasts", category: "Horses", members: ["Horse", "War Horse"]},
+    {chapter: "Beasts", category: "Imp", members: ["Imp"]},
+    {chapter: "Beasts", category: "Lamia", members: ["Lamia"]},
+    {chapter: "Beasts", category: "Lion", members: ["Lion"]},
+    {chapter: "Beasts", category: "Minotaur", members: ["Minotaur"]},
+    {chapter: "Beasts", category: "Mudcrab", members: ["Mudcrab"]},
+    {chapter: "Beasts", category: "Ogre", members: ["Ogre"]},
+    {chapter: "Beasts", category: "Slaughterfish", members: ["Slaughterfish"]},
+    {chapter: "Beasts", category: "Trolls", members: ["Cave Troll", "Frost Troll"]},
+    {chapter: "Beasts", category: "Wolf", members: ["Wolf"]},
+
+    {chapter: "People", category: "Acrobat", members: ["Acrobat"]},
+    {chapter: "People", category: "Agent", members: ["Agent"]},
+    {chapter: "People", category: "Assassin", members: ["Assassin"]},
+    {chapter: "People", category: "Arena Fighters", members: ["Gladiator", "Champion"]},
+    {chapter: "People", category: "Bandits", members: ["Bandit", "Bandit Marauder", "Bandit Poacher", "Bandit Hedge Mage"]},
+    {chapter: "People", category: "Bandit Ringleader", members: ["Bandit Ringleader"]},
+    {chapter: "People", category: "Barbarian", members: ["Barbarian"]},
+    {chapter: "People", category: "Bard", members: ["Bard"]},
+    {chapter: "People", category: "Battlemage", members: ["Battlemage"]},
+    {chapter: "People", category: "Bureaucrat", members: ["Bureaucrat"]},
+    {chapter: "People", category: "Commoner", members: ["Commoner"]},
+    {chapter: "People", category: "Crusader", members: ["Crusader"]},
+    {chapter: "People", category: "Cultists", members: ["Cultist", "Cultist Fanatic", "Cultist Mage"]},
+    {chapter: "People", category: "Guards", members: ["City/Town Guard", "Legion Zero Watchman"]},
+    {chapter: "People", category: "Healer", members: ["Healer"]},
+    {chapter: "People", category: "Knight", members: ["Knight"]},
+    {chapter: "People", category: "Mages", members: ["Mage", "Archmage"]},
+    {chapter: "People", category: "Necromancer", members: ["Necromancer"]},
+    {chapter: "People", category: "Hedge Mage", members: ["Hedge Mage"]},
+    {chapter: "People", category: "Merchant", members: ["Merchant"]},
+    {chapter: "People", category: "Monks", members: ["Monk", "Two-Moons Dance Monk"]},
+    {chapter: "People", category: "Nightblade", members: ["Nightblade"]},
+    {chapter: "People", category: "Pilgrim", members: ["Pilgrim"]},
+    {chapter: "People", category: "Priest", members: ["Priest"]},
+    {chapter: "People", category: "Rangers", members: ["Archer", "Hunter", "Bounty Hunter"]},
+    {chapter: "People", category: "Rogue", members: ["Rogue"]},
+    {chapter: "People", category: "Scholar", members: ["Scholar"]},
+    {chapter: "People", category: "Scout", members: ["Scout"]},
+    {chapter: "People", category: "Sorcerer", members: ["Sorcerer"]},
+    {chapter: "People", category: "Spellsword", members: ["Spellsword"]},
+    {chapter: "People", category: "Thief", members: ["Thief"]},
+    {chapter: "People", category: "Warrior", members: ["Warrior"]},
+    {chapter: "People", category: "Witchhunter", members: ["Witchhunter"]},
+    {chapter: "People", category: "Slave", members: ["Slave"]},
+
+    {chapter: "Undead", category: "Bonelords", members: ["Bonelord", "Ancient Bonelord"]},
+    {chapter: "Undead", category: "Bonewalkers", members: ["Bonewalker", "Greater Bonewalker"]},
+    {chapter: "Undead", category: "Bonewolf", members: ["Bonewolf"]},
+    {chapter: "Undead", category: "Death Hound", members: ["Death Hound"]},
+    {chapter: "Undead", category: "Draugr", members: ["Draugr Thrall", "Draugr Wight", "Draugr Scourge", "Draugr Wight Lord", "Draugr Deathlord", "Dragon Priest"]},
+    {chapter: "Undead", category: "Ghost", members: ["Ghost"]},
+    {chapter: "Undead", category: "Liches", members: ["Nether Lich", "Lich", "Ancient Lich"]},
+    {chapter: "Undead", category: "Skeletons", members: ["Skeleton", "Skeletal Champion"]},
+    {chapter: "Undead", category: "Wraiths", members: ["Wraith", "Gloom Wraith"]},
+    {chapter: "Undead", category: "Zombies", members: ["Zombie", "Dread Zombie"]},
 ]
+
+// a search should find a skeever when you type rat, so the category and the chapter
+// count as well as the name, and a trailing s is ignored on both sides
+function searchable(word: string) {
+    const bare = word.toLowerCase().trim()
+    return bare.endsWith("s") ? bare.slice(0, -1) : bare
+}
+
+function creatureMatches(name: string, category: string, chapter: string, search: string) {
+    const want = searchable(search)
+    if (want === "") return true
+    return [name, category, chapter].some(field =>
+        searchable(field).includes(want) || field.toLowerCase().includes(search.toLowerCase().trim()))
+}
 
 // bear, then bear 2, then bear 3, the way a folder names a repeated file. the first
 // free slot is taken, so deleting bear 2 and adding another bear fills that gap again
@@ -2464,26 +2543,68 @@ function App() {
                                     </div>
 
                                     <div className="pickList">
-                                        {creatureLibrary
-                                            .filter(name => name.toLowerCase().includes(creatureSearch.trim().toLowerCase()))
-                                            .map(name => (
-                                                <button type="button" key={name} className="pickRow" onClick={() => {
-                                                    const id = "c" + Math.random().toString(36).slice(2, 8)
-                                                    const taken = creatures.map(c => c.name)
-                                                    setCreatures([...creatures, {
-                                                        id: id,
-                                                        name: nextCreatureName(name, taken),
-                                                        from: name,
-                                                        hp: [10, 10], ap: [3, 3], sp: [4, 4],
-                                                    }])
-                                                    setOrderKeys([...orderKeys, id])
-                                                }}>
-                                                    <b>{name}</b>
-                                                </button>
-                                            ))}
-                                        {creatureLibrary.filter(name => name.toLowerCase().includes(creatureSearch.trim().toLowerCase())).length === 0 && (
-                                            <p className="tempty">Nothing matches that.</p>
-                                        )}
+                                        {(() => {
+                                            const add = (name: string) => {
+                                                const id = "c" + Math.random().toString(36).slice(2, 8)
+                                                const taken = creatures.map(c => c.name)
+                                                setCreatures([...creatures, {
+                                                    id: id,
+                                                    name: nextCreatureName(name, taken),
+                                                    from: name,
+                                                    hp: [10, 10], ap: [3, 3], sp: [4, 4],
+                                                }])
+                                                setOrderKeys([...orderKeys, id])
+                                            }
+
+                                            const searching = creatureSearch.trim() !== ""
+
+                                            // with something typed the categories get out of the way and
+                                            // every creature that matches is listed on its own
+                                            if (searching) {
+                                                const hits: {name: string, category: string}[] = []
+                                                creatureLibrary.forEach(group => {
+                                                    group.members.forEach(name => {
+                                                        if (creatureMatches(name, group.category, group.chapter, creatureSearch)) {
+                                                            hits.push({name: name, category: group.category})
+                                                        }
+                                                    })
+                                                })
+                                                if (hits.length === 0) return <p className="tempty">Nothing matches that.</p>
+                                                return hits.map(hit => (
+                                                    <button type="button" key={hit.name} className="pickRow" onClick={() => add(hit.name)}>
+                                                        <b>{hit.name}</b>
+                                                        {hit.category !== hit.name && <span>{hit.category}</span>}
+                                                    </button>
+                                                ))
+                                            }
+
+                                            // with nothing typed it is a list of categories to open
+                                            return creatureLibrary.map(group => {
+                                                // a category holding one creature is that creature, so
+                                                // opening it to show a single name would be a wasted click
+                                                if (group.members.length === 1) {
+                                                    return (
+                                                        <button type="button" key={group.category} className="pickRow" onClick={() => add(group.members[0])}>
+                                                            <b>{group.category}</b>
+                                                        </button>
+                                                    )
+                                                }
+                                                const open = openActions.includes("cat " + group.category)
+                                                return (
+                                                    <div className="pickGroup" key={group.category}>
+                                                        <button type="button" className="pickRow catRow" onClick={() => setOpenActions(open ? openActions.filter(n => n !== "cat " + group.category) : [...openActions, "cat " + group.category])}>
+                                                            <b>{group.category}</b>
+                                                            <span>{group.members.length}</span>
+                                                        </button>
+                                                        {open && group.members.map(name => (
+                                                            <button type="button" key={name} className="pickRow member" onClick={() => add(name)}>
+                                                                <b>{name}</b>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )
+                                            })
+                                        })()}
                                     </div>
 
                                     <div className="popfoot">

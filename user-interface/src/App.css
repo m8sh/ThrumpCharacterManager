@@ -1252,6 +1252,14 @@ body:has(#center > .nameRow){display:block}
 .popout .pickList .pickRow span{display:inline;font-size:.85em;opacity:.5}
 .popout .tempty{padding:.6em .7em;opacity:.45}
 
+/* a category that opens to its members, and the members sitting under it */
+.popout .pickGroup{border-bottom:1px solid var(--line)}
+.popout .pickGroup:last-child{border-bottom:0}
+.popout .pickGroup .pickRow{border-bottom:0}
+.popout .pickRow.catRow{background:var(--band)}
+.popout .pickRow.catRow span{opacity:.4;font-size:.85em}
+.popout .pickRow.member{padding-left:1.6em}
+
 /* a blank picked from a list, where each choice explains what it means */
 .popout .traitChoice{display:flex;flex-direction:column;margin-top:.3em;border:1px solid var(--line)}
 .popout .traitChoice button{
