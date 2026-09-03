@@ -1252,6 +1252,20 @@ body:has(#center > .nameRow){display:block}
 .popout .pickList .pickRow span{display:inline;font-size:.85em;opacity:.5}
 .popout .tempty{padding:.6em .7em;opacity:.45}
 
+/* which part of the book a run of categories comes from */
+.popout .pickChapter{
+  padding:.4em .7em .3em;
+  background:var(--band);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  text-align:center;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  opacity:.7;
+}
+.popout .pickList > .pickChapter:first-child{border-top:0}
+
 /* a category that opens to its members, and the members sitting under it */
 .popout .pickGroup{border-bottom:1px solid var(--line)}
 .popout .pickGroup:last-child{border-bottom:0}
@@ -1599,8 +1613,14 @@ body:has(#center > .nameRow){display:block}
 }
 
 /* a creature's write up */
-#center .flavour{margin:0 0 .3em;opacity:.75;max-width:60em}
-#center .sbTags{margin:0 0 .9em;font-size:.95em;opacity:.55;max-width:60em}
+#center .flavour{margin:0 0 .35em;opacity:.75;max-width:60em}
+#center .sbTags{
+  margin:0 0 .9em;
+  font-size:1.15em;
+  font-weight:700;
+  color:var(--text);
+  max-width:60em;
+}
 #center .sbStats{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));

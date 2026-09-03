@@ -47,10 +47,57 @@ type Statblock = {
     flavour: string,
     tags: string,
     stats: {group: string, rows: [string, string][]}[],
-    sections: {head: string, kind: "list" | "prose", items: {name?: string, text: string}[]}[],
+    sections: {head: string, kind: "list" | "prose", items: {name?: string, text?: string}[]}[],
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Snow Bear": {
+        name: "Snow Bear",
+        flavour: "Covered in stark-white fur and larger than their southern cousins, Snow Bears can be found roaming the frozen tundras and craggy glaciers of Tamriel\u2019s northernmost provinces. They are stronger and more aggressive than other varieties of bear.",
+        tags: "Bear, Beast; Average; White Soul (300)",
+        stats: [
+            {group: "Characteristics", rows: [
+                    ["Strength", "50"], ["Endurance", "50"], ["Agility", "30"], ["Intelligence", "15"],
+                    ["Willpower", "35"], ["Perception", "30"], ["Personality", "5"], ["Morale", "45"],
+                ]},
+            {group: "Attributes", rows: [
+                    ["Hit Points", "50"], ["Wound Thr.", "16"], ["Magicka", "15"], ["Stamina", "5"],
+                    ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Large"],
+                ]},
+            {group: "Skills", rows: [
+                    ["Combat", "70"], ["Magic", "-"], ["Evade", "30"], ["Observe", "50"],
+                    ["Stealth", "40"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "70"],
+                ]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Claws", text: "1d12 Crushing or Splitting; Reach 1m"},
+                    {name: "Bite", text: "1d10 Crushing; Reach 1m"},
+                    {name: "Natural Toughness (3)"},
+                    {name: "Resist Frost (8)", text: "Reduces incoming Frost damage by 8."},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Maul (1 AP + 2 SP)", text: "The bear performs a melee attack as a Primary action that deals 2d8 Crushing damage to a target creature within 1 meter. Additionally, all creatures within reach that are Medium or smaller must succeed on an Acrobatics or Athletics test or be knocked prone."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, then the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Quadruped"},
+                    {name: "Savage", text: "Rolls damage twice and uses the highest result."},
+                ]},
+            {head: "Encountering Snow Bears", kind: "prose", items: [
+                    {text: "Snow bears can be found roaming the frozen tundras and glacier-filled ravines of Tamriel\u2019s northernmost provinces and islands. They roam these frozen lands year-round and, due to the harsh conditions in which they live, these animals will seldom give up an opportunity to make a kill. Unlike their southern cousins, they will eat men or mer they bring down and will guard the carcasses of their prey ferociously."},
+                    {text: "Snow bears will become very territorial and aggressive unless the target is obviously superior or causes Fear. These bears will relentlessly pursue their prey, and can run on all fours nearly as fast as a horse despite their great size."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the bear\u2019s pelt, worth 200 drakes, over the course of a Short Rest.This pelt has an ENC of 2. Failing this test spoils the pelt, halving its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a bear pelt into two limb pieces of Full Snow Bear Fur armor, or one Full Snow Bear Fur chest piece. Bear Fur armor is exactly the same as regular Fur but has 4 AR and gives 4 Frost AR. Failing this test spoils the pelt instead, rendering it useless and halving its worth."},
+                    {text: "On a +20 Simple Survival test over a Long Rest, a character can harvest DoS x 3 days\u2019 rations of bear meat. The meat will spoil within a day if not properly preserved."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can harvest and powder the bear\u2019s claws, which are a Rare Alteration ingredient. The character harvests DoS dosages."},
+                ]},
+        ],
+    },
     "Bear": {
         name: "Bear",
         flavour: "Bears are large ursine quadrupeds that are widespread and ubiquitous in temperate and arctic regions. They are typically large and capable of crushing an armored man.",
@@ -73,19 +120,19 @@ const statblocks: Record<string, Statblock> = {
             {head: "Weapons and Armor", kind: "list", items: [
                     {name: "Claws", text: "1d12 Crushing or Splitting; Reach 1m"},
                     {name: "Bite", text: "1d10 Crushing; Reach 1m"},
-                    {text: "Natural Toughness (3)"},
+                    {name: "Natural Toughness (3)"},
                 ]},
             {head: "Special Abilities", kind: "list", items: [
                     {name: "Maul (1 AP + 2 SP)", text: "The bear performs a melee attack as a Primary Action that deals 2d8 Crushing damage to a target creature within 1 meter. Additionally, all creatures within reach that are Medium or smaller must succeed on an Acrobatics or Athletics test or be knocked prone."},
                 ]},
             {head: "Traits", kind: "list", items: [
-                    {text: "Bestial"},
+                    {name: "Bestial"},
                     {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
                     {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
-                    {text: "Quadruped"},
+                    {name: "Quadruped"},
                 ]},
             {head: "Variant: Cave Bear", kind: "list", items: [
-                    {text: "Dark Sight"},
+                    {name: "Dark Sight"},
                     {name: "Stubborn", text: "The creature may re-roll failed Fear tests."},
                 ]},
             {head: "Encountering Bears", kind: "prose", items: [
@@ -190,6 +237,28 @@ function creatureMatches(name: string, category: string, chapter: string, search
     if (want === "") return true
     return [name, category, chapter].some(field =>
         searchable(field).includes(want) || field.toLowerCase().includes(search.toLowerCase().trim()))
+}
+
+// the pools a creature starts with come straight off its own write up
+function statOf(sb: Statblock | undefined, label: string, fallback: number) {
+    if (!sb) return fallback
+    for (const group of sb.stats) {
+        for (const row of group.rows) {
+            if (row[0] === label) {
+                const n = Number(row[1])
+                if (!isNaN(n)) return n
+            }
+        }
+    }
+    return fallback
+}
+
+function startingPools(name: string) {
+    const sb = statblocks[name]
+    const hp = statOf(sb, "Hit Points", 10)
+    const ap = statOf(sb, "Action Pts.", 3)
+    const sp = statOf(sb, "Stamina", 4)
+    return {hp: [hp, hp] as [number, number], ap: [ap, ap] as [number, number], sp: [sp, sp] as [number, number]}
 }
 
 // bear, then bear 2, then bear 3, the way a folder names a repeated file. the first
@@ -2196,7 +2265,9 @@ function App() {
                             <ul className="sbList">
                                 {sec.items.map((item, i) => (
                                     <li key={i}>
-                                        {item.name ? <><b>{item.name}:</b> {item.text}</> : <b>{item.text}</b>}
+                                        {item.name && item.text && <><b>{item.name}:</b> {item.text}</>}
+                                        {item.name && !item.text && <b>{item.name}</b>}
+                                        {!item.name && item.text}
                                     </li>
                                 ))}
                             </ul>
@@ -2547,11 +2618,12 @@ function App() {
                                             const add = (name: string) => {
                                                 const id = "c" + Math.random().toString(36).slice(2, 8)
                                                 const taken = creatures.map(c => c.name)
+                                                const pools = startingPools(name)
                                                 setCreatures([...creatures, {
                                                     id: id,
                                                     name: nextCreatureName(name, taken),
                                                     from: name,
-                                                    hp: [10, 10], ap: [3, 3], sp: [4, 4],
+                                                    hp: pools.hp, ap: pools.ap, sp: pools.sp,
                                                 }])
                                                 setOrderKeys([...orderKeys, id])
                                             }
@@ -2578,32 +2650,42 @@ function App() {
                                                 ))
                                             }
 
-                                            // with nothing typed it is a list of categories to open
-                                            return creatureLibrary.map(group => {
-                                                // a category holding one creature is that creature, so
-                                                // opening it to show a single name would be a wasted click
-                                                if (group.members.length === 1) {
-                                                    return (
-                                                        <button type="button" key={group.category} className="pickRow" onClick={() => add(group.members[0])}>
-                                                            <b>{group.category}</b>
-                                                        </button>
-                                                    )
-                                                }
-                                                const open = openActions.includes("cat " + group.category)
-                                                return (
-                                                    <div className="pickGroup" key={group.category}>
-                                                        <button type="button" className="pickRow catRow" onClick={() => setOpenActions(open ? openActions.filter(n => n !== "cat " + group.category) : [...openActions, "cat " + group.category])}>
-                                                            <b>{group.category}</b>
-                                                            <span>{group.members.length}</span>
-                                                        </button>
-                                                        {open && group.members.map(name => (
-                                                            <button type="button" key={name} className="pickRow member" onClick={() => add(name)}>
-                                                                <b>{name}</b>
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                )
+                                            // with nothing typed the categories sit under their chapters
+                                            const chapters: string[] = []
+                                            creatureLibrary.forEach(group => {
+                                                if (!chapters.includes(group.chapter)) chapters.push(group.chapter)
                                             })
+
+                                            return chapters.map(chapter => (
+                                                <Fragment key={chapter}>
+                                                    <div className="pickChapter">{chapter}</div>
+                                                    {creatureLibrary.filter(group => group.chapter === chapter).map(group => {
+                                                        // a category holding one creature is that creature, so
+                                                        // opening it to show a single name would be a wasted click
+                                                        if (group.members.length === 1) {
+                                                            return (
+                                                                <button type="button" key={group.category} className="pickRow" onClick={() => add(group.members[0])}>
+                                                                    <b>{group.category}</b>
+                                                                </button>
+                                                            )
+                                                        }
+                                                        const open = openActions.includes("cat " + group.category)
+                                                        return (
+                                                            <div className="pickGroup" key={group.category}>
+                                                                <button type="button" className="pickRow catRow" onClick={() => setOpenActions(open ? openActions.filter(n => n !== "cat " + group.category) : [...openActions, "cat " + group.category])}>
+                                                                    <b>{group.category}</b>
+                                                                    <span>{group.members.length}</span>
+                                                                </button>
+                                                                {open && group.members.map(name => (
+                                                                    <button type="button" key={name} className="pickRow member" onClick={() => add(name)}>
+                                                                        <b>{name}</b>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </Fragment>
+                                            ))
                                         })()}
                                     </div>
 
