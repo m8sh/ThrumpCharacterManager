@@ -2650,42 +2650,50 @@ function App() {
                                                 ))
                                             }
 
-                                            // with nothing typed the categories sit under their chapters
+                                            // with nothing typed the whole book folds down to three
+                                            // headings, each one opening to its categories
                                             const chapters: string[] = []
                                             creatureLibrary.forEach(group => {
                                                 if (!chapters.includes(group.chapter)) chapters.push(group.chapter)
                                             })
 
-                                            return chapters.map(chapter => (
-                                                <Fragment key={chapter}>
-                                                    <div className="pickChapter">{chapter}</div>
-                                                    {creatureLibrary.filter(group => group.chapter === chapter).map(group => {
-                                                        // a category holding one creature is that creature, so
-                                                        // opening it to show a single name would be a wasted click
-                                                        if (group.members.length === 1) {
-                                                            return (
-                                                                <button type="button" key={group.category} className="pickRow" onClick={() => add(group.members[0])}>
-                                                                    <b>{group.category}</b>
-                                                                </button>
-                                                            )
-                                                        }
-                                                        const open = openActions.includes("cat " + group.category)
-                                                        return (
-                                                            <div className="pickGroup" key={group.category}>
-                                                                <button type="button" className="pickRow catRow" onClick={() => setOpenActions(open ? openActions.filter(n => n !== "cat " + group.category) : [...openActions, "cat " + group.category])}>
-                                                                    <b>{group.category}</b>
-                                                                    <span>{group.members.length}</span>
-                                                                </button>
-                                                                {open && group.members.map(name => (
-                                                                    <button type="button" key={name} className="pickRow member" onClick={() => add(name)}>
-                                                                        <b>{name}</b>
+                                            return chapters.map(chapter => {
+                                                // open to begin with, since a shut list tells the gm nothing
+                                                const shut = openActions.includes("chapShut " + chapter)
+                                                return (
+                                                    <Fragment key={chapter}>
+                                                        <button type="button" className="pickChapter" onClick={() => setOpenActions(shut ? openActions.filter(n => n !== "chapShut " + chapter) : [...openActions, "chapShut " + chapter])}>
+                                                            {chapter}
+                                                        </button>
+
+                                                        {!shut && creatureLibrary.filter(group => group.chapter === chapter).map(group => {
+                                                            // a category holding one creature is that creature, so
+                                                            // opening it to show a single name would be a wasted click
+                                                            if (group.members.length === 1) {
+                                                                return (
+                                                                    <button type="button" key={group.category} className="pickRow" onClick={() => add(group.members[0])}>
+                                                                        <b>{group.category}</b>
                                                                     </button>
-                                                                ))}
-                                                            </div>
-                                                        )
-                                                    })}
-                                                </Fragment>
-                                            ))
+                                                                )
+                                                            }
+                                                            const open = openActions.includes("cat " + group.category)
+                                                            return (
+                                                                <div className="pickGroup" key={group.category}>
+                                                                    <button type="button" className="pickRow catRow" onClick={() => setOpenActions(open ? openActions.filter(n => n !== "cat " + group.category) : [...openActions, "cat " + group.category])}>
+                                                                        <b>{group.category}</b>
+                                                                        <span>{group.members.length}</span>
+                                                                    </button>
+                                                                    {open && group.members.map(name => (
+                                                                        <button type="button" key={name} className="pickRow member" onClick={() => add(name)}>
+                                                                            <b>{name}</b>
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            )
+                                                        })}
+                                                    </Fragment>
+                                                )
+                                            })
                                         })()}
                                     </div>
 

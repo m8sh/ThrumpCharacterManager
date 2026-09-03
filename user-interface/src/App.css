@@ -1252,18 +1252,26 @@ body:has(#center > .nameRow){display:block}
 .popout .pickList .pickRow span{display:inline;font-size:.85em;opacity:.5}
 .popout .tempty{padding:.6em .7em;opacity:.45}
 
-/* which part of the book a run of categories comes from */
+/* the three parts of the book, each folding its categories away */
 .popout .pickChapter{
-  padding:.4em .7em .3em;
-  background:var(--band);
+  display:block;
+  width:100%;
+  padding:.55em .7em;
+  font:inherit;
+  font-size:1.25em;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  text-align:center;
+  color:var(--text);
+  background:#272c34;
+  border:0;
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
-  text-align:center;
-  font-weight:700;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  opacity:.7;
+  border-radius:0;
+  cursor:pointer;
 }
+.popout .pickChapter:hover{background:#2f353f;color:var(--accent)}
 .popout .pickList > .pickChapter:first-child{border-top:0}
 
 /* a category that opens to its members, and the members sitting under it */
