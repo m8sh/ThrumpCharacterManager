@@ -2388,6 +2388,15 @@ function App() {
                                             })
                                             setOrderKeys(sorted.map(l => l.key))
                                         }}>Sort</button>
+                                        <button type="button" onClick={() => {
+                                            // a d8 each, plus whatever initiative rating their write up gives
+                                            const rolled = {...initBy}
+                                            creatures.forEach(c => {
+                                                const rating = statOf(statblocks[c.from], "Initiative", 0)
+                                                rolled[c.id] = Math.floor(Math.random() * 8) + 1 + rating
+                                            })
+                                            setInitBy(rolled)
+                                        }}>Roll All NPC Initiative</button>
                                         <button type="button" onClick={() => setCreatures([])}>Clear All NPCs</button>
                                     </div>
 
