@@ -1621,6 +1621,7 @@ function App() {
     const [statblock, setStatblock] = useState("")
     // which creature name is being typed over, empty when none is
     const [renaming, setRenaming] = useState("")
+    const [tieLines, setTieLines] = useState<string[]>([])
     const [initBy, setInitBy] = useState<Record<string, number>>(savedTracker?.initBy ?? {})
     const [atkBy, setAtkBy] = useState<Record<string, number>>(savedTracker?.atkBy ?? {})
     const [orderKeys, setOrderKeys] = useState<string[]>(savedTracker?.orderKeys ?? [])
@@ -2311,16 +2312,30 @@ function App() {
                             // players come from the room, creatures are the gm's own, and
                             // both sit in one list ordered by whatever the gm has arranged
                             type Line = {key: string, name: string, npc: boolean, from?: string,
+                                ir: number, luck: number,
                                 hp: [number, number], ap: [number, number], sp: [number, number], sheet?: string}
 
                             const lines: Line[] = []
                             roster.forEach(entry => {
                                 const pools = poolsOf(entry.sheet)
+                                let ir = 0
+                                let luck = 0
+                                try {
+                                    const info = new Map<string, string | boolean | undefined>(JSON.parse(entry.sheet).charInfo)
+                                    ir = Number(info.get("IR")) || 0
+                                    luck = Math.floor((Number(info.get("Lck")) || 0) / 10)
+                                } catch {
+                                    // an unreadable sheet just sorts as though it had nothing
+                                }
                                 lines.push({key: entry.player_id, name: entry.name, npc: false,
+                                    ir: ir, luck: luck,
                                     hp: pools.hp, ap: pools.ap, sp: pools.sp, sheet: entry.sheet})
                             })
                             creatures.forEach(c => {
-                                lines.push({key: c.id, name: c.name, npc: true, from: c.from, hp: c.hp, ap: c.ap, sp: c.sp})
+                                const sb = statblocks[c.from]
+                                lines.push({key: c.id, name: c.name, npc: true, from: c.from,
+                                    ir: statOf(sb, "Initiative", 0), luck: 0,
+                                    hp: c.hp, ap: c.ap, sp: c.sp})
                             })
 
                             // anyone the gm has not placed yet goes on the end
@@ -2377,16 +2392,41 @@ function App() {
                                 <>
                                     <div className="trackTop">
                                         <button type="button" onClick={() => {
-                                            // blanks wait at the bottom rather than vanishing
-                                            const sorted = [...lines].sort((a, b) => {
+                                            // initiative first, then initiative rating, then a player
+                                            // always beats a creature, and one player beats another on
+                                            // the better luck bonus
+                                            const compare = (a: Line, b: Line) => {
                                                 const ai = initBy[a.key] ?? 0
                                                 const bi = initBy[b.key] ?? 0
-                                                if (!ai && !bi) return 0
-                                                if (!ai) return 1
-                                                if (!bi) return -1
-                                                return bi - ai
-                                            })
+                                                // blanks wait at the bottom rather than vanishing
+                                                if (!ai && !bi) { /* both unrolled, fall through */ }
+                                                else if (!ai) return 1
+                                                else if (!bi) return -1
+                                                else if (ai !== bi) return bi - ai
+
+                                                if (a.ir !== b.ir) return b.ir - a.ir
+
+                                                if (a.npc !== b.npc) return a.npc ? 1 : -1
+                                                if (!a.npc && a.luck !== b.luck) return b.luck - a.luck
+                                                return 0
+                                            }
+
+                                            const sorted = [...lines].sort(compare)
                                             setOrderKeys(sorted.map(l => l.key))
+
+                                            // anything the rules cannot separate is handed back to the gm
+                                            const groups: string[][] = []
+                                            let i = 0
+                                            while (i < sorted.length) {
+                                                let j = i
+                                                while (j + 1 < sorted.length && compare(sorted[j], sorted[j + 1]) === 0) j++
+                                                if (j > i) groups.push(sorted.slice(i, j + 1).map(l => l.name))
+                                                i = j + 1
+                                            }
+                                            if (groups.length > 0) {
+                                                setTieLines(groups.map(names => names.join(" and ") + " are tied."))
+                                                setPopout("ties")
+                                            }
                                         }}>Sort</button>
                                         <button type="button" onClick={() => {
                                             // a d8 each, plus whatever initiative rating their write up gives
@@ -2606,6 +2646,21 @@ function App() {
                         }}>Leave Room</button>
 
                         {diceTray}
+
+                        {popout === "ties" && (
+                            <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
+                                <div className="popout">
+                                    <div className="pophead">Tied Initiative</div>
+                                    <div className="popbody">
+                                        {tieLines.map((line, i) => <p key={i}>{line}</p>)}
+                                        <p>Please break the tie in whichever way you see fit.</p>
+                                    </div>
+                                    <div className="popfoot">
+                                        <button type="button" className="go" onClick={() => setPopout(null)}>Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {popout === "addCreature" && (
                             <div className="scrim" onClick={e => {if (e.target === e.currentTarget) setPopout(null)}}>
