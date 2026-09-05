@@ -1673,6 +1673,14 @@ body:has(#center > .nameRow){display:block}
 }
 #center.gmRoom h2::before,
 #center.gmRoom h2::after{content:"";flex:1;height:1px;background:var(--line)}
+#center .sbQuote{
+  margin:0 0 .9em;
+  padding-left:.8em;
+  border-left:2px solid var(--line);
+  max-width:50em;
+}
+#center .sbQuote p{margin:0;font-style:italic;opacity:.8}
+#center .sbQuote cite{font-style:normal;font-size:.9em;opacity:.55}
 #center .sbList{margin:.2em 0;padding-left:1.2em;max-width:60em}
 #center .sbList li{margin:.28em 0}
 #center .sbList li b{font-weight:700}

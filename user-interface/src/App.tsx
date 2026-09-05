@@ -46,11 +46,235 @@ type Statblock = {
     name: string,
     flavour: string,
     tags: string,
+    quote?: {text: string, by: string},
     stats: {group: string, rows: [string, string][]}[],
     sections: {head: string, kind: "list" | "prose", items: {name?: string, text?: string}[]}[],
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Cave Rat": {
+        name: "Cave Rat",
+        flavour: "Cave rats are a plague upon the common folk of Tamriel. Found in virtually every province, individually they are weak but collectively they can bring down a fully-armored man.",
+        tags: "Rat, Beast; Trivial; White Soul (10)",
+        quote: {text: "\u201cYou can\u2019t imagine the fuss some people make. My rats are no problem for anyone.\u201d", by: "- Arvena Thelas"},
+        stats: [
+            {group: "Characteristics", rows: [
+                    ["Strength", "10"], ["Endurance", "20"], ["Agility", "40"], ["Intelligence", "10"],
+                    ["Willpower", "5"], ["Perception", "30"], ["Personality", "5"], ["Morale", "5"],
+                ]},
+            {group: "Attributes", rows: [
+                    ["Hit Points", "10"], ["Wound Thr.", "3"], ["Magicka", "10"], ["Stamina", "2"],
+                    ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Tiny"],
+                ]},
+            {group: "Skills", rows: [
+                    ["Combat", "40"], ["Magic", "-"], ["Evade", "40"], ["Observe", "40"],
+                    ["Stealth", "50"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "20"],
+                ]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Claws & Teeth", text: "1d4 Slashing, Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Rat Leap (1 AP + 1 SP)", text: "The rat leaps up to 3m and makes a biting attack as a primary action against the target. Dodging or Parrying the attack has a -20 penalty as the rat catches them off-guard."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (-30)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, then the target creature must succeed on a -30 Endurance test or contract a Common Disease."},
+                    {name: "Quadruped"},
+                ]},
+            {head: "Encountering Cave Rats", kind: "prose", items: [
+                    {text: "Cave Rats are most commonly encountered in caves, however they can also be found in dungeons, sewers, and various other subterranean pits and places. They are harbingers of disease and decay, and wherever civilization goes, Cave Rats tend to follow."},
+                    {text: "Cave Rats are notoriously aggressive in spite of their diminutive size and feeble strength, which makes them a danger to societies small and large. Purging rat dens is a quintessential adventurer\u2019s quest, and rat-killer is a perfectly reasonable career in large cities like Mournhold or Whiterun."},
+                    {text: "Cave Rats are defensive in their dens, and aggressively raid settlements, typically during the night, for anything they can eat. When fought, rats tend to flee when they realize they are in danger, but they are just as likely to be recklessly courageous, throwing themselves at their opponent with reckless abandon without awareness the mortal danger they are in."},
+                    {text: "Should a population of Cave Rats flee their den they will typically regroup and create a new den quickly."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can harvest one day\u2019s ration of rat meat. Rat meat must be cooked, and consuming it forces a +0 Endurance test, causing the consuming character to gain a Common Disease on a failure."},
+                    {text: "A character can harvest the rat\u2019s tail, which is a Common Destruction ingredient."},
+                ]},
+        ],
+    },
+    "Skeever": {
+        name: "Skeever",
+        flavour: "Larger and more aggressive than the common Cave Rat, Skeevers carry virulent diseases and can be dangerous to even the most hardened adventurers when fought en-masse.",
+        tags: "Rat, Beast; Trivial; Soul Type (15)",
+        stats: [
+            {group: "Characteristics", rows: [
+                    ["Strength", "20"], ["Endurance", "20"], ["Agility", "40"], ["Intelligence", "10"],
+                    ["Willpower", "5"], ["Perception", "30"], ["Personality", "5"], ["Morale", "5"],
+                ]},
+            {group: "Attributes", rows: [
+                    ["Hit Points", "12"], ["Wound Thr.", "4"], ["Magicka", "10"], ["Stamina", "2"],
+                    ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Small"],
+                ]},
+            {group: "Skills", rows: [
+                    ["Combat", "50"], ["Magic", "-"], ["Evade", "40"], ["Observe", "40"],
+                    ["Stealth", "40"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "30"],
+                ]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Claws & Teeth", text: "1d4 Slashing, Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Rat Leap (1 AP + 1 SP)", text: "The rat leaps up to 3m and makes a biting attack as a primary action against the target. Dodging or Parrying the attack has a -20 penalty as the rat catches them off-guard."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (-30)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, then the target creature must succeed on a -30 Endurance test or contract a Common Disease."},
+                    {name: "Quadruped"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                ]},
+            {head: "Encountering Skeevers", kind: "prose", items: [
+                    {text: "Skeevers are dog-sized vermin that can be found inhabiting dark caves and fetid sewers across the continent. While less common than their Cave Rat cousins, they are more dangerous and are more likely to spread the diseases they carry to anyone unfortunate enough to cross paths with them."},
+                    {text: "These oversized rats are even more aggressive than Cave Rats, requiring city-guards or even dedicated rat-slayers to flush these warrens out. When fought, Skeevers will fight even fully grown men when in small groups, but alone they will often flee to the safety of the dark, damp places they call home if the threat is too great. Much like their smaller cousins, they can often be suicidally courageous in small groups and will throw themselves at their opponent with reckless abandon with little regard for the mortal danger they are in."},
+                    {text: "If flushed from their den, surviving Skeevers will often establish new colonies which will continue to plague whatever town or city they reside in."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can harvest one day\u2019s ration of skeever meat. Skeever meat must be cooked, and consuming it forces a -10 Endurance test, causing the consuming character to contract a Common Disease on a failure."},
+                    {text: "A character can harvest the skeever\u2019s tail, which is an Uncommon Destruction ingredient."},
+                ]},
+        ],
+    },
+    "Crocodile": {
+        name: "Crocodile",
+        flavour: "Crocodiles are large, aquatic reptiles found in many of the southern regions of Tamriel.",
+        tags: "Beast; Average; Soul Type (200)",
+        stats: [
+            {group: "Characteristics", rows: [
+                    ["Strength", "35"], ["Endurance", "32"], ["Agility", "20"], ["Intelligence", "15"],
+                    ["Willpower", "25"], ["Perception", "20"], ["Personality", "5"], ["Morale", "25"],
+                ]},
+            {group: "Attributes", rows: [
+                    ["Hit Points", "32"], ["Wound Thr.", "8"], ["Magicka", "15"], ["Stamina", "3"],
+                    ["Initiative", "+5"], ["Action Pts.", "3"], ["Speed", "7m"], ["Size", "Std."],
+                ]},
+            {group: "Skills", rows: [
+                    ["Combat", "45"], ["Magic", "-"], ["Evade", "20"], ["Observe", "30"],
+                    ["Stealth", "60"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "55"],
+                ]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d10; Crushing; Reach 1m"},
+                    {name: "Scales", text: "Partial AR 3"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Thrash (1 SP)", text: "If the crocodile successfully Bites a target, it can spend a Stamina as a free action to Thrash the target. This deals 1d10+3 damage that ignores armor. If underwater, the target must pass a +0 Endurance test or be dropped to 0 HP as they drown."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Amphibious", text: "Can breath water and ignores the skill cap placed on their Combat rolls by their Athletics when fighting in water."},
+                    {name: "Bestial"},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, then the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Savage", text: "Rolls damage twice and uses the highest result."},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Weak Point (Underbelly)", text: "This creature\u2019s AR is not applied to its underbelly. Precision Strikes can be made targeting this location in addition to the standard hit locations."},
+                ]},
+            {head: "Encountering Crocodiles", kind: "prose", items: [
+                    {text: "Crocodiles can be found in the warmer southern climes of Tamriel, most commonly in Black Marsh and in the wetlands surrounding Leyawiin. Crocodiles are large reptilian predators that can hold their breath for significant periods of time, using this trait to ambush unwary prey passing near the water\u2019s edge."},
+                    {text: "While they don\u2019t normally hunt men or me crocodiles will attack nearly anything that comes too close. Their jaws snap with such pressure that they easily breaks bones and these creatures can quickly drown targets by thrashing them about underwater. Even if one does survive a crocodile attack, it is not uncommon for their victims to lose limbs in the process as the force of their bites can often shear limb from body."},
+                    {text: "Crocodiles often have bounties put on their heads when they encroach too close to civilization, because of the danger they pose to unsuspecting travelers who may find themselves rapidly pulled into a nearby body of water and killed."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +0 Survival test, a character can remove the crocodile\u2019s hide, worth 100 drakes, over the course of a Long Rest. If the character fails the test, they spoil the hide, halving its worth."},
+                    {text: "On a +10 Survival test, a character can, over the course of a Long Rest, turn a crocodile hide into one piece of Full Crocodile Hide armor. Crocodile Hide armor is exactly the same as regular Hide but has 3 AR and is waterproof. It takes two crocodile hides to make a Crocodile Hide chest piece. If the character fails the test, they spoil the hide, failing to craft the armor and halving the hide\u2019s worth."},
+                    {text: "On a successful +20 Simple Survival test over a Short Rest, a character can butcher a crocodile for meat. A character prepares DoS x 2 days\u2019 rations worth of crocodile meat. The meat will spoil within a day if not properly preserved."},
+                    {text: "On a +0 Alchemy test, a character can harvest the crocodile\u2019s eyes, which are a Rare Mysticism ingredient. If the character scores more than 3 DoS, they harvest two eyes instead."},
+                ]},
+        ],
+    },
+    "Dog": {
+        name: "Dog",
+        flavour: "Dogs both wild and domesticated can be found across Tamriel. They are \u201cman\u2019s best friend\u201d are commonly used as companion and work animals.",
+        tags: "Dog, Beast; Minor; White Soul (100)",
+        stats: [
+            {group: "Characteristics", rows: [
+                    ["Strength", "25"], ["Endurance", "25"], ["Agility", "40"], ["Intelligence", "15"],
+                    ["Willpower", "25"], ["Perception", "30"], ["Personality", "15"], ["Morale", "25"],
+                ]},
+            {group: "Attributes", rows: [
+                    ["Hit Points", "13"], ["Wound Thr.", "6"], ["Magicka", "15"], ["Stamina", "4"],
+                    ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Small"],
+                ]},
+            {group: "Skills", rows: [
+                    ["Combat", "40"], ["Magic", "-"], ["Evade", "40"], ["Observe", "70"],
+                    ["Stealth", "40"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "50"],
+                ]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d6; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Latch On (1 SP)", text: "If the creature successfully Bites a target which results in a grapple, it latches on as a free action. As a result, the grappled character receives a -20 penalty to their attempts to break free. Alternatively, the grappled target can instead end the grapple as a free action. In doing so, they suffer the Bleeding (2) Condition and must test for Disease."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, then the target creature must succeed a +0 Endurance test or contract a Common Disease."},
+                    {name: "Man\u2019s Best Friend", text: "Even though it cannot speak any languages, a dog can understand simple orders given by a character it trusts."},
+                    {name: "Quadruped"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                ]},
+            {head: "Encountering Dogs", kind: "prose", items: [
+                    {text: "Dogs can be found all across Tamriel. Domesticated dogs can be found in and around nearly all human settlements, and have followed mankind in their journeys ever since they came down from Atmora. They range from friendly to belligerent, and will, like most beasts, fiercely defend their young. They can be befriended and trained with relative ease, and many across Tamriel make their living breeding and training dogs for a variety of uses."},
+                    {text: "Wild dogs can be encountered roaming the warmer climates, most commonly in packs that wander Hammerfell and Elsweyr, fulfilling much the same niche as wolves. These dogs hunt in large packs and are aggressive, especially towards the weak or wounded. Although they do not often hunt men or mer, desperation can lead wild dogs to hunt down and attempt to kill those traveling the wilds of Tamriel."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +0 Survival test, a character can remove the dog\u2019s pelt, worth 5 drakes, over the course of a Short Rest. Skinning a domestic dog is considered a cruel act in most of Tamriel, and in some places is also a crime."},
+                    {text: "On a +30 Simple Survival test over a Short Rest, a character can harvest DoS days\u2019 rations of dog meat. The meat will spoil within a day if not properly preserved. Additionally, harvesting a domesticated dog\u2019s meat is typically considered cruel and may be criminal."},
+                ]},
+        ],
+    },
+    "War Dog": {
+        name: "War Dog",
+        flavour: "Some dogs have been bred to join their masters in battle. They are stronger, faster, and more deadly than their domestic cousins and will respond to the commands of their master without hesitation, no matter the situation.",
+        tags: "Dog, Beast; Minor; White Soul (150)",
+        stats: [
+            {group: "Characteristics", rows: [
+                    ["Strength", "35"], ["Endurance", "25"], ["Agility", "40"], ["Intelligence", "15"],
+                    ["Willpower", "25"], ["Perception", "30"], ["Personality", "15"], ["Morale", "45"],
+                ]},
+            {group: "Attributes", rows: [
+                    ["Hit Points", "13"], ["Wound Thr.", "6"], ["Magicka", "15"], ["Stamina", "4"],
+                    ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Small"],
+                ]},
+            {group: "Skills", rows: [
+                    ["Combat", "50"], ["Magic", "-"], ["Evade", "50"], ["Observe", "70"],
+                    ["Stealth", "40"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "60"],
+                ]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d6; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Latch On (1 SP)", text: "If the creature successfully Bites a target which results in a grapple, it latches on as a free action. As a result, the grappled character receives a -20 penalty to their attempts to break free. Alternatively, the grappled target can instead end the grapple as a free action. In doing so, they suffer the Bleeding (2) Condition and must test for Disease."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, then the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Man\u2019s Best Friend", text: "Even though it cannot speak any languages, a dog can understand simple orders given by a character it trusts."},
+                    {name: "Quadruped"},
+                    {name: "Teamwork", text: "Gains a bonus DoS on any attack rolls made while an ally with Teamwork is in Reach of the same target."},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Stubborn", text: "Can re-roll failed Panic tests."},
+                    {name: "Unrelenting", text: "Targets cannot Disengage while in Reach of a War Dog."},
+                ]},
+            {head: "Encountering War Dogs", kind: "prose", items: [
+                    {text: "While common dogs can be found across the continent in both domestic and wild forms, War Dogs are almost exclusively found in the possession of soldiers and guards. War Dogs have no wild counterparts and thus have lost many of their natural instincts beyond those they have been bred to possess. These dogs are fiercely loyal to their masters and will fight to the death on their behalf, obeying any commands given without hesitation and using their increased strength and lethality to great effect against those unfortunate enough to face them."},
+                    {text: "It is not uncommon to find a pair of guards accompanied by a War Dog as they patrol the streets of a city or for a hardened warrior to be accompanied by the dog they served with in conflicts past. They can also be found in the possession of the many ne\u0027er-do-wells across Tamriel, used to intimidate or eviscerate any who cross them. In short, War Dogs are almost always encountered alongside their masters and this combination of warrior and canine is a truly potent force for any adventurer to face."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +0 Survival test, a character can remove the War Dog\u2019s pelt, worth 5 drakes, over the course of a Short Rest. Skinning a domestic dog is considered a cruel act in most of Tamriel, and in some places is also a crime."},
+                    {text: "On a +30 Simple Survival test over a Short Rest, a character can harvest DoS days\u2019 rations of dog meat. The meat will spoil within a day if not properly preserved. Additionally, harvesting a domesticated dog\u2019s meat is typically considered cruel and may be criminal."},
+                ]},
+        ],
+    },
     "Snow Bear": {
         name: "Snow Bear",
         flavour: "Covered in stark-white fur and larger than their southern cousins, Snow Bears can be found roaming the frozen tundras and craggy glaciers of Tamriel\u2019s northernmost provinces. They are stronger and more aggressive than other varieties of bear.",
@@ -2241,6 +2465,12 @@ function App() {
 
                 <p className="flavour">{sb.flavour}</p>
                 <p className="sbTags">{sb.tags}</p>
+                {sb.quote && (
+                    <blockquote className="sbQuote">
+                        <p>{sb.quote.text}</p>
+                        <cite>{sb.quote.by}</cite>
+                    </blockquote>
+                )}
 
                 <div className="sbStats">
                     {sb.stats.map(group => (
