@@ -46,17 +46,391 @@ type Statblock = {
     name: string,
     flavour: string,
     tags: string,
-    quote?: {text: string, by: string},
     stats: {group: string, rows: [string, string][]}[],
-    sections: {head: string, kind: "list" | "prose", items: {name?: string, text?: string}[]}[],
+    sections: {head: string, kind: "list" | "prose" | "table",
+        items: {name?: string, text?: string}[], cols?: string[], rows?: string[][]}[],
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Dreugh": {
+        name: "Dreugh",
+        flavour: "Dreugh are an ancient species of aquatic, octopus-like beastfolk, commonly hunted for their hide and the wax from their shells.",
+        tags: "Dreugh, Beast; Average; White Soul (400)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "40"], ["Intelligence", "30"], ["Willpower", "35"], ["Perception", "40"], ["Personality", "5"], ["Morale", "45"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "11"], ["Magicka", "30"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "6m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "55"], ["Evade", "50"], ["Observe", "50"], ["Stealth", "40"], ["Knowledge", "40"], ["Social", "15"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Dreugh Claws", text: "1d8; Crushing; Reach 1m"},
+                    {name: "Dreugh Hide", text: "AR 6 / Magic AR 2; Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Refresh Spells (1 SP)", text: "The Dreugh can, as a free action, refresh MP equal to half their max MP. If they have the optional Spellcaster trait, they refresh all of their spell uses instead."},
+                    {name: "Tentacle Grab (1 AP + 1 SP)", text: "As an Primary Action, while underwater, the Dreugh can attack with its many tentacles which lash out and grasp wildly. This is a melee attack with a Reach of 1 meter. If it hits, the target is Grappled and the Dreugh can immediately perform a bonus Grapple Action for free."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Amphibious", text: "Can breath water and ignores the skill cap placed on their Combat rolls by their athletics when fighting in water."},
+                    {name: "Bestial"},
+                    {name: "Dark Sight"},
+                    {name: "Immunity (Paralysis, Poison)"},
+                    {name: "Swimmer", text: "This creature doubles its movement speed in water."},
+                    {name: "Weakness (Frost, 3)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Shock Bite 1", text: "3 MP; 1d4 Shock; Melee (1m), Attack, Overload"},
+                    {name: "Shock Bite 2", text: "5 MP; 1d6 Shock; Melee (1m), Attack, Overload"},
+                    {name: "Shock Bite 3", text: "7 MP; 1d8 Shock; Melee (1m), Attack, Overload"},
+                ]},
+            {head: "Encountering Dreughs", kind: "prose", items: [
+                    {text: "Dreugh are a mysterious and esoteric beast-peoples that live in underground lairs and sunken ruins. They appear half man, half octopus, with the claws of crabs. Dreugh can be found in any of the saltwater seas surrounding Tamriel, and frequent the waterways of the Iliac Bay."},
+                    {text: "Their origins are shrouded in legend, though some say the Dreugh are the remnants of a prehistoric civilization that spanned the seas, who lived in castles of glass and coral. The ancient Chimer waged frequent war against the Dreugh, to which some attribute the species\u2019 devolved intelligence and collapsed empire. Others still suggest that Dreugh ruled the world in an even older time, when the world was all seas and Lyg, and Molag Bal served as their chief."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +0 Survival test, a character can remove the Dreugh\u2019s shell, worth 150 drakes, over the course of a Long Rest. Failing this test spoils the shell, halving its worth."},
+                    {text: "On a +0 Survival test, a character can, over the course of a Long Rest, turn a Dreugh Shell into one Full Dreugh Hide Chest piece, or two Full Dreugh Hide limb pieces, or four Partial Dreugh Hide Limbs, or two Partial Dreugh Hide Chest pieces. Failing this test instead spoils the shell, halving its worth."},
+                    {text: "On a -10 Alchemy test over a Short Rest, a character can harvest the wax from the Dreugh\u2019s shell, which is an Very Rare Restoration ingredient. The character can only ever manage to salvage a single dose."},
+                ]},
+        ],
+    },
+    "Land Dreugh": {
+        name: "Land Dreugh",
+        flavour: "For one year of their life, dreughs undergo karvinasim and emerge onto land as aggressive crustaceans to breed. During this period they are known as land dreughs (or \u201cbillies\u201d).",
+        tags: "Dreugh, Beast; Average; White Soul (400)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "45"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "35"], ["Perception", "40"], ["Personality", "5"], ["Morale", "45"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "12"], ["Magicka", "30"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "50"], ["Evade", "55"], ["Observe", "60"], ["Stealth", "45"], ["Knowledge", "30"], ["Social", "5"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Dreugh Claws", text: "1d8; Crushing; Reach 1m"},
+                    {name: "Dreugh Hide", text: "AR 6 / Magic AR 2; Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Refresh Spells (1 SP)", text: "The Dreugh can, as a free action, refresh MP equal to half their max MP. If they have the optional Spellcaster trait, they refresh all of their spell uses instead."},
+                    {name: "Scything Claws (1 AP + 1 SP)", text: "As an Primary Action, the Land Dreugh can ravage their opponent with the claws that grow from their backs. These claws do 1d12 Slashing damage and hit up to 2 targets within 2m."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Amphibious", text: "Can breath water and ignores the skill cap placed on their Combat rolls by their athletics when fighting in water."},
+                    {name: "Bestial"},
+                    {name: "Dark Sight"},
+                    {name: "Quadruped"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Shock Bite 1", text: "3 MP; 1d4 Shock; Melee (1m), Attack, Overload"},
+                    {name: "Shock Bite 2", text: "5 MP; 1d6 Shock; Melee (1m), Attack, Overload"},
+                    {name: "Shock Bite 3", text: "7 MP; 1d8 Shock; Melee (1m), Attack, Overload"},
+                ]},
+            {head: "Encountering Land Dreughs", kind: "prose", items: [
+                    {text: "Once in their lifetime, for a single year, Dreugh undergo metamorphosis called karvinasim and emerge onto land as violent crustaceans, with many legs and extra appendages, adapted for surface hunting. Land Dreugh, unlike their depth dwelling kin, are highly aggressive and very dangerous. With hard armor, and large, raking talons, Land Dreugh emerge onto land to hunt and mate for a brief time."},
+                    {text: "Land Dreugh can be found on many large beaches, and will gather into colonies that will hunt indiscriminately for miles around their beach-colony. Whole villages have been wiped out by Land Dreugh, who capture or kill the inhabitants to feed their freshly spawned younglings."},
+                    {text: "In combat, Land Dreugh will fight to win, using all of their cunning and brutality to their advantage, and if in the proper numbers, will not hesitate to engage in full scale battles."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +0 Survival test, a character can remove the Dreugh\u2019s shell, worth 150 drakes, over the course of a Long Rest."},
+                    {text: "On a +0 Survival test, a character can, over the course of a Long Rest, turn a Dreugh Shell into one Full Dreugh Hide Chest piece, or two Full Dreugh Hide limb pieces, or four Partial Dreugh Hide Limbs, or two Partial Dreugh Hide Chest pieces. Failing this test instead spoils the shell, halving its worth."},
+                    {text: "On a -10 Alchemy test over a Short Rest, a character can harvest the wax from the Dreugh\u2019s shell, which is an Very Rare Restoration ingredient. The character can only ever manage to salvage a single dose."},
+                ]},
+        ],
+    },
+    "Durzog": {
+        name: "Durzog",
+        flavour: "Sometimes called sludgepuppies, a durzog is a dog-like reptilian creature used in battle by goblins and orcs.",
+        tags: "Beast; Average; White Soul (200)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "35"], ["Agility", "40"], ["Intelligence", "25"], ["Willpower", "20"], ["Perception", "35"], ["Personality", "5"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "25"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Small"]]},
+            {group: "Skills", rows: [["Combat", "55"], ["Magic", "-"], ["Evade", "40"], ["Observe", "55"], ["Stealth", "40"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "50"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d10; Crushing (2); Reach 1m"},
+                    {name: "Scaled Hide", text: "Partial AR 5 / Poison 1"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Latch On (1 SP)", text: "If the creature successfully Bites a target which results in a grapple, it latches on as a free action. As a result, the grappled character receives a -20 penalty to their attempts to break free. Alternatively, the grappled target can instead end the grapple as a free action. In doing so, they suffer the Bleeding (2) Condition and must test for Disease."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, then the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Greenskin\u2019s Best Friend", text: "Even though it cannot speak any languages, a durzog can understand simple orders given by a goblin or orc that it trusts."},
+                    {name: "Quadruped"},
+                    {name: "Savage", text: "Rolls damage twice and uses the highest result."},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Teamwork", text: "Gains a bonus DoS on any attack rolls made while an ally with Teamwork is in Reach of the same target."},
+                    {name: "Weak Point (Underbelly)", text: "This creature\u2019s AR is not applied to its underbelly. Precision Strikes can be made targeting this location in addition to the standard hit locations."},
+                ]},
+            {head: "Variant: War Durzog", kind: "list", items: [
+                    {name: "Stubborn", text: "Can re-roll failed Panic tests"},
+                    {name: "Trained", text: "War Durzogs ignore the Bestial trait."},
+                    {name: "Unrelenting", text: "Targets cannot use the Disengage action while in the War Durzog\u2019s melee range."},
+                ]},
+            {head: "Encountering Durzogs", kind: "prose", items: [
+                    {text: "Durzogs are hound-like reptiles found both in the wild and in service of goblins and orcs, especially in the Wrothgarian and Dragontail Mountains. Durzogs are large, bulky, and have powerful snapping jaws, resembling a crocodiles, but with large piercing tusks."},
+                    {text: "In the wilderness, durzogs live in small familial packs, usually numbering no greater than half a dozen. When tamed and bred by greenskins, their packs can be far, far larger, sometimes in the hundreds, if the tribe can keep them fed."},
+                    {text: "Durzogs will typically live in warrens they dig with their large, broad claws, or in existing cave systems, where their night eyes allow them to see. They typically hunt at night, and are not afraid to hunt men and mer alike."},
+                    {text: "Durzogs tend to size up an opponent, then in unison will swarm and violently bite and snap at their prey until they can drag it to the ground and pull it limb from limb to devour it while it is still alive. They eat all of their prey, and do not even leave behind the bones."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the durzog\u2019s hide, worth 30 drakes, over the course of a Short Rest."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a durzog hide into one piece of Full Durzog Hide armor. Durzog Hide armor uses the standard Hide armor profile with the addition of 1 Poison AR."},
+                    {text: "On a +20 Simple Survival test over a Short Rest, a character can harvest DoS days\u2019 rations of durzog meat, which can be cooked and eaten as a ration, or can be used as an Uncommon Illusion ingredient. Unlike other raw meats, durzog meat will not spoil."},
+                ]},
+        ],
+    },
+    "Small Game": {
+        name: "Small Game",
+        flavour: "Animals such as rabbits, foxes, squirrels, birds, small lizards, very large insects, raccoon, hedgehogs, and fish.",
+        tags: "Game, Beast; Trivial; White Soul (5)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "5"], ["Endurance", "20"], ["Agility", "40"], ["Intelligence", "10"], ["Willpower", "5"], ["Perception", "35"], ["Personality", "5"], ["Morale", "5"]]},
+            {group: "Attributes", rows: [["Hit Points", "5-10"], ["Wound Thr.", "2"], ["Magicka", "10"], ["Stamina", "2"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "8m"], ["Size", "Tiny"]]},
+            {group: "Skills", rows: [["Combat", "20"], ["Magic", "-"], ["Evade", "40"], ["Observe", "55"], ["Stealth", "40"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "50"]]},
+        ],
+        sections: [
+            {head: "Game Animals", kind: "prose", items: [
+                    {text: "There are many beasts hunted for sport or for meat and hides across Tamriel, that don\u2019t typically present a major threat in combat. Game Animals are so widely varied, that these profiles should cover most varieties with some tweaking."},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Biting, Pecking, or Clawing", text: "1d4; Reach 1m"},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                ]},
+            {head: "Variable Traits", kind: "list", items: [
+                    {text: "Any game animal may have any of the following traits in any combination depending on their species:"},
+                    {name: "Amphibious", text: "Can breath water and ignores the skill cap placed on their Combat rolls by their Athletics when fighting in water."},
+                    {name: "Dark Sight"},
+                    {name: "Flyer (Speed x 3)"},
+                    {name: "Quadruped"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Swimmer", text: "This creature doubles its movement speed in water."},
+                ]},
+            {head: "Encountering Game Animals", kind: "prose", items: [
+                    {text: "Game Animals of all sorts can be found across Tamriel, and are most commonly hunted for their meat, pelts or trophies. This entry is mostly to aid in characters hunting for rations in their downtime, and can be tailored to represent something as large as a moose or as small as a mouse."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +20 Survival test, a character can remove the game animal\u2019s hide. It takes a Short Rest to remove the pelt of a Small Game animal, worth 10 drakes. It takes a Long Rest to remove the pelt of a Large Game animal, worth 100 drakes. Failing the test spoils the hide, halving its worth."},
+                    {text: "On a +20 Survival test, a character can create one piece of Partial Hide or Fur armor using a Small hide, or one piece of Full Hide or Fur armor using a Large Hide (or two Partial pieces) over a Long Rest."},
+                    {text: "On a +40 Survival test, a character can remove a trophy from a Large Game animal over a Short Rest, worth 100 drakes."},
+                    {text: "On a +30 Simple Survival test, a character can harvest meat from a Game Animal. They gain DoS / 2 rations of meat from a Small Game animal which takes a Short Rest, and DoS x 3 rations of meat from a Large Game animal which takes a Long Rest. The meat will spoil if not preserved."},
+                ]},
+        ],
+    },
+    "Large Game": {
+        name: "Large Game",
+        flavour: "Animals such as deer, moose, elk, antelopes, large lizards, giant insects, bison, rams, and small whales.",
+        tags: "Game, Beast; Trivial; White Soul (30)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "40"], ["Agility", "40"], ["Intelligence", "10"], ["Willpower", "10"], ["Perception", "30"], ["Personality", "5"], ["Morale", "10"]]},
+            {group: "Attributes", rows: [["Hit Points", "15-30"], ["Wound Thr.", "8"], ["Magicka", "10"], ["Stamina", "4"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "-"], ["Evade", "30"], ["Observe", "55"], ["Stealth", "30"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Game Animals", kind: "prose", items: [
+                    {text: "There are many beasts hunted for sport or for meat and hides across Tamriel, that don\u2019t typically present a major threat in combat. Game Animals are so widely varied, that these profiles should cover most varieties with some tweaking."},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Biting, Ramming, Thrashing, or Goring", text: "1d10; Slashing or Crushing; Reach 1m"},
+                    {name: "Natural Toughness (2)"},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                ]},
+            {head: "Variable Traits", kind: "list", items: [
+                    {text: "Any game animal may have any of the following traits in any combination depending on their species:"},
+                    {name: "Amphibious", text: "Can breath water and ignores the skill cap placed on their Combat rolls by their Athletics when fighting in water."},
+                    {name: "Dark Sight"},
+                    {name: "Flyer (Speed x 3)"},
+                    {name: "Quadruped"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Swimmer", text: "This creature doubles its movement speed in water."},
+                ]},
+            {head: "Encountering Game Animals", kind: "prose", items: [
+                    {text: "Game Animals of all sorts can be found across Tamriel, and are most commonly hunted for their meat, pelts or trophies. This entry is mostly to aid in characters hunting for rations in their downtime, and can be tailored to represent something as large as a moose or as small as a mouse."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +20 Survival test, a character can remove the game animal\u2019s hide. It takes a Short Rest to remove the pelt of a Small Game animal, worth 10 drakes. It takes a Long Rest to remove the pelt of a Large Game animal, worth 100 drakes. Failing the test spoils the hide, halving its worth."},
+                    {text: "On a +20 Survival test, a character can create one piece of Partial Hide or Fur armor using a Small hide, or one piece of Full Hide or Fur armor using a Large Hide (or two Partial pieces) over a Long Rest."},
+                    {text: "On a +40 Survival test, a character can remove a trophy from a Large Game animal over a Short Rest, worth 100 drakes."},
+                    {text: "On a +30 Simple Survival test, a character can harvest meat from a Game Animal. They gain DoS / 2 rations of meat from a Small Game animal which takes a Short Rest, and DoS x 3 rations of meat from a Large Game animal which takes a Long Rest. The meat will spoil if not preserved."},
+                ]},
+        ],
+    },
+    "Giant": {
+        name: "Giant",
+        flavour: "Giants are enormous humanoids with a primitive culture, hailing from Atmora.",
+        tags: "Beast; Major; White Soul (800)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "70"], ["Endurance", "60"], ["Agility", "30"], ["Intelligence", "20"], ["Willpower", "45"], ["Perception", "30"], ["Personality", "20"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "120"], ["Wound Thr.", "17"], ["Magicka", "20"], ["Stamina", "6"], ["Initiative", "+6"], ["Action Pts.", "3"], ["Speed", "8m"], ["Size", "Huge"]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "-"], ["Evade", "10"], ["Observe", "40"], ["Stealth", "5"], ["Knowledge", "30"], ["Social", "20"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Giant Club", text: "3d10; Crushing, Unwieldy, Shieldsplitter, Concussive; Reach 2-4m, 1H"},
+                    {name: "Natural Toughness (2)"},
+                    {name: "Mammoth Fur Armor", text: "AR 3 / Frost 2; Light, Partial; Body and Legs"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Overhead Slam (1 AP + 3 SP)", text: "The giant can, as part of a melee attack, make an overhead slam. This is a 4m line originating from the giant. This is resolved as an AoE. Any target that is hit is immediately thrown a number of meters vertically equal to the damage they receive. They then suffer the consequences of falling as usual."},
+                    {name: "Sweeping Strike (1 AP + 1 SP)", text: "The giant can, as part of a melee attack, make a sweeping strike, which hits up to 5 targets in the giant\u0027s Reach. This is resolved as an AoE."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Colossal Strikes", text: "Cannot be parried, but targets gain a +10 on tests to Evade its melee attacks."},
+                    {name: "Magic Resistant", text: "Re-rolls failed tests to resist Magic."},
+                    {name: "Stubborn", text: "Re-rolls failed Panic tests."},
+                    {name: "Thick Skull", text: "Immune to the Stun and Dazed conditions."},
+                    {name: "Special Hit Table"},
+                ]},
+            {head: "Special Hit Table", kind: "table", items: [],
+                cols: ["Hit Location", "Melee", "Ranged"],
+                rows: [
+                    ["Left Leg", "1-3", "1-2"],
+                    ["Right Leg", "4-6", "3-4"],
+                    ["Body", "7-8", "5-7"],
+                    ["Left Arm", "9", "8"],
+                    ["Right Arm", "10", "9"],
+                    ["Head", "-", "10"],
+                ]},
+            {head: "Encountering Giants", kind: "prose", items: [
+                    {text: "Giants are a semi-intelligent nomadic race native to Skyrim and High Rock. Giants speak in a deep, guttural language that no one since the days of Atmora remembers how to speak. They wear clothing made of furs and bones. A giant\u2019s tools and weapons are often made from oversized rock, logs, and scrimshawed mammoth bones."},
+                    {text: "Giants stand 11-12 feet tall, and female giants are rarely, if ever, seen. It is speculated that female giants are kept living in the mountains while the nomadic males range about during the summer months, only to return to the mountaintops in winter after having grazed their mammoth herds for the season, which they have domesticated and shepherd. Giants are highly territorial and protective of their mammoths, and will often attack those who stray too near their encampments. In combat, giants use their massive strength to crush their enemies."},
+                    {text: "Giants have demonstrated complex beliefs concerning death. When a giant is sick or dying, they make pilgrimage to one of their sacred burial grounds to die alone."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can salvage Mammoth Cheese from the giant\u2019s pouch. The character searching can salvage up to d4 rations of the rancid cheese. It requires a +0 Endurance test to keep down."},
+                    {text: "A character can remove Giant Toes, which are a Very Rare Restoration Ingredients. The character salvages up to two toes - the rest are simply too small."},
+                    {text: "A character can wield the Giant\u2019s Club using the stats presented in its profile. Use by a regular PC requires at least 50 Strength, must be used in two hands, and requires a Stamina Point each time its wings. It has ENC 10."},
+                    {text: "On a +10 Survival test, a character can turn giant bones into weapons or armor. Giant bones are exactly like regular Bone equipment, but lose the Primitive trait. Additionally, Giant Bone armor increases its AR and ENC by 1."},
+                ]},
+        ],
+    },
+    "Giant Bat": {
+        name: "Giant Bat",
+        flavour: "Large bats, roughly the size of the average dog.",
+        tags: "Beast; Trivial; White Soul (50)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "20"], ["Endurance", "24"], ["Agility", "50"], ["Intelligence", "15"], ["Willpower", "25"], ["Perception", "40"], ["Personality", "5"], ["Morale", "25"]]},
+            {group: "Attributes", rows: [["Hit Points", "12"], ["Wound Thr.", "6"], ["Magicka", "15"], ["Stamina", "2"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "6m"], ["Size", "Small"]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "-"], ["Evade", "60"], ["Observe", "50"], ["Stealth", "50"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d6; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Drink Blood (1 SP)", text: "If the Giant Bat deals damage to a target using its Vampiric Fangs, it can immediately spend a Stamina Point to heal for 1d10 HP as a free action. This may not exceed its HP maximum."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (-20)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a -20 Endurance test or contract a Common Disease."},
+                    {name: "Echolocation", text: "A Giant Bat sees by hearing, not by sight. A Giant Bat cannot be conventionally Blinded, but is instead treated as also being Blind when affected by the Deafened condition."},
+                    {name: "Flyer (20m)", text: "The Giant Bat\u2019s flight speed is 20m."},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                ]},
+            {head: "Encountering Giant Bats", kind: "prose", items: [
+                    {text: "Giant bats can be found across Tamriel, in caves and in deep woods. Giant bats, much like their smaller cousins, hunt by night using high-pitched screeching to echo-locate. Because of their larger size, the screeches of giant bats are very much audible by the ears of men and mer, and their cries put fear into the hearts of travelers, for giant bats are not solitary hunters."},
+                    {text: "Giant bats, when hunting, will swarm a single target ruthlessly with the intent of killing, so they may feed on the body in the precious time before dawn, where they can be seen and their night-time advantage leaves them. If giant bats are driven off, but have done sufficient flesh wounds to a potential target, they will return time and again over the course of the night in hit and run attacks, depriving their prey of rest."},
+                    {text: "When attacked in their lairs, bats will swarm viciously as above, but will frequently simply flee their nest and return when it is safe, unless there are vulnerable young to protect, in which case they will fight until the small creatures are able to escape."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the bat\u2019s hide, worth 20 drakes, over the course of a Short Rest. Failing this test spoils the hide, halving its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a bat hide into one piece of Full Bat Hide armor. It requires two bat hides to make a Full Bat Hide chest piece. Bat Hide armor is exactly the same as regular Hide, but is a cool midnight black color and provides a +10 bonus to the wearer\u2019s Stealth tests if the character is wearing at least 4 Bat Hide pieces. Failing this test spoils the hide, halving its worth and rendering it useless."},
+                    {text: "On a +20 Simple Survival test a character can harvest bat meat over a Short Rest. The character harvests DoS days\u2019 rations. The meat will spoil within a day if not preserved."},
+                    {text: "On a -10 Alchemy test over a Short Rest, a character can prepare the bat\u2019s fangs, which are a Rare Destruction ingredient. Scoring 2 or more DoS harvests 2 fangs instead."},
+                ]},
+        ],
+    },
+    "Giant Snake": {
+        name: "Giant Snake",
+        flavour: "Enormous, deadly snakes. Often found near water.",
+        tags: "Beast; Minor; White Soul (80)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "45"], ["Agility", "50"], ["Intelligence", "15"], ["Willpower", "30"], ["Perception", "35"], ["Personality", "5"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "12"], ["Magicka", "15"], ["Stamina", "4"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "15m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "-"], ["Evade", "50"], ["Observe", "55"], ["Stealth", "70"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d8; Slashing; Reach 1m"},
+                    {name: "Snake Hide", text: "AR 2 / Poison 1; Full"},
+                    {name: "Weak Point (Underbelly)", text: "This creature\u2019s AR is not applied to its underbelly. Precision Strikes can be made targeting this location in addition to the standard hit locations."},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Constrict (1 AP + 1 SP)", text: "If an enemy is Grappled, the Snake can cause them to lose 2 SP as a Secondary Action."},
+                    {name: "Envenom (1 SP)", text: "After successfully dealing damage with a Bite attack, the Giant Snake deals an additional 1d6 Poison damage as a Free Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Amphibious", text: "Can breath water and ignores the skill cap placed on their Combat rolls by their Athletics when fighting in water."},
+                    {name: "Bestial"},
+                    {name: "Crawler", text: "This creature is not slowed by difficult terrain."},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Serpentine", text: "Attacks which target the Arm or Leg hit locations are resolved against the body instead."},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                ]},
+            {head: "Encountering Giant Snakes", kind: "prose", items: [
+                    {text: "Giant snakes can be found in both the wet and dry regions of Tamriel. Giant snakes tend to prey on large fauna, such as elk, deer, and sometimes a foolhardy adventurer."},
+                    {text: "Giant snakes come in a wide variety of types, some of which are deadly poisoners, and some are brutal constrictors. A poisonous giant snake will focus their efforts on envenoming their prey, while a constrictor will go in for a squeeze and will not stop until their prey is utterly crushed."},
+                    {text: "Despite their large size, giant snakes are surprisingly stealthy, as they move silently and low to the underbrush. This can make spotting them hazardous, and in swampy regions, they sometimes swim on the surface of water, or drop down from trees."},
+                    {text: "Snakes make semi-permanent burrows they range out of to hunt prey. Due to the size of their prey, they do not feed often, as they digest their victims whole, a process that takes weeks, sometimes months."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the snake\u2019s hide, worth 100 drakes, over the course of a Short Rest. Failing this test spoils the hide and halves its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a snake hide into one piece of Full Snake Hide armor. Alternatively, creating a Full Snake Hide chest piece requires two snake hides. Snake Hide armor is exactly the same as regular Hide but also provides 1 Poison AR. Failing this test spoils the hide, halving its worth, and renders it useless."},
+                    {text: "On a +20 Simple Survival test over a Short Rest, a character can harvest DoS days\u2019 rations of snake meat. Snake meat will spoil within a day if not preserved."},
+                    {text: "On a +20 Alchemy test over a Short Rest, a character can harvest and prepare the snake\u2019s eyes, which are Uncommon Illusion ingredients. If the character scores more than 1 DoS, they harvest 2 giant snake eyes instead."},
+                    {text: "Additionally, a character can make on roll on the Treasure table to see if the snake has swallowed any other adventurers and what loot they had."},
+                ]},
+        ],
+    },
+    "Giant Spider": {
+        name: "Giant Spider",
+        flavour: "Enormous spiders that lurk in dark caves, and deep within ancient forests, spinning webs to catch unsuspecting prey.",
+        tags: "Beast; Minor; White Soul (160)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "44"], ["Agility", "55"], ["Intelligence", "15"], ["Willpower", "30"], ["Perception", "30"], ["Personality", "5"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "22"], ["Wound Thr.", "11"], ["Magicka", "15"], ["Stamina", "4"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "15m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "-"], ["Evade", "65"], ["Observe", "50"], ["Stealth", "70"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d6; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Poison Spray (1 AP + 1 SP)", text: "The spider can spray poison at a target up to 10m away as a ranged attack action. It gains a +10 to hit and deals 2d6 Poison damage."},
+                    {name: "Web Blast (1 AP + 1 SP)", text: "The spider can launch a web up to 10m as a ranged attack action. If it hits, the target becomes Entangled."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Climber", text: "This creature can climb walls and ceilings as if open ground."},
+                    {name: "Crawler", text: "This creature is not slowed by difficult terrain."},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                ]},
+            {head: "Encountering Giant Spiders", kind: "prose", items: [
+                    {text: "Giant spiders often live in small broods, down in the hidden and darkened depths of the underground, or in particularly dense forests. Often, there are dozens, or hundreds of smaller spiderlings under the command of a larger mother spider, and her handful of mates."},
+                    {text: "Capable of crawling on ceilings and walls, giant spiders weave powerful webs to entangle victims, who are then liquefied with deadly poison and feasted upon. They will lie in wait to ambush larger prey, but are unafraid of charging weaker, man sized prey head on. The spiders can also use their deadly venom as projectiles, spitting it in large globs to weaken their prey from a distance."},
+                    {text: "Though giant spiders are ambush hunters, desperation for food may drive them to take a more proactive approach to hunting, which may result in attacks away from their lair on the road, or in small villages. When attacked in their lair, spiders will use all of their abilities and defenses to their advantage to hinder their foes."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the spider\u2019s hide, worth 30 drakes, over the course of a Short Rest. Failing this test spoils the hide and halves its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a spider hide into one piece of Full Spider Hide armor. Alternatively, creating a Full Spider Hide chest piece requires two spider hides. Spider Hide armor is exactly the same as regular Hide, but provides a +10 bonus to the wearer\u2019s Athletics tests made to climb, if the character is wearing at least 4 pieces. Failing this test spoils the hide, which halves its worth and renders it useless."},
+                    {text: "On a +10 Survival test, a character can harvest one dose of spider poison, which is a Plentiful quality poison. If the character fails this test, they instead immediately take d6 Poison damage as they spill or fumble the toxin sac."},
+                    {text: "On a -10 Alchemy test over a Short Rest, a character can harvest the spider\u2019s eyes. They retrieve DoS eyes, up to 8 maximum. Each eye is one Rare Mysticism ingredient."},
+                ]},
+        ],
+    },
     "Cave Rat": {
         name: "Cave Rat",
         flavour: "Cave rats are a plague upon the common folk of Tamriel. Found in virtually every province, individually they are weak but collectively they can bring down a fully-armored man.",
         tags: "Rat, Beast; Trivial; White Soul (10)",
-        quote: {text: "\u201cYou can\u2019t imagine the fuss some people make. My rats are no problem for anyone.\u201d", by: "- Arvena Thelas"},
         stats: [
             {group: "Characteristics", rows: [
                     ["Strength", "10"], ["Endurance", "20"], ["Agility", "40"], ["Intelligence", "10"],
@@ -469,8 +843,9 @@ function statOf(sb: Statblock | undefined, label: string, fallback: number) {
     for (const group of sb.stats) {
         for (const row of group.rows) {
             if (row[0] === label) {
-                const n = Number(row[1])
-                if (!isNaN(n)) return n
+                // a range like "5-10" starts at its lower end
+                const found = row[1].match(/\d+/)
+                if (found) return Number(found[0])
             }
         }
     }
@@ -2465,12 +2840,6 @@ function App() {
 
                 <p className="flavour">{sb.flavour}</p>
                 <p className="sbTags">{sb.tags}</p>
-                {sb.quote && (
-                    <blockquote className="sbQuote">
-                        <p>{sb.quote.text}</p>
-                        <cite>{sb.quote.by}</cite>
-                    </blockquote>
-                )}
 
                 <div className="sbStats">
                     {sb.stats.map(group => (
@@ -2490,7 +2859,16 @@ function App() {
                 {sb.sections.map(sec => (
                     <div key={sec.head}>
                         <h2>{sec.head}</h2>
-                        {sec.kind === "prose" ? (
+                        {sec.kind === "table" ? (
+                            <div className="sbTable" style={{gridTemplateColumns: "repeat(" + (sec.cols ?? []).length + ", auto)"}}>
+                                {(sec.cols ?? []).map(col => <div className="dh" key={col}>{col}</div>)}
+                                {(sec.rows ?? []).map((row, i) => (
+                                    <Fragment key={i}>
+                                        {row.map((cell, j) => <div key={j}>{cell}</div>)}
+                                    </Fragment>
+                                ))}
+                            </div>
+                        ) : sec.kind === "prose" ? (
                             sec.items.map((item, i) => <p key={i}>{item.text}</p>)
                         ) : (
                             <ul className="sbList">

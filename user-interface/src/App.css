@@ -1673,14 +1673,16 @@ body:has(#center > .nameRow){display:block}
 }
 #center.gmRoom h2::before,
 #center.gmRoom h2::after{content:"";flex:1;height:1px;background:var(--line)}
-#center .sbQuote{
-  margin:0 0 .9em;
-  padding-left:.8em;
-  border-left:2px solid var(--line);
-  max-width:50em;
+/* a small table inside a creature's write up */
+#center .sbTable{
+  display:inline-grid;
+  gap:1px;
+  margin:.3em 0 .2em;
+  background:var(--line);
+  border:1px solid var(--line);
 }
-#center .sbQuote p{margin:0;font-style:italic;opacity:.8}
-#center .sbQuote cite{font-style:normal;font-size:.9em;opacity:.55}
+#center .sbTable > div{padding:.22em .6em;background:var(--tile)}
+#center .sbTable > .dh{background:var(--band);font-weight:700;font-size:.85em;opacity:.7}
 #center .sbList{margin:.2em 0;padding-left:1.2em;max-width:60em}
 #center .sbList li{margin:.28em 0}
 #center .sbList li b{font-weight:700}
