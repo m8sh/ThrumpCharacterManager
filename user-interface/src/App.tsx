@@ -48,10 +48,329 @@ type Statblock = {
     tags: string,
     stats: {group: string, rows: [string, string][]}[],
     sections: {head: string, kind: "list" | "prose" | "table",
-        items: {name?: string, text?: string}[], cols?: string[], rows?: string[][]}[],
+        items: {name?: string, text?: string, subs?: string[]}[], cols?: string[], rows?: string[][]}[],
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Goblin Grunt": {
+        name: "Goblin Grunt",
+        flavour: "Goblins are violent, primitive humanoids found throughout Tamriel, often living in sewers, caves and ruins in small clan-based societies. Appearance-wise, goblins have green skin, yellow eyes with slitted pupils, pronounced canine teeth, elven ears, and sometimes horns and hunchbacks.",
+        tags: "Goblin, Beast; Minor; White Soul (100)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "20"], ["Agility", "35"], ["Intelligence", "15"], ["Willpower", "15"], ["Perception", "35"], ["Personality", "10"], ["Morale", "25"]]},
+            {group: "Attributes", rows: [["Hit Points", "10"], ["Wound Thr.", "6"], ["Magicka", "15"], ["Stamina", "2"], ["Initiative", "+6"], ["Action Pts.", "2"], ["Speed", "9m"], ["Size", "Small"]]},
+            {group: "Skills", rows: [["Combat", "45"], ["Magic", "15"], ["Evade", "45"], ["Observe", "45"], ["Stealth", "45"], ["Knowledge", "15"], ["Social", "10"], ["Physical", "35"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Goblin Battle Axe", text: "1d8; Splitting, Unwieldy; Reach 2m, 2H"},
+                    {name: "Goblin Blade", text: "1d6; Slashing, Exploit Weakness; Reach 1m, 1H"},
+                    {name: "Goblin Bow", text: "1d6; Reload(1), Range (20/100/200); 2H", subs: ["Includes 12 Iron Splitting or Slashing Arrows"]},
+                    {name: "Goblin Cudgel", text: "1d6; Crushing, Unwieldy; Reach 1m, 1H"},
+                    {name: "Goblin Spear", text: "1d6; Unwieldy; Reach 2m, 1H"},
+                    {text: "Also has any of:"},
+                    {name: "Goblin Armor", text: "AR 2; Light, Partial"},
+                    {name: "Goblin Shield", text: "BR 6 / MR 3; Light"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Gang Up (1 SP)", text: "Can gang up as a free action by spending a Stamina Point when an enemy in Reach is attacked by another allied Goblin. Ganging up imposes a -10 on the target\u0027s Defense roll. Additionally, each ganging up Goblin adds +1 damage to the attacking Goblin\u0027s damage roll."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Crawler", text: "This creature is not slowed by difficult terrain."},
+                    {name: "Dark Sight"},
+                ]},
+            {head: "Variant: Durzog Trainer", kind: "list", items: [
+                    {text: "Special Abilities"},
+                    {name: "Inspire (1 SP)", text: "On their turn, a Durzog Trainer can spend a Stamina point to inspire one Durzog. That Durzog can then re-roll its next failed Combat test."},
+                    {text: "Traits"},
+                    {name: "Teamwork", text: "Gains a bonus DoS on any attack rolls made while an ally with Teamwork is in Reach of the same target."},
+                ]},
+            {head: "Encountering Goblins", kind: "prose", items: [
+                    {text: "Goblins are savage, primitive humanoids found throughout Tamriel. They live in clan based societies ruled by the strongest of them in a hierarchy of might-makes-right. Goblins have green skin, yellow-slitted eyes, large fangs and elven ears, and stand at the height of around a man\u2019s chin."},
+                    {text: "The most common goblins are cave goblins, which dwell in caves, sewers, ruins and other subterranean lairs. They typically build simple but deadly traps, and construct minor fortifications in their underground bases."},
+                    {text: "The other main type of goblins are the clan goblins, which dwell as nomads on the surface world, hunting and raiding as necessary. Clan goblins are far larger and stronger than their underground cousins, so naturally pose a much larger threat on the offensive than the relatively diminuitive cave goblins, who typically have the advantage on the defensive instead. Goblins are known to train the dog-like Durzogs for battle, and raise rats for their meat."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A goblin has on its person what it is equipped with, in addition to about d4 drakes worth of junk weighing about 1 ENC."},
+                    {text: "A character can make a +0 Alchemy test to harvest a goblin ear, which is an Uncommon Destruction ingredient. If the character succeeds with more than 1 DoS, they harvest two ears instead."},
+                    {text: "Goblins are likely to have treasure stashed somewhere in their den. At the GM\u0027s discretion, the characters can make a number of rolls on the Treasure table the GM feels appropriate for the den."},
+                ]},
+        ],
+    },
+    "Goblin Berserker": {
+        name: "Goblin Berserker",
+        flavour: "A Goblin Berserker is a slightly larger, angrier Goblin.",
+        tags: "Goblin, Beast; Minor; White Soul (120)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "30"], ["Agility", "35"], ["Intelligence", "10"], ["Willpower", "20"], ["Perception", "10"], ["Personality", "5"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "10"], ["Stamina", "3"], ["Initiative", "+5"], ["Action Pts.", "2"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "45"], ["Magic", "15"], ["Evade", "45"], ["Observe", "45"], ["Stealth", "45"], ["Knowledge", "15"], ["Social", "10"], ["Physical", "35"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has two of:"},
+                    {name: "Goblin Blade", text: "1d6; Slashing, Exploit Weakness; Reach 1m, 1H"},
+                    {name: "Goblin Cleaver", text: "1d8; Splitting, Unwieldy; Reach 1m, 1H"},
+                    {name: "Goblin Cudgel", text: "1d6; Crushing, Unwieldy, Reach 1m, 1H"},
+                    {text: "Or one of:"},
+                    {name: "Goblin Battle Axe", text: "1d8; Splitting, Unwieldy; Reach 2m, 2H"},
+                    {name: "Goblin Sledge", text: "1d8; Crushing, Unwieldy; Reach 2m, 2H"},
+                    {text: "Also has:"},
+                    {name: "Goblin Heavy Armor", text: "AR 4; Medium, Partial"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Blood Frenzy (1 AP + 1 SP)", text: "The berserker works them self into a blood rage as a Primary Action, gaining the Frenzied condition. While frenzied, they roll all damage dice twice and pick the highest. Additionally, they cannot make Defensive Reactions."},
+                    {name: "Whirlwind (1 AP + 1 SP)", text: "The berserker can strike up to 3 targets in their Reach as part of a single melee attack. Test for the attack once, and all defenders may react separately opposing the attack test. The goblin can choose the order in which their opponents resolve their defenses."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Crawler", text: "This creature is not slowed by difficult terrain."},
+                    {name: "Dark Sight"},
+                ]},
+            {head: "Encountering Goblin Berserkers", kind: "prose", items: [
+                    {text: "Goblin berserkers are the closest equivalent to the nobles of goblin society. Larger, stronger, and more violent-minded than the lesser goblins, goblin berserkers fight with the primal rage of their patron, Malacath, who they worship as Muluk."},
+                    {text: "Goblin berserkers rule as second in command to a clan\u2019s War-Chief, and maintain what passes as discipline in goblin culture. On the battlefield, goblin berserkers use their bulk and fury to their advantage, and press constantly on the attack, often forgoing defense in favor of ruthless and unending strikes. They often use either a broad two handed weapon they can swing with reckless abandon, or a pair of weapons to maximize their offensive output, forsaking shields in favor of heavier, more prestigious goblin armor worthy of their social status."},
+                    {text: "Although goblins are typically a minor threat at best against experienced warriors, many have been caught off-guard by a goblin berserker\u2019s insane lack of self preservation: their rank in goblin society depends on their might and fearlessness, and to lose face would be worse than death."},
+                    {text: "Goblin berserkers typically do not parry incoming blows, but are surprisingly deft and capable of dodging should they need to. If it is clear that the goblins are routing in a fight, goblin berserkers will refuse to retreat and will fight until either they or their opponents are dead."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A goblin berserker has on its person what it is equipped with, in addition to about d8 drakes worth of trophies weighing about 1 ENC."},
+                    {text: "A character can make a +0 Alchemy test to harvest a goblin ear, which is an Uncommon Destruction ingredient. If the character succeeds with more than 1 DoS, they harvest two ears instead."},
+                    {text: "Goblins are likely to have treasure stashed somewhere in their den. At the GM\u0027s discretion, the characters can make a number of rolls on the Treasure table the GM feels appropriate for the den."},
+                ]},
+        ],
+    },
+    "Goblin War-Chief": {
+        name: "Goblin War-Chief",
+        flavour: "Goblins War-chiefs are the largest, most powerful members of the tribe, and serve as their leaders in battle.",
+        tags: "Goblin, Leader, Beast; Average; White Soul (350)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "48"], ["Agility", "40"], ["Intelligence", "25"], ["Willpower", "40"], ["Perception", "30"], ["Personality", "15"], ["Morale", "60"]]},
+            {group: "Attributes", rows: [["Hit Points", "24"], ["Wound Thr.", "13"], ["Magicka", "25"], ["Stamina", "4"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "15"], ["Evade", "50"], ["Observe", "50"], ["Stealth", "20"], ["Knowledge", "35"], ["Social", "15"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "May have:"},
+                    {name: "Goblin Chief Axe", text: "1d8; Splitting, Unwieldy; Reach 1m, 1H"},
+                    {name: "Goblin Shield", text: "BR 7 / MR 4; Light"},
+                    {text: "Or:"},
+                    {name: "Goblin Sledge", text: "1d12; Crushing, Unwieldy; Reach 2m, 2H"},
+                    {text: "Or:"},
+                    {name: "Dual-Wielded Goblin Slashers", text: "1d8; Slashing; Reach 1m; 1H; Wields one in each hand"},
+                    {text: "Also has:"},
+                    {name: "Goblin War-Chief Armor", text: "AR 4; Medium, Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Inspire (1 AP + 1 SP)", text: "The Goblin War-Chief makes a +0 Combat Test to rally their tribesman as a Primary Action. A number of target goblins up to the DoS of the Combat test can re-roll their next failed test."},
+                    {name: "War-Caller (1 AP + 1 SP)", text: "The Goblin War-Chief calls their goblins to arms as a Primary Action. All goblins within 10m can immediately make a free Attack action or use their Gang Up ability without spending a Stamina Point."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Savage", text: "Rolls damage twice and uses the highest result."},
+                    {name: "Crawler", text: "This creature is not slowed by difficult terrain."},
+                    {name: "Dark Sight"},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                ]},
+            {head: "Encountering Goblin War-Chiefs", kind: "prose", items: [
+                    {text: "Goblin war-chiefs are the biggest, strongest, smartest goblins in a clan, and as such rule over their weaker kin through force of muscle, and through low cunning. A goblin war-chief is man sized or larger, and those of the nomad clans are even rumored to be supernaturally protected. Some scholars speculate this to be some sort of blessing from Malacath made manifest, though it warrants further study."},
+                    {text: "Goblin war-chiefs, as the highest ranking members of a clan, have best pick of the weapons, armor, food, durzogs, and mates, and they greedily hoard all of these. In a goblin clan, the war-chief is king, and their word is law. As a result, goblins fear, respect, and envy their chiefs, which results in both total loyalty and murderous betrayal. A goblin war-chief must be careful to keep their berserkers and officers in line, lest they attempt to usurp them."},
+                    {text: "Goblin war-chiefs, unlike goblin berserkers, will retreat if it is warranted, or if they can fall back to a strategic position or ambush. At worst, a goblin war-chief commands enough respect to rally their clan to make a counter-attack at a later date, but to not retaliate at all would certainly result in being cast down; as a result, any attack on a goblin clan is viewed as a personal insult to the war-chief."},
+                    {text: "GMs running campaigns that feature goblins as primary antagonists shouldn\u2019t be afraid to deviate from the stats presented here to give a war-chief Talents from the Character creation chapter in the 3e Core Rules, or to give them magic weapons and armor to help differentiate war-chiefs of different clans, or successors to previously killed war-chiefs. Even one Combat or Weapon talent can help give a goblin war-chief a lot of mechanical personality."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A goblin war-chief has on its person what it is equipped with, in addition to about 2d10 drakes worth of trophies weighing 1 ENC."},
+                    {text: "A character can make a +0 Alchemy test to harvest a goblin ear, which is an Uncommon Destruction ingredient. If the character succeeds with more than 1 DoS, they harvest two ears instead."},
+                ]},
+        ],
+    },
+    "Goblin Shaman": {
+        name: "Goblin Shaman",
+        flavour: "Goblins Shamans are intelligent, magic wielding goblins. They serve as religious leaders for the tribe.",
+        tags: "Goblin, Beast; Minor; Soul Type (300)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "35"], ["Intelligence", "35"], ["Willpower", "35"], ["Perception", "35"], ["Personality", "15"], ["Morale", "35"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "70"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Small"]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "65"], ["Evade", "55"], ["Observe", "55"], ["Stealth", "45"], ["Knowledge", "55"], ["Social", "15"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Totem Staff", text: "1d6; Crushing, Focus, Magic; Reach 2m; 2H", subs: [
+                            "Innate Spell: The wielder of the Totem Staff is able to use it to cast an Innate Spell. An Innate Spell costs no Magicka to cast, and always counts as passing its casting test with 1 DoS. It stores one spell from below:",
+                            "Fire Bolt (1d4, 100m) (2 MP)",
+                            "Frost Bolt (1d4, 100m) (2 MP)",
+                            "Shock Bolt (1d4, 100m) (2 MP)",
+                            "Poison Bolt (1d4, 100m) (2 MP)",
+                            "Heal Bolt (1d4, 100m) (2 MP)",
+                        ]},
+                    {name: "Goblin Shaman Garb", text: "Clothing"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Goblin Shaman can perform a tribal dance which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Crawler", text: "This creature is not slowed by difficult terrain."},
+                    {name: "Dark Sight"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "[Type] Cone 2", text: "11MP; 1d6 [Type]; AoE (5m, cone), Attack, Overload"},
+                    {name: "[Type] Ball 1", text: "8 MP; 1d4 [Type]; AoE (2m, sphere), Attack, Overload"},
+                    {name: "[Type] Bolt 2", text: "6 MP; 1d6 [Type]; Ranged (100m), Attack, Overload"},
+                    {name: "Chain Lightning 2", text: "11 MP; 1d6 Shock; Ranged (50m), Attack, Overload; Deals damage to target within 50m, then jumps to another target within 10m of the first. Repeats for a third target."},
+                    {name: "Heal 3", text: "7 MP; Instant; Caster regains 6 HP."},
+                    {name: "Fatigue 3", text: "10 MP; Direct, Attack, Upkeep; Target within 50m tests End at +0 test or loses 1 SP."},
+                    {name: "Drain Magicka 2", text: "8 MP; Upkeep, Direct; Target within 50m tests Wp or loses 8 MP."},
+                ]},
+            {head: "Encountering Goblin Shamans", kind: "prose", items: [
+                    {text: "Goblin shamans serve as the high priests and religious leaders of the goblin clans, who worship Muluk, the goblins\u2019 version of Malacath. They practice primitive elemental hedge-magic and concoct simple brews and poisons for their clans."},
+                    {text: "The most interesting feature of the goblin shaman is their Totem Staff, a brutal, bladed staff enchanted with primal magics that allow the casting of a single damaging cantrip at will. Goblin totem staves are passed down generation to generation, and date back to time unknown. The Totem Staff of a clan has profound spiritual importance to the tribe, and they will relentlessly hunt for their Totem Staff if stolen, either by a rival clan or by adventurers. Goblin scouts will range for miles and burn villages to the ground in night raids, and sack other goblin dens in their search."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A goblin shaman has on its person what it is equipped with, in addition to about d12 drakes worth of fetishes and baubles weighing about 1 ENC. Goblin Totem Staves are able to always cast their innate spell. A goblin clan will stop at nothing to retrieve a stolen Totem Staff, and their generations breed quickly. Taking the Totem Staff will likely result in increased goblin raids in the coming weeks and months as they search for their ancestral totem."},
+                    {text: "A character can make a +0 Alchemy test to harvest a goblin ear, which is an Uncommon Destruction ingredient. If the character succeeds with more than 1 DoS, they harvest two ears instead."},
+                    {text: "Goblins are likely to have treasure stashed somewhere in their den. At the GM\u0027s discretion, the characters can make a number of rolls on the Treasure table the GM feels appropriate for the den."},
+                ]},
+        ],
+    },
+    "Harpy": {
+        name: "Harpy",
+        flavour: "Fierce, carnivorous, feminine humanoids with the colourful wings of a bird.",
+        tags: "Minor; White Soul (150)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "35"], ["Agility", "55"], ["Intelligence", "20"], ["Willpower", "35"], ["Perception", "40"], ["Personality", "5"], ["Morale", "45"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "20"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "6m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "35"], ["Evade", "75"], ["Observe", "50"], ["Stealth", "55"], ["Knowledge", "30"], ["Social", "5"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Talons", text: "1d4; Slashing, Exploit Weakness; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Earth\u2019s Harsh Embrace (1 SP)", text: "Instead of dealing damage on a successful hit in melee with its Talons against a Medium or smaller target, the Harpy can spend a Stamina Point to grab them and soar upwards 6m without spending movement. The Harpy can then immediately spend another Stamina Point and Action point to continue flying upwards. If multiple Harpies are carrying the same target, only one needs to spend a Stamina Point per 6m of height. This is treated as a Grapple for the purposes of breaking free, and the Harpy can choose to drop the target at any point, which will suffer falling damage as normal."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Flyer (13m)"},
+                    {name: "Resistance (Normal Weapons, 2)"},
+                ]},
+            {head: "Encountering Harpies", kind: "prose", items: [
+                    {text: "Harpies are found in places with rocky cliffs and crags suitable for their nests, where they live in small matriarchal groups that have in rare cases been known to communicate with mortals. They are a common nuisance around the Iliac Bay."},
+                    {text: "They are usually encountered when they leave their nests in order to kidnap, mate with and kill human males, or to keep strangers away from their nests. When threatened, harpies use their flight to their advantage, making hit and run attacks and using their powerful legs to heave characters into the air, either to drop them to break their bones, or to separate the party so they can focus their savage attacks on one target at a time. They prefer to fight in the open, where they can take advantage of their flight to its best, and high places are preferred ambush sites."},
+                    {text: "Harpy feathers are treasured for their vibrance, ranging from deep blues and greens to bright electric pinks and yellows. Their feathers are said to be imbued with magical properties that are the envy of crafters and trophy seekers."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test over a Short Rest, a character can strip the harpy\u2019s feather hides, which are worth 150 drakes. Failing this test spoils the feathers, halving their worth."},
+                    {text: "On a +10 Survival test over a Long Rest, a character can use 5 harpy feather hides to create a Harpy Feather Cloak. A Harpy Feather cloak can be worn on the back, and weighs 1 ENC when carried. Any time the wearer succeeds on a Defense Test roll, regardless of whether or not they win the Opposed Combat Roll, the wearer gains the Resist Normal Weapons 2 trait for the duration of the attack. Failing this test spoils the feathered hides, halving their worth and rendering them useless."},
+                    {text: "On a +0 Alchemy test, a character can harvest harpy talons over a Short Rest. The character harvests DoS doses of harpy talons, which are an Uncommon Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Horker": {
+        name: "Horker",
+        flavour: "Horkers are sea animals, similar in appearance to a walrus, that inhabit the cold northern coasts of Tamriel.",
+        tags: "Beast; Minor; White Soul (100)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "35"], ["Agility", "15"], ["Intelligence", "5"], ["Willpower", "25"], ["Perception", "25"], ["Personality", "5"], ["Morale", "-"]]},
+            {group: "Attributes", rows: [["Hit Points", "35"], ["Wound Thr.", "8"], ["Magicka", "5"], ["Stamina", "3"], ["Initiative", "+3"], ["Action Pts.", "2"], ["Speed", "3m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "-"], ["Evade", "5"], ["Observe", "35"], ["Stealth", "5"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "50"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Horker Tusks", text: "1d8; Slashing; Reach 1m"},
+                    {name: "Horker Hide", text: "AR 2 / Frost 3; Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Gore (1 SP)", text: "As part of a successfully damaging melee attack, the Horker can spend a Stamina Point to immediately deal a bonus SB damage."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Semi-Aquatic", text: "Ignores the skill cap placed on their Combat rolls by their Athletics when fighting in water."},
+                    {name: "Bestial"},
+                    {name: "Swimmer", text: "Doubles movement speed in the water."},
+                ]},
+            {head: "Encountering Horkers", kind: "prose", items: [
+                    {text: "Found along the northern coasts of Skyrim and on the isle of Solstheim, horkers are large, rotund sea mammals. They have a trio of long tusks, valuable as ornamentation, as drinking horns, or as simple weapons. Horkers are coated in a thick insulating blubber to keep them warm in the frigid climes they dwell in. Horkers typically prey on sea fish and clams, but it isn\u2019t unheard of for a horker to take on mudcrabs and slaughterfish when desperate."},
+                    {text: "Horkers can be found on beaches, ice shelfs, or in the cold north seas, and are typically docile unless approached, in which case they become violently defensive, though they do not often give chase."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the horker\u2019s hide, worth 20 drakes, over the course of a Short Rest. Failing this test spoils the hide and halves its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a horker hide into one piece of Full Horker Hide armor. Alternatively, creating a Full Horker Hide chest piece requires two horker hides. Horker Hide armour is exactly the same as regular Hide but provides 5 Frost Resistance. Failing this test spoils the hide, halving its worth and rendering it useless."},
+                    {text: "On a +30 Simple Survival test, a character can harvest meat from a horker over a Long Rest. The character harvest DoS*2 days\u2019 rations of meat, which will spoil if not preserved."},
+                    {text: "On a +30 Survival test, a character can remove the horker\u2019s three tusks, worth 50 drakes each. These can also be fashioned into daggers or spearheads, which are Bone weapons without the Primitive trait."},
+                    {text: "On a +0 Alchemy test, a character can harvest the horker\u2019s blubber over a Short Rest, which is a Common Restoration ingredient. The character retrieves DoS doses."},
+                    {text: "On a -20 Survival test, a character can fashion a water breathing apparatus from a horker\u2019s air bladder over a Short Rest. Using the breathing bladder allows a character to hold their breath twice as long underwater."},
+                ]},
+        ],
+    },
+    "Horse": {
+        name: "Horse",
+        flavour: "Horses are common throughout most parts of Tamriel, and serve a variety of useful purposes.",
+        tags: "Horse, Beast; Minor; White Soul (100)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "40"], ["Agility", "40"], ["Intelligence", "15"], ["Willpower", "30"], ["Perception", "25"], ["Personality", "10"], ["Morale", "10"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "12"], ["Magicka", "15"], ["Stamina", "4"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "-"], ["Evade", "40"], ["Observe", "45"], ["Stealth", "20"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "80"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Trample", text: "1d8; Crushing; Reach 1m"},
+                    {name: "Natural Toughness (2)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Charge (1 AP + 1 SP)", text: "The horse can lower its head and trample foes as an attack. It may move up to 3x its movement speed, and when it does, any characters it moves within 1m of must test Evade or take 1d6 Crushing damage and be knocked Prone."},
+                    {name: "Gallop (1 SP)", text: "Used in place of the Sprint ability to move 5x the horse\u2019s movement speed instead of the usual 3."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Quadruped"},
+                ]},
+            {head: "Encountering Horses", kind: "prose", items: [
+                    {text: "Horses are large, quadrupedal beasts that can be found both in the wild and raised and bred in captivity by the various cultures on Tamriel. Wild horses spook easily, and are very fast. Fighting wild horses is a rare occurence due to their preference to flee, but an angry horse is no laughing matter."},
+                    {text: "In combat, a horse will trample its foes with its large, powerful hooves, or by charging and headbutting its foes before stomping on them when they are underfoot. A horse that is wrangled will buck and kick violently, and its not unheard of for errant stablehands to be brutally killed by their charges."},
+                    {text: "For this reason, particularly angry or poorly tempered destriers are the preferred war horses of the peoples of Tamriel, though the horses themselves are as varied as man and mer alike. For example, the sleek horses of Hammerfell as thin and fast, their wide hooves ideal for travel on sand, and the hardy horses of Skyrim are large, shaggy coated, and muscular."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the horse\u2019s hide, worth 40 drakes, over the course of a Long Rest. Failing this test spoils the hide and halves its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a horse hide into one piece of Full Horse Hide armor. Alternatively, creating a Full Horse Hide chest piece requires two horse hides. Horse Hide armor is exactly the same as regular Hide. Failing this test spoils the hide, halving its worth and rendering it useless."},
+                    {text: "On a +30 Simple Survival test, a character can harvest meat from a horse over a Long Rest. The character harvest DoS*3 days\u2019 rations of meat, which will spoil if not preserved."},
+                    {text: "On a +0 Alchemy test, a character can remove and prepare the horse\u2019s hooves over a Short Rest. Horse hooves are a Common Alteration ingredient. The character can retrieve two doses, and if they score more than 1 DoS, they retrieve four."},
+                ]},
+        ],
+    },
+    "War Horse": {
+        name: "War Horse",
+        flavour: "Horses are common throughout most parts of Tamriel, and serve a variety of useful purposes.",
+        tags: "Horse, Beast; Minor; White Soul (100)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "60"], ["Endurance", "40"], ["Agility", "40"], ["Intelligence", "15"], ["Willpower", "30"], ["Perception", "25"], ["Personality", "10"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "30"], ["Wound Thr.", "15"], ["Magicka", "15"], ["Stamina", "4"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "-"], ["Evade", "40"], ["Observe", "45"], ["Stealth", "20"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "80"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Trample", text: "1d8; Crushing; Reach 1m"},
+                    {name: "Natural Toughness (2)"},
+                    {name: "(Optional) Horse Armor", text: "AR 3; Light, Partial"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Charge (1 AP + 1 SP)", text: "The horse can lower its head and trample foes as an attack. It may move up to 3x its movement speed, and when it does, any characters it moves within 1m of must test Evade or take 1d6 Crushing damage and be knocked Prone."},
+                    {name: "Gallop (1 SP)", text: "Used in place of the Sprint ability to move 5x the horse\u2019s movement speed instead of the usual 3."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Stubborn", text: "Can re-roll failed Panic tests."},
+                    {name: "Quadruped"},
+                ]},
+            {head: "Encountering War Horses", kind: "prose", items: [
+                    {text: "Horses are large, quadrupedal beasts that can be found both in the wild and raised and bred in captivity by the various cultures on Tamriel. Wild horses spook easily, and are very fast. Fighting wild horses is a rare occurrence due to their preference to flee, but an angry horse is no laughing matter."},
+                    {text: "In combat, a horse will trample its foes with its large, powerful hooves, or by charging and headbutting its foes before stomping on them when they are underfoot. A horse that is wrangled will buck and kick violently, and its not unheard of for errant stablehands to be brutally killed by their charges."},
+                    {text: "For this reason, particularly angry or poorly tempered destriers are the preferred war horses of the peoples of Tamriel, though the horses themselves are as varied as man and mer alike. For example, the sleek horses of Hammerfell as thin and fast, their wide hooves ideal for travel on sand, and the hardy horses of Skyrim are large, shaggy coated, and muscular."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the horse\u2019s hide, worth 40 drakes, over the course of a Long Rest. Failing this test spoils the hide and halves its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a horse hide into one piece of Full Horse Hide armour. Alternatively, creating a Full Horse Hide chest piece requires two horse hides. Horse Hide armor is exactly the same as regular Hide.Failing this test spoils the hide, halving its worth and rendering it useless."},
+                    {text: "On a +30 Simple Survival test, a character can harvest meat from a horse over a Long Rest. The character harvest DoS*3 days\u2019 rations of meat, which will spoil if not preserved."},
+                    {text: "On a +0 Alchemy test, a character can remove and prepare the horse\u2019s hooves over a Short Rest. Horse hooves are a Common Alteration ingredient. The character can retrieve two doses, and if they score more than 1 DoS, they retrieve four."},
+                ]},
+        ],
+    },
     "Dreugh": {
         name: "Dreugh",
         flavour: "Dreugh are an ancient species of aquatic, octopus-like beastfolk, commonly hunted for their hide and the wax from their shells.",
@@ -2877,6 +3196,11 @@ function App() {
                                         {item.name && item.text && <><b>{item.name}:</b> {item.text}</>}
                                         {item.name && !item.text && <b>{item.name}</b>}
                                         {!item.name && item.text}
+                                        {item.subs && (
+                                            <ul>
+                                                {item.subs.map((sub, j) => <li key={j}>{sub}</li>)}
+                                            </ul>
+                                        )}
                                     </li>
                                 ))}
                             </ul>

@@ -1686,6 +1686,9 @@ body:has(#center > .nameRow){display:block}
 #center .sbList{margin:.2em 0;padding-left:1.2em;max-width:60em}
 #center .sbList li{margin:.28em 0}
 #center .sbList li b{font-weight:700}
+/* a bullet that carries its own bullets, as the goblin equipment lists do */
+#center .sbList ul{margin:.2em 0 .1em;padding-left:1.1em}
+#center .sbList ul li{opacity:.9}
 #center.gmRoom p{max-width:60em}
 
 /* the gm's initiative tracker */
