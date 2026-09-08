@@ -52,6 +52,415 @@ type Statblock = {
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Imp": {
+        name: "Imp",
+        flavour: "Imps are small, winged humanoids who are slightly intelligent and can cast a variety of spells.",
+        tags: "Beast; Minor; White Soul (120)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "15"], ["Endurance", "15"], ["Agility", "35"], ["Intelligence", "25"], ["Willpower", "40"], ["Perception", "30"], ["Personality", "5"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "8"], ["Wound Thr.", "6"], ["Magicka", "-"], ["Stamina", "1"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "7m"], ["Size", "Tiny"]]},
+            {group: "Skills", rows: [["Combat", "15"], ["Magic", "55"], ["Evade", "45"], ["Observe", "30"], ["Stealth", "30"], ["Knowledge", "25"], ["Social", "5"], ["Physical", "15"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Imp Claws", text: "1d4; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Refresh (1 SP)", text: "The Imp can spend a Stamina point to refresh all spell casts for their Spellcaster trait. If using magicka point casting, regenerate MP up to their MP maximum."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Flyer (15m)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Fire Bolt 3", text: "8 MP; 1d8 Fire; Ranged (100m), Attack, Overload"},
+                    {name: "Shock Bolt 3", text: "8 MP; 1d8 Shock; Ranged (100m), Attack, Overload"},
+                    {name: "Frost Bolt 3", text: "8 MP; 1d8 Frost; Ranged (100m), Attack, Overload"},
+                    {name: "Chain Lightning 1", text: "9 MP; 1d4 Shock; Ranged (50m), Attack, Overload; Deals damage to target within 50m, then jumps to another target within 10m of the first. Repeats for a third target."},
+                ]},
+            {head: "Encountering Imps", kind: "prose", items: [
+                    {text: "Imps can be found across Tamriel, but are most common in the Cyrodilic highlands. Their preferred dwellings are caves, ruins, abandoned villages, or the trees themselves, the small creatures are not particularly picky."},
+                    {text: "Imps are of low to average intelligence, and can be found living in small communities, but to call them any sort of society would be a stretch. Imps band together to bring down larger prey, which they eat and plunder, but the moment their mutual goals are met, the imps will turn on one another, convinced the treasure and meat is theirs and theirs alone. For this reason, imps are most commonly found solitary, or in the presence of other dead imps."},
+                    {text: "Despite their violent nature, they have been known to have been tamed and befriended by men and mer. They have been recorded to occasionally carry precious items like enchanted rings and even small effigies of their own kind. Whether or not the imps in question understand the true nature of the magic items they carry, or how and why they would have such dolls is entirely unknown."},
+                    {text: "Imps attack nearly exclusively using primitive hedge-magicks, and they are happy to attack any travelers or creatures they find, often going up against monsters and heroes many times their size without fear. Imps never flee from combat, and are suicidally brave."},
+                    {text: "Where all these imps are coming from, considering they tend to violently kill one another, and often die to large monsters or adventurers in suicidal attacks, nobody knows. It is a complete and total mystery, and has been for centuries."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can carefully retrieve the delicate imp gall, which is a Very Rare Destruction and Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Lamia": {
+        name: "Lamia",
+        flavour: "Lamia are a species of intelligent, amphibious beastfolk. Scattered across Tamriel, these half-woman half-snake creatures are reviled as monsters. Despite being exclusively female, they lay eggs, of which they are incredibly protective. They have a religion, venerating entities called the Egg Mother and the Great Egg.",
+        tags: "Beast; Major; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "40"], ["Agility", "45"], ["Intelligence", "40"], ["Willpower", "45"], ["Perception", "35"], ["Personality", "35"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "12"], ["Magicka", "80"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "55"], ["Magic", "65"], ["Evade", "55"], ["Observe", "55"], ["Stealth", "55"], ["Knowledge", "55"], ["Social", "55"], ["Physical", "45"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Clawed Hands", text: "1d6 Slashing; Reach 1m"},
+                    {name: "Lamia Hide", text: "AR 2 / Magic 1; Partial"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Terrifying Shriek (1 AP + 2 SP)", text: "The lamia can spend two Stamina Points to shriek magically as a Primary Action. All non-lamia creatures and characters within 10m must immediately make a Panic test at +0."},
+                    {name: "Refresh (1 SP)", text: "The Lamia can spend a Stamina Point to either replenish their MP to full or refresh their Spellcaster spell list."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Amphibious", text: "Can breathe water and ignores the skill cap placed on their Combat rolls by their Athletics when fighting in water."},
+                    {name: "Dark Sight"},
+                    {name: "Half-Serpent", text: "Lamia resolve hits to the legs against the body."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Sunbeam 3", text: "16 MP; 1d8 Fire; AoE (30m, beam), Attack, Overload; Damage counts as sunlight."},
+                    {name: "Poisonbloom 2", text: "10 MP; 1d6 Poison; AoE (2m, sphere) , Attack, Overload"},
+                    {name: "Heal 3", text: "7 MP; Instant; Caster regains 6 HP"},
+                    {name: "Ward 3", text: "7 MP; Defensive Overload; 8 BR/MR, cannot Power Block, does not provoke Attacks of Opportunity."},
+                    {name: "Blind 3", text: "13 MP; Upkeep, Direct, Attack; Target within 50m tests Wp at +0 or is blinded for 1 round."},
+                    {name: "Calm 3", text: "13 MP; Upkeep, Direct, Attack; Target within 50m tests Wp at +0 or is calmed for 1m."},
+                    {name: "Silence 3", text: "13 MP; Upkeep, Direct, Attack; Target within 50m tests Wp at +0 or is Silenced for 1 round."},
+                ]},
+            {head: "Encountering Lamia", kind: "prose", items: [
+                    {text: "Lamia are amphibious beast-peoples. The species is exclusively female, or at least appears outwardly so. They have a serpentine lower body, with a humanoid torso resembling a human female, though their appearance can range from fully human to fully snake-like."},
+                    {text: "Lamia can be found all over Tamriel, and though they can live on land, are seldom found far from water. Although they are hated as being a violent beast-race, Lamia are comparably intelligent to the humanoids of the Empire, and speak Tamrielic."},
+                    {text: "Lamia adorn themselves with jewelry in the pursuit of vanity, and covet treasure. When not in their lairs, tending to their cherished eggs, they hunt for aquatic game or raid ships and coastal caravans for the gold and jewels they carry."},
+                    {text: "In combat, Lamia make use of powerful Destruction magic, and though they prefer to use magic and have powerful claws, are more than capable of using weapons and armor as well. If they become threatened as enemies close in, they will use their Terrifying Shriek in an attempt to deter them. Lamia will defend their eggs with their lives, but if a battle is plainly lost, they will attempt to gather as many eggs as they can carry before retreating away to deep water."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +0 Survival test, a character can remove the Lamia\u2019s hide, worth 300 drakes, over the course of a Long Rest. Failing this test spoils the hide and halves its worth."},
+                    {text: "On a +10 Survival test, a character can, over the course of a Long Rest, turn a snake hide into one piece of Full Lamia Hide armour. Alternatively, creating a Full Lamia Hide chest piece requires two snake hides. Lamia Hide armour is exactly the same as regular Hide, but is strikingly vibrant, and has Magic Resistance 1."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can harvest the Lamia\u2019s forked tongue, which is a Very Rare Illusion ingredient."},
+                    {text: "A character can roll on the Treasure Table, to represent the Lamia\u2019s worn jewelry."},
+                ]},
+        ],
+    },
+    "Lion": {
+        name: "Lion",
+        flavour: "Mountain lions are agile, dangerous predators. They inhabit the wooded and rocky areas in the temperate climes of Tamriel, like Cyrodiil and High Rock.",
+        tags: "Beast; Average; White (180)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "45"], ["Intelligence", "15"], ["Willpower", "25"], ["Perception", "40"], ["Personality", "5"], ["Morale", "25"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "10"], ["Magicka", "15"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "55"], ["Magic", "-"], ["Evade", "55"], ["Observe", "60"], ["Stealth", "75"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d8; Splitting; Reach 1m"},
+                    {name: "Claws", text: "1d10; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Rake (1 SP)", text: "The Lion can rake a target savagely and roll a second attack against a target that was successfully damaged. This attack cannot win advantages."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Catfall", text: "Reduces the distance the Lion falls by 4 meters when calculating fall damage."},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Quadruped"},
+                    {name: "Stealth Predator", text: "The lion adds 3 bonus damage to successful attacks made while hidden."},
+                ]},
+            {head: "Encountering Lions", kind: "prose", items: [
+                    {text: "Lions, and other big cats such as mountain lions, tigers, cougars, and the like, can be found either in prides or as solitary hunters, depending on the species. A lion\u2019s pride is composed of a group of females and one male. The females will work together to hunt, first using stealth, then using explosive power and incredible speed to close the gap. The lions are coordinated and dangerous, and will cut off routes of escape."},
+                    {text: "A lone lion will instead use stealth and cunning to separate a single target out from their herd or group, and violently run them to the ground, hoping their companions leave them behind."},
+                    {text: "Lions tend to be slothful when not hunting, and typically maintain a handful of small dens over their ranging lands. They could be considered semi-migratory, depending on the season and the patterns of their prey. Lions will typically retreat from a poor fight, and are clever enough to not start a fight they can\u2019t win."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the lion\u2019s hide, worth 40 drakes, over the course of a Long Rest. Failing this test spoils the hide and halves its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a lion hide into one piece of Full Lion Hide armour. Alternatively, creating a Full Lion Hide chest piece requires two lion hides. Lion Hide armour is exactly the same as regular Hide, but each piece gives the wearer a cumulative +5 bonus to resisting Fear. Failing the Survival test spoils the hide, halving its worth and rendering it useless."},
+                    {text: "On a +30 Simple Survival test, a character can harvest meat from a lion over a Long Rest. The character harvest DoS*2 days\u2019 rations of meat, which will spoil if not preserved."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can remove and prepare the lion\u2019s eyes, which are each one Rare Destruction ingredient."},
+                ]},
+        ],
+    },
+    "Minotaur": {
+        name: "Minotaur",
+        flavour: "",
+        tags: "Beast; Major; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "55"], ["Agility", "35"], ["Intelligence", "15"], ["Willpower", "45"], ["Perception", "35"], ["Personality", "10"], ["Morale", "45"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "14"], ["Magicka", "65"], ["Stamina", "5"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "70"], ["Magic", "65"], ["Evade", "35"], ["Observe", "65"], ["Stealth", "15"], ["Knowledge", "15"], ["Social", "10"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Horns", text: "1d8 Splitting; Unwieldy, magic; Reach 1m"},
+                    {name: "Natural Toughness (2)"},
+                    {name: "Minotaur Leathers", text: "AR 3 / Fire 1; Medium, Full"},
+                    {text: "Any one of the following:"},
+                    {name: "Minotaur Greataxe", text: "1d12; Splitting, Shieldsplitter, Unwieldy; Reach 3m, 2H"},
+                    {name: "Minotaur Maul", text: "1d12; Crushing, Shieldsplitter, Unwieldy; Reach 3m, 2H"},
+                    {name: "Minotaur Cleavers", text: "1d8; Splitting, Unwieldy; Reach 2m, 1H; wields one in each hand"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Gore (1 SP)", text: "The minotaur can gore a target when it makes an attack with its Horns by spending a Stamina Point to roll an additional d8 and add it to its damage. If the attack deals damage, it automatically inflicts a Wound, but cannot sever limbs."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Magic Resistant", text: "Re-rolls failed tests to resist Magic."},
+                    {name: "Stubborn", text: "Can re-roll failed Panic tests."},
+                    {name: "Thick Skull", text: "Immune to the Stun and Dazed conditions."},
+                    {name: "Unrelenting", text: "Targets within reach cannot Disengage."},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                ]},
+            {head: "Variant: Minotaur Shaman", kind: "list", items: [
+                    {text: "Spells:", subs: [
+                            "Fire Cone 3: 13 MP; 1d8 Fire; AoE (5m, cone), Attack, Overload",
+                            "Fire Bolt 4: 10 MP; 1d10 Fire; Ranged (100m), Attack, Overload",
+                            "Chain Lightning 4: 15 MP; 1d10 Shock; Ranged (50m), Attack, Overload; Deals damage to target within 50m, then jumps to another target within 10m of the first. Repeats for a third target.",
+                            "Heal 5: 11 MP; Instant; Caster regains 10 HP",
+                            "Heal Ally 4: 12 MP; Instant, Direct; Target within 50m regains 8 HP",
+                        ]},
+                ]},
+            {head: "Encountering Minotaurs", kind: "prose", items: [
+                    {text: "Minotaurs are a beast race, composed of half-men half-bulls, found in Cyrodiil. Their great and profound role in the founding of the First Empire has long been forgotten, in no small part due to the meddling of the old Alessian Order, and as of the Third Era, are regarded as little more than savage creatures, comparable to ogres and goblins. Minotaurs are social, and often are found in war herds of twenty or more. They congregate around old ruins, of historical significance to the First Empire, though it is unknown if this is deliberate or because of some long forgotten Instinct."},
+                    {text: "While they have little interaction with the Empire, there is no bounty on their heads as there is on goblins or ogres, as they are content to live in peace in the wilds around the ruins they inhabit. In combat, they are hyper-aggressive and absolutely punishing in their blows. If significantly threatened, minotaurs will retreat deeper into their labyrinthine ruins, and wait for the threat to pass, or to foolishly pursue them into their den."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the minotaur\u2019s hide, worth 100 drakes, over the course of a Long Rest. Failing this test spoils the hide and halves its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a minotaur hide into one piece of Full Minotaur Hide armor. Alternatively, creating a Full Minotaur Hide chest piece requires two minotaur hides. minotaur Hide armor is exactly the same as regular Hide."},
+                    {text: "On a +30 Simple Survival test, a character can harvest meat from a Minotaur over a Long Rest. The character harvest DoS*2 days\u2019 rations of meat, which will spoil if not preserved."},
+                    {text: "On a +0 Alchemy test, a character can harvest the minotaur\u2019s horns over a Short Rest. Each horn is a Very Rare Restoration ingredient. If the character scores more than 1 DoS, they harvest two horns instead of one."},
+                ]},
+        ],
+    },
+    "Mudcrab": {
+        name: "Mudcrab",
+        flavour: "Mudcrabs are small hostile creatures primarily found near water. They are capable of disguising themselves as small rocks to ambush their prey.",
+        tags: "Beast; Trivial; White Soul (20)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "15"], ["Endurance", "24"], ["Agility", "15"], ["Intelligence", "10"], ["Willpower", "10"], ["Perception", "25"], ["Personality", "5"], ["Morale", "10"]]},
+            {group: "Attributes", rows: [["Hit Points", "12"], ["Wound Thr.", "4"], ["Magicka", "10"], ["Stamina", "2"], ["Initiative", "+4"], ["Action Pts.", "2"], ["Speed", "3m"], ["Size", "Tiny"]]},
+            {group: "Skills", rows: [["Combat", "35"], ["Magic", "-"], ["Evade", "15"], ["Observe", "25"], ["Stealth", "70"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "25"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Claws", text: "1d4; Reach 1m"},
+                    {name: "Mudcrab Chitin", text: "1 AR; Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Grab On (1 SP)", text: "If the creature successfully hits a target with its claws it grabs on with all its strength, initiating a grapple. As a result, the grappled character receives a -20 penalty to their attempts to break free. Alternatively, the grappled target can instead end the grapple as a free action. In doing so, they suffer the Bleeding (2) Condition and must test for Disease."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Amphibious", text: "Can Can breathe water and ignores the skill cap placed water and ignores the skill cap placed on their Combat rolls by their Athletics when fighting in water."},
+                    {name: "Bestial"},
+                    {name: "Diseased (-10)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a -10 Endurance test or contract a Common Disease."},
+                    {name: "Swimmer", text: "This creature doubles its movement speed in water."},
+                ]},
+            {head: "Variant: Cyrodilic Mudcrab", kind: "list", items: [
+                    {text: "Traits"},
+                    {name: "Crab Leap (1 SP)", text: "The crab leaps up to 3m, and makes a claw attack against the target. Dodging or Parrying the attack has a -20 penalty as the crab catches them off-guard. If the attack successfully hits the target, the crab additionally automatically Grabs On, as described in that ability."},
+                    {name: "Quadruped"},
+                ]},
+            {head: "Encountering Mudcrabs", kind: "prose", items: [
+                    {text: "Mudcrabs are a ubiquitous coastal and river pest found all across the breadth of the Empire and beyond. From Morrowind, to Skyrim, to the heartlands of Cyrodiil, all the way to the golden yellow coasts of Summerset, mudcrabs can be found. Mudcrabs often lurk in the shallow waters, or on the waterfronts of virtually any body of salt or fresh water, sifting the sand with their filter mouths for food."},
+                    {text: "Mudcrabs are often docile, or at least non-confrontational, but many otherwise unaware travelers or fishers find themselves literally tripping and stumbling on mudcrabs they thought were just rocks or driftwood, to which the mudcrabs do not take too kindly. Mudcrabs will cry out to rally other mudcrabs in the area to repel aggressors from their feeding grounds if they feel threatened, and will pursue targets an unreasonable distance while giving chase."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the mudcrab\u2019s shell, worth 15 drakes, over the course of a Short Rest. Failing this test spoils the chitin and halves its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a mudcrab shell into one piece of Full Mudcrab Chitin armor. Alternatively, creating a Full Mudcrab Chitin chest piece requires two mudcrab hides. Mudcrab Chitin armor is exactly the same as regular Chitin, but provides 1 Frost Resistance instead of 1 Fire Resistance."},
+                    {text: "On a +30 Simple Survival test, a character can harvest meat from a mudcrab over a Short Rest. The character harvest DoS/2 days\u2019 rations of meat, which will spoil if not preserved. After eating mudcrab meat, a character must test Endurance +20 or contract Common Disease."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can attempt to harvest the Mudcrab\u2019s claw, which is a Common Restoration ingredient. If they score greater than one DoS, they harvest two claws instead."},
+                ]},
+        ],
+    },
+    "Ogre": {
+        name: "Ogre",
+        flavour: "Huge humanoids with small heads and barrel-chests, their distinctive steely blue skin does not at first sight reveal they are in fact considered a species of goblinoid.",
+        tags: "Beast; Major; White Soul (600)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "55"], ["Endurance", "45"], ["Agility", "30"], ["Intelligence", "15"], ["Willpower", "35"], ["Perception", "25"], ["Personality", "5"], ["Morale", "85"]]},
+            {group: "Attributes", rows: [["Hit Points", "45"], ["Wound Thr.", "12"], ["Magicka", "15"], ["Stamina", "4"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "-"], ["Evade", "30"], ["Observe", "25"], ["Stealth", "15"], ["Knowledge", "15"], ["Social", "5"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Fists", text: "1d6; Crushing; Reach 1m"},
+                    {name: "Natural Toughness (2)"},
+                    {text: "Also has one of:"},
+                    {name: "Ogre Greatclub", text: "1d12; Crushing, Unwieldy, Shieldsplitter; Reach 3m, 2H"},
+                    {name: "Ogre Littleclub", text: "1d8; Crushing, Unwieldy, Reach 2m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Sweeping Strike (1 SP)", text: "The ogre can, as part of a melee weapon attack, make a sweeping strike, which hits up to 3 targets in the ogre\u0027s Reach. This is resolved as an AoE."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Thick Skull", text: "Immune to the Stunned and Dazed conditions."},
+                    {name: "Too Dumb to Live", text: "Immune to Illusion magic."},
+                    {name: "Weakness (Poison, 3)"},
+                ]},
+            {head: "Encountering Ogres", kind: "prose", items: [
+                    {text: "An adventurer is most likely to come across an ogre while exploring the backwoods and natural caverns of Cyrodiil, though they can be found across all of Tamriel, particularly in the Dragontail and Wrothgarian Mountains. If food is to be found, one can be sure that ogres are not far behind."},
+                    {text: "While many would think ogres are stupid or dim witted, ogres have proven in the past to possess reasonable intelligence, at least in the case of their leadership. For example, the Ironhand ogres proved a significant threat to the region of Stormhaven, and the ogres of Wrothgar helped found the first Orsinium alongside the orcs and goblins."},
+                    {text: "Ogre dwellings are home to small, primitive hunter-gatherer communities. Their culture is also primitive, and their dwellings are home to rotting carcasses, stripped bones, and the occasional shrine to Malacath, their patron. Ogres raiding settlements is far from unheard of, and often a legitimate concern for those in the frontier regions in Cyrodiil, though these raids most often end in stolen livestock rather than sacked villages. In combat, ogres use large clubs, rocks, and their crushing fists as weapons."},
+                    {text: "Ogres are notoriously heavy sleepers, and are astutely imperceptive. However, this very lack of perception girds them from illusion magic."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "An ogre has on its person what it is equipped with, in addition to about 2d10 drakes worth of trophies weighing 1 ENC."},
+                    {text: "A character can make a +0 Alchemy test to harvest and grind up one dose of ogre teeth, which is a Very Rare Alteration ingredient. If the character scores more than 1 DoS on the test, they harvest 2 doses instead."},
+                    {text: "Ogres are likely to have treasure stashed somewhere in their den. At the GM\u0027s discretion, the characters can make a number of rolls on the Treasure table the GM feels appropriate for the den."},
+                ]},
+        ],
+    },
+    "Slaughterfish": {
+        name: "Slaughterfish",
+        flavour: "Slaughterfish are small, hostile fish with razor sharp teeth.",
+        tags: "Beast; Trivial; White Soul (15)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "15"], ["Endurance", "20"], ["Agility", "45"], ["Intelligence", "10"], ["Willpower", "5"], ["Perception", "30"], ["Personality", "5"], ["Morale", "15"]]},
+            {group: "Attributes", rows: [["Hit Points", "10"], ["Wound Thr.", "4"], ["Magicka", "10"], ["Stamina", "2"], ["Initiative", "+8"], ["Action Pts.", "2"], ["Speed", "9m"], ["Size", "Tiny"]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "-"], ["Evade", "55"], ["Observe", "50"], ["Stealth", "25"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "35"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d4; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Gang Up (1 SP)", text: "Can gang up by spending a Stamina Point when an enemy in Reach is attacked by another allied Slaughterfish. Ganging up imposes a -10 on the target\u0027s Defense roll. Additionally, each ganging up Slaughterfish adds +1 damage to the attacking Slaughterfish\u0027s damage."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Aquatic", text: "Can breath water as if it were air, but cannot breath air."},
+                    {name: "Bestial"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Fish", text: "Movement speed is 0m while on land, and is only able to spend its actions flopping around helplessly."},
+                    {name: "Swimmer", text: "Doubles movement speed in water."},
+                    {name: "Teamwork", text: "Gains a bonus DoS on any attack rolls made while an ally with Teamwork is in Reach of the same target."},
+                ]},
+            {head: "Encountering Slaughterfish", kind: "prose", items: [
+                    {text: "Slaughterfish are hostile, predatory fish that can dwell in both fresh and salt water. This adaptability, and aggressive and exploratory demeanor, has lead to their infestation of virtually all the waterways and seas of Tamriel, establishing themselves as an apex predator in spite of their small size."},
+                    {text: "Slaughterfish can be found in nearly every body of water capable of sustaining a suitable population of prey for them to feed on, and they are proliferous reproducers, spawning in massive schools of hundreds of baby fish at a time. Most of the babies are eaten by their parents, who have no love for their offspring."},
+                    {text: "Slaughterfish do not retreat from a fight, and are extremely territorial. They live in small hunting schools, though it is not unheard of for them to swarm up into massive schools that go on feeding frenzies, draining entire lakes and rivers of life before starving off themselves, restarting the natural cycle and allowing water life to return to the area, before a new brood of slaughterfish inevitably find their way to the ecosystem."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Simple Survival test, a character can harvest meat from a Slaughterfish over a Short Rest. The character harvest DoS/2 days\u2019 rations of meat, which will spoil if not preserved."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can harvest and prepare one dose of Slaughterfish scales, which are a Common Illusion ingredient."},
+                ]},
+        ],
+    },
+    "Cave Troll": {
+        name: "Cave Troll",
+        flavour: "Trolls are large, ape-like humanoids endowed with three eyes. Their powerful arms and claws deal massive physical damage, and their flesh rapidly regenerates. Their greatest vulnerability is to fire, which not only damages them, but prevents their regeneration.",
+        tags: "Troll, Beast; Major; White Soul (800)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "50"], ["Agility", "40"], ["Intelligence", "10"], ["Willpower", "45"], ["Perception", "30"], ["Personality", "5"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "100"], ["Wound Thr.", "14"], ["Magicka", "10"], ["Stamina", "5"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "-"], ["Evade", "50"], ["Observe", "40"], ["Stealth", "20"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Claws", text: "2d8; Splitting, Concussive, Magic, Shieldsplitter; Reach 2m"},
+                    {name: "Natural Toughness (4)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Hyper-Metabolize (1 SP)", text: "When the troll makes its Regeneration roll at the start of the next round, it gains an additional 2d10 HP. Cannot be used while Burning or if the Troll took Fire damage within 1 Round."},
+                    {name: "Sweeping Strike (1 SP)", text: "The troll can, as part of a melee attack, make a sweeping strike, which hits up to 3 targets in the troll\u0027s Reach. This is resolved as an AoE."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Quadruped"},
+                    {name: "Regenerate", text: "Trolls may make an Endurance test at the start of each round to heal 10+DoS HP."},
+                    {name: "Three-Eyed", text: "Requires 3 Head Wounds to Blind. Additionally, attempts to Blind the troll are at a -20"},
+                    {name: "Weakness (Fire, 5)"},
+                ]},
+            {head: "Encountering Cave Trolls", kind: "prose", items: [
+                    {text: "Trolls are massive, ape-like apex predators with three eyes and regenerative properties. They can be found all across Tamriel, but are more common in the colder and temperate climates. They make permanent dens in caves or under large rocky outcroppings, typically deep in the wilderness, but it is not uncommon that a troll establishes its lair near civilization to make preying upon it easier."},
+                    {text: "Although unintelligent and animalistic, some trolls are capable of learning basic Tamrielic and literacy. They occasionally band into simple tribes to raid towns, but these tribes quickly fall apart."},
+                    {text: "It is common knowledge that trolls are vulnerable to fire and flames, which prevents their flesh from knitting itself back together, at least for a time."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a -10 Survival test, a character can remove the frost troll\u2019s hide, worth 150 drakes, over the course of a Short Rest. These hides are 2 ENC. Failing this test spoils the pelt, halving its worth."},
+                    {text: "On a +10 Survival test, a character can, over the course of a Long Rest, turn a troll hide into two pieces of Full Troll Hide armour, or one Full Troll Hide chest piece. Troll Hide armour is exactly the same as regular Hide but has +2 AR, and Weakness (Fire, 1). Failing this test spoils the pelt instead, rendering it useless and halving its worth."},
+                    {text: "On a +0 Alchemy test, a character can scrape the troll\u2019s bones for one dose of troll fat, which is an Extremely Rare Restoration and Destruction ingredient."},
+                    {text: "On a +20 Survival test, a character can fashion a Troll Skull Helm. A Troll Skull Helm is a Full Bone helmet with +2 Magic AR, that grants the wearer the Thick Skull trait while worn."},
+                    {text: "Armour made of Troll Bone has +2 Magic AR, and Troll Bone weapons have the Magic trait."},
+                ]},
+        ],
+    },
+    "Frost Troll": {
+        name: "Frost Troll",
+        flavour: "Trolls are large, ape-like humanoids endowed with three eyes. Their powerful arms and claws deal massive physical damage, and their flesh rapidly regenerates. Their greatest vulnerability is to fire, which not only damages them, but prevents their regeneration.",
+        tags: "Troll, Beast; Major; White Soul (1000)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "50"], ["Agility", "40"], ["Intelligence", "10"], ["Willpower", "45"], ["Perception", "30"], ["Personality", "5"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "150"], ["Wound Thr.", "16"], ["Magicka", "10"], ["Stamina", "5"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "-"], ["Evade", "50"], ["Observe", "40"], ["Stealth", "20"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Claws", text: "2d8; Splitting, Concussive, Magic, Shieldsplitter; Reach 2m"},
+                    {name: "Natural Toughness (4)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Hyper-Metabolize (1 SP)", text: "When the troll makes its Regeneration roll at the start of the next round, it gains an additional 2d10 HP. Cannot be used while Burning or if the Troll took Fire damage within 1 Round."},
+                    {name: "Sweeping Strike (1 SP)", text: "The troll can, as part of a melee attack, make a sweeping strike, which hits up to 3 targets in the troll\u0027s Reach. This is resolved as an AoE."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Diseased (+0)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a +0 Endurance test or contract a Common Disease."},
+                    {name: "Quadruped"},
+                    {name: "Regenerate", text: "Trolls may make an Endurance test at the start of each round to heal 10+DoS HP."},
+                    {name: "Three-Eyed", text: "Requires 3 Head Wounds to Blind. Additionally, attempts to Blind the troll are at a -20"},
+                    {name: "Weakness (Fire, 5)"},
+                    {name: "Resistance (Frost, 8)"},
+                    {name: "Savage", text: "Rolls damage twice and takes the highest result."},
+                ]},
+            {head: "Encountering Frost Trolls", kind: "prose", items: [
+                    {text: "Frost Trolls are much like standard Cave Trolls, except they have adapted to the harshest climates in the north. They are incredibly protective over their territory due to limited resources in the frozen wastes, and are much more durable both in terms of resistance to the cold and general survivability."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a -10 Survival test, a character can remove the frost troll\u2019s hide, worth 300 drakes, over the course of a Short Rest. These hides are 2 ENC. Failing this test spoils the pelt, halving its worth."},
+                    {text: "On a +10 Survival test, a character can, over the course of a Long Rest, turn a frost troll hide into two pieces of Full Frost Troll Hide armour or one Full Frost Troll Hide chest piece. Frost Troll Hide armour is exactly the same as regular Hide but has +2 AR, +3 Frost AR, and Weakness (Fire, 1). Failing this test spoils the pelt instead, rendering it useless and halving its worth."},
+                    {text: "On a +0 Alchemy test, a character can scrape the troll\u2019s bones for one dose of troll fat, which is an Extremely Rare Restoration and Destruction ingredient."},
+                    {text: "On a +20 Survival test, a character can fashion a Troll Skull Helm. A Troll Skull Helm is a Full Bone helmet with +2 Magic AR, that grants the wearer the Thick Skull trait while worn."},
+                    {text: "Armour made of Troll Bone has +2 Magic AR and +1 Frost AR. Troll Bone weapons have the Magic trait."},
+                ]},
+        ],
+    },
+    "Wolf": {
+        name: "Wolf",
+        flavour: "Wolves are aggressive canines found throughout Tamriel. They are packs hunters and can often be found in packs of two or three, using their highly developed sense of smell to track their prey. When threatened, they may howl and thus draw in other members of their pack. When attacking, they will often attempt to circle around behind their prey to bite.",
+        tags: "Beast; Minor; White Soul (120)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "25"], ["Endurance", "30"], ["Agility", "40"], ["Intelligence", "15"], ["Willpower", "30"], ["Perception", "30"], ["Personality", "5"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "5"], ["Magicka", "15"], ["Stamina", "3"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Small"]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "-"], ["Evade", "50"], ["Observe", "70"], ["Stealth", "60"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "45"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d6; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Latch On (1 SP)", text: "If the creature successfully Bites a target which results in a grapple, it latches on as a free action. As a result, the grappled character receives a -20 penalty to their attempts to break free. Alternatively, the grappled target can instead end the grapple as a free action. In doing so, they suffer the Bleeding (2) Condition and must test for Disease."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bestial"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Dark Sight"},
+                    {name: "Diseased (-20)", text: "If the creature successfully deals damage to an undiseased target with their natural weapons, the target creature must succeed on a -20 Endurance test or contract a Common Disease."},
+                    {name: "Quadruped"},
+                    {name: "Teamwork", text: "Gains a bonus DoS on any attack rolls made while an ally with Teamwork is in Reach of the same target."},
+                    {name: "Unrelenting", text: "Targets cannot Disengage while within Reach of a Wolf."},
+                ]},
+            {head: "Variant: Ice Wolf", kind: "list", items: [
+                    {text: "Traits"},
+                    {name: "Resist (Frost, 8)"},
+                    {name: "Savage", text: "Rolls damage twice and takes the highest result."},
+                ]},
+            {head: "Encountering Wolves", kind: "prose", items: [
+                    {text: "Wolves can be found across Tamriel, but are more common in the colder or temperate climes. They are pack hunters, traveling in family groups of around a dozen. They work together using concentrated efforts to bring down prey much larger than themselves."},
+                    {text: "Surprisingly cunning, wolves are lead by a pack alpha, who can coordinate complex hunting plans among their followers. Many an unfortunate adventurer has found themselves outflanked and outwitted by the devilish creatures."},
+                    {text: "Notorious for hunting livestock, wolves often have a price on their heads by local authorities, not to mention the hazard they pose to isolated villages and unsupervised children."},
+                    {text: "Wolves in combat will focus on the weakest members of a group, and drag them to the ground, while using their teeth to cripple and thrash prey into submission. Wolves are capable of coordinated attacks and devious plans, and in large numbers can be a formidable foe for even experienced adventurers."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +30 Survival test, a character can remove the wolf\u2019s pelt, worth 25 drakes, over the course of a Short Rest. Ice Wolf pelts are worth 50 drakes. If the character fails this test, the pelt is spoiled, halving its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a wolf pelt into one piece of Full Wolf Fur armor. Wolf Fur armor is exactly the same as regular Fur. Ice Wolf Fur armor grants an additional +2 Frost Resistance. Failing the crafting test spoils the pelt, halving its worth and rendering it useless."},
+                    {text: "On a +20 Simple Survival test over a Short Rest, a character can harvest DoS days\u2019 rations of wolf meat, which will spoil within a day if not properly preserved."},
+                    {text: "On a +0 Alchemy test, a character can harvest the wolf\u2019s heart over a Short Rest. A wolf\u2019s heart is an Uncommon Alteration ingredient."},
+                ]},
+        ],
+    },
     "Goblin Grunt": {
         name: "Goblin Grunt",
         flavour: "Goblins are violent, primitive humanoids found throughout Tamriel, often living in sewers, caves and ruins in small clan-based societies. Appearance-wise, goblins have green skin, yellow eyes with slitted pupils, pronounced canine teeth, elven ears, and sometimes horns and hunchbacks.",
