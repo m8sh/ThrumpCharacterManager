@@ -52,6 +52,299 @@ type Statblock = {
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Acrobat": {
+        name: "Acrobat",
+        flavour: "\u201cAcrobat\u201d is a polite euphemism for agile burglars and second-story men. These thieves avoid detection by stealth and rely on mobility and cunning to avoid capture.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "40"], ["Agility", "45"], ["Intelligence", "30"], ["Willpower", "35"], ["Perception", "45"], ["Personality", "40"], ["Morale", "25"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "10"], ["Magicka", "30"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "55"], ["Evade", "75"], ["Observe", "65"], ["Stealth", "85"], ["Knowledge", "50"], ["Social", "60"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Acrobatics", text: "75"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel-studded Cestus", text: "1d4+1; Crushing, Hand to Hand, Small; Reach 1m, 1H"},
+                    {name: "Steel Dagger", text: "1d4+1, Slashing, Exploit Weakness, Thrown (5/10/15), Small; Reach 1m, 1H"},
+                    {text: "Additionally has:"},
+                    {name: "Wood Shortbow", text: "1d6; Reload (2); Range (20/100/200)m, 2H", subs: ["Includes 12 Steel Splitting or Slashing Arrows (+1 dmg)"]},
+                    {name: "Partial Leather", text: "AR 1 / Fire 1; Light"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Incredible Acrobatics (1 AP + 2 SP)", text: "If caught in melee, the Acrobat can make an opposed Acrobatics roll vs the target\u2019s Combat Style or Athletics. If they win, they may move up to 6 meters away then perform a Free Action attack with any one of its ranged weapons."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Cat\u2019s Grace", text: "Meters fallen is reduced by 5 for the purposes of determining Falling Damage. Immune to becoming prone unless physically restrained"},
+                    {name: "Cat\u2019s Reflexes", text: "Can perform a ranged attack as a free action after taking the Dash Action at a -10 penalty. Inflicts a -10 penalty to all incoming ranged attacks on the same round."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Jump 2", text: "3 MP; Instant; Caster may jump 2m higher or further on their next jump."},
+                    {name: "Open 2", text: "7 MP, Opens a locked door or container within 1m, if extended test threshold is 4 or lower, is instantly unlocked."},
+                ]},
+        ],
+    },
+    "Agent": {
+        name: "Agent",
+        flavour: "Agents are operatives skilled in deception and avoidance, but trained in self-defense and deadly force. Self-reliant and independent, agents devote themselves to personal goals, or to patrons and causes.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "35"], ["Agility", "40"], ["Intelligence", "45"], ["Willpower", "40"], ["Perception", "45"], ["Personality", "45"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "10"], ["Magicka", "45"], ["Stamina", "3"], ["Initiative", "+12"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "55"], ["Evade", "60"], ["Observe", "85"], ["Stealth", "70"], ["Knowledge", "75"], ["Social", "80"], ["Physical", "45"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Deceive", text: "85"},
+                    {name: "Investigate", text: "85"},
+                    {name: "Subterfuge", text: "85"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Steel-studded Cestus", text: "1d4+1; Crushing (1), Hand to Hand, Small; Reach 1m, 1H"},
+                    {name: "Steel Dagger", text: "1d4+1; Slashing, Exploit Weakness, Thrown(5/10/15), Small; Reach 1m, 1H"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Incredible Acrobatics (1 AP + 2 SP)", text: "As a Reaction if attacked in melee, the Agent can make an opposed Acrobatics roll vs the target\u2019s Combat Style or Athletics. If they win, they may move up to 6 meters away then perform a Free Attack Action with any one of its ranged weapons."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Cat\u2019s Grace", text: "Meters fallen is reduced by 5 for the purposes of determining Falling Damage. Immune to becoming prone unless physically restrained"},
+                    {name: "Cat\u2019s Reflexes", text: "Can perform a ranged attack as a free action after taking the Dash Action but at a -10 penalty, but likewise inflicts a -10 penalty to all incoming ranged attacks on the same round."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Charm 2", text: "8 MP; Direct; Attack; Target within 50m next Persuade or Deceive test within 1 minute gains a +10 bonus."},
+                    {name: "Chameleon 2", text: "7 MP; Upkeep; Caster gains the Chameleon (-10) condition for 1 minute."},
+                    {name: "Muffle 2", text: "7 MP; Upkeep; Caster gains the Muffled (-10) condition for 1 minute."},
+                    {name: "Conjure Shortbow 2", text: "15 MP; Upkeep; Inferior Quality Shortbow (with ammo) appears in the caster\u2019s hands for 1 round. This weapon is not loaded when summoned, but the first reload action AP cost is reduced by 1."},
+                ]},
+        ],
+    },
+    "Assassin": {
+        name: "Assassin",
+        flavour: "Assassins are killers who rely on stealth and mobility to approach victims undetected. Execution is with ranged weapons or with short blades for close quarter combat. A skilled Assassin will never face their target head-on.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "45"], ["Intelligence", "35"], ["Willpower", "35"], ["Perception", "45"], ["Personality", "40"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "11"], ["Magicka", "35"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "-"], ["Evade", "75"], ["Observe", "75"], ["Stealth", "85"], ["Knowledge", "55"], ["Social", "60"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Acrobatics", text: "75"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Steel Shortsword", text: "1d6+1; Slashing, Exploit Weakness, Reach 1m, 1H"},
+                    {name: "Wood Shortbow", text: "1d6; Range (20/100/200)m; Reload(1); 2H", subs: ["Includes 12 Steel Splitting or Slashing Arrows (+1 dmg)"]},
+                    {name: "Partial Leather", text: "AR 1 / Fire 1; Light"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Quickpoison (1 SP)", text: "The assassin coats their equipped weapon(s) in Ubiquitous Poison (1d4 poison damage on failed Endurance test). If applied to a melee weapon, this lasts for the next 3 hits."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Assassins Grace", text: "Immune to Attacks of Opportunity."},
+                    {name: "Killers Instinct", text: "Attacks from the Assassin treat target Wound Threshold as 1 lower."},
+                    {name: "Sneak Attack", text: "Add 4 damage to successful attacks made while hidden."},
+                ]},
+        ],
+    },
+    "Gladiator": {
+        name: "Gladiator",
+        flavour: "Throughout all the Arenas and battles for sport across Tamriel, there lies a great many people across all races willing to join. These fighters have a flair for the dramatic and battle as if it is an art form, always ready to please a crowd.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "35"], ["Agility", "30"], ["Intelligence", "25"], ["Willpower", "25"], ["Perception", "30"], ["Personality", "40"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "25"], ["Stamina", "3"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "-"], ["Evade", "30"], ["Observe", "40"], ["Stealth", "15"], ["Knowledge", "35"], ["Social", "60"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Iron Trident", text: "1d6(1d8); Impaling, Unwieldy; Reach 2m, 1.5H"},
+                    {name: "Iron Hooksword", text: "1d6; Slashing(1), Dueling Weapon, Hooked; Reach 1m, 1H"},
+                    {name: "Net", text: "- ; Entangling, Thrown(3/4/5); Reach 2m, 1H"},
+                    {name: "Partial Iron Armor", text: "AR 3, Medium"},
+                    {text: "Note: These are only examples; a gladiator may have any weapon crafted from iron."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Duelist", text: "1 extra DoS to melee attacks when only 1 opponent is in range."},
+                    {name: "Appeal", text: "While being watched by a crowd of people, for an AP the Gladiator can test Social, if they succeed they gain a +20 to all Combat Style tests until they fail a test."},
+                ]},
+        ],
+    },
+    "Champion": {
+        name: "Champion",
+        flavour: "Throughout all the Arenas and battles for sport across Tamriel, there lies a great many people across all races willing to join. These fighters have a flair for the dramatic and battle as if it is an art form, always ready to please a crowd.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "45"], ["Agility", "30"], ["Intelligence", "25"], ["Willpower", "25"], ["Perception", "30"], ["Personality", "40"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "10"], ["Magicka", "25"], ["Stamina", "4"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "95"], ["Magic", "-"], ["Evade", "30"], ["Observe", "40"], ["Stealth", "15"], ["Knowledge", "35"], ["Social", "60"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Malachite Trident", text: "1d6(1d8)+3; Impaling, Unwieldy, Magic; Reach 2m, 1.5H."},
+                    {name: "Malachite Hooksword", text: "1d6+3; Slashing(1), Dueling Weapon, Hooked, Magic; Reach 1m, 1H."},
+                    {name: "Net", text: "- ; Entangling, Thrown(3/4/5); Reach 2m, 1H."},
+                    {name: "Partial Malachite Armor", text: "AR 5 / Magic 2, Medium"},
+                    {text: "Note: These are only examples; a champion may have any weapon crafted from malachite."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Duelist", text: "1 extra DoS to melee attacks when only 1 opponent is in range."},
+                    {name: "Appeal", text: "While being watched by a crowd of people, for an AP the Gladiator can test Social, if they succeed they gain a +20 to all Combat Style tests until they fail a test."},
+                    {name: "Seasoned Victor", text: "Gains +1 DoS in melee combat rolls."},
+                    {text: "Note: The Champion may also have any weapon talent appropriate to the weapons that they wield"},
+                ]},
+        ],
+    },
+    "Bandit": {
+        name: "Bandit",
+        flavour: "Bandits are criminals hiding from the Empire due to various crimes.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "35"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "35"], ["Personality", "30"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "30"], ["Evade", "35"], ["Observe", "55"], ["Stealth", "55"], ["Knowledge", "30"], ["Social", "35"], ["Physical", "55"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "One of:"},
+                    {name: "Iron Broadsword", text: "1d8; Slashing; Reach 2m, 1H"},
+                    {name: "Iron War Axe", text: "1d8; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Iron Mace", text: "1d8; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {text: "Also has one of:"},
+                    {name: "Partial Fur", text: "AR 1 / Frost 1, Light"},
+                    {name: "Partial Leather", text: "AR 1 / Fire 1, Light"},
+                    {name: "Partial Chitin", text: "AR 1 / Fire 1"},
+                    {name: "Partial Iron", text: "AR 3, Medium"},
+                    {name: "Partial Bonemold", text: "AR 2, Light"},
+                    {text: "May also have one of:"},
+                    {name: "Fur Shield", text: "BR 7 / Frost BR 5, Light"},
+                    {name: "Chitin Shield", text: "BR 7 / Fire BR 5, Light"},
+                    {name: "Iron Shield", text: "BR 9, Medium"},
+                ]},
+        ],
+    },
+    "Bandit Marauder": {
+        name: "Bandit Marauder",
+        flavour: "Marauders are seasoned killers, wielding powerful two-handed weapons to deal devastating blows to their targets.",
+        tags: "Any Race, Humanoid; Average; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "35"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "35"], ["Personality", "30"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "22"], ["Wound Thr.", "12"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "30"], ["Evade", "35"], ["Observe", "55"], ["Stealth", "55"], ["Knowledge", "30"], ["Social", "35"], ["Physical", "55"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "One of:"},
+                    {name: "Iron Greatsword", text: "1d12; Slashing, Unwieldy, Concussive; Reach 3m, 2H"},
+                    {name: "Iron Great Axe", text: "1d12; Splitting, Unwieldy, Shield Splitter, Concussive; Reach 3m, 2H"},
+                    {name: "Iron Maul", text: "1d12; Crushing, Unwieldy, Shield Splitter, Concussive; Reach 3m, 2H"},
+                    {text: "Also has one of:"},
+                    {name: "Partial Fur", text: "AR 1 / Frost 1, Light"},
+                    {name: "Partial Leather", text: "AR 1 / Fire 1, Light"},
+                    {name: "Partial Chitin", text: "AR 1 / Fire 1"},
+                    {name: "Partial Iron", text: "AR 3, Medium"},
+                    {name: "Partial Bonemold", text: "AR 2, Light"},
+                ]},
+        ],
+    },
+    "Bandit Poacher": {
+        name: "Bandit Poacher",
+        flavour: "Poachers often carry out their banditry by stealing a hunters prey, hunting on private land, or killing and harvesting a farmer\u2019s livestock. They also frequently serve as archers when ambushing a target on the highway.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "35"], ["Agility", "45"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "45"], ["Personality", "30"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "30"], ["Evade", "35"], ["Observe", "65"], ["Stealth", "65"], ["Knowledge", "30"], ["Social", "35"], ["Physical", "55"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has:"},
+                    {name: "Wood Shortbow", text: "1d6; (20/100/200)m Range; Reload(1), 2H", subs: ["Includes 12 Splitting or Slashing Iron Arrows"]},
+                    {name: "Net", text: "Entangling, Thrown (3/4/5); Range 2m, 1H"},
+                    {text: "Also has one of:"},
+                    {name: "Iron War Axe", text: "1d8; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Iron Spear", text: "1d8(1d10); Impaling, Unwieldy; Reach 2-3m, 1.5H"},
+                    {text: "Also has one of:"},
+                    {name: "Partial Fur", text: "AR 1 / Frost 1, Light"},
+                    {name: "Partial Leather", text: "AR 1 / Fire 1, Light"},
+                    {name: "Partial Chitin", text: "AR 1 / Fire 1"},
+                ]},
+        ],
+    },
+    "Bandit Hedge Mage": {
+        name: "Bandit Hedge Mage",
+        flavour: "Just like any militant force, bandits in Tamriel need mages to deal out magical damage and provide support to their fellows.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "35"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "35"], ["Personality", "30"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "60"], ["Evade", "35"], ["Observe", "55"], ["Stealth", "55"], ["Knowledge", "30"], ["Social", "35"], ["Physical", "55"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "One of:"},
+                    {name: "Iron Broadsword", text: "1d8; Slashing, Reach 2m, 1H"},
+                    {name: "Iron War Axe", text: "1d8; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Iron Mace", text: "1d8; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {text: "One of:"},
+                    {name: "Partial Fur", text: "AR 1 / Frost 1, Light"},
+                    {name: "Partial Leather", text: "1 AR/1 Fire AR, Light"},
+                    {name: "Partial Chitin", text: "1 AR/1 Fire AR, Light"},
+                    {name: "Partial Iron", text: "3 AR, Medium"},
+                    {name: "Partial Bonemold", text: "2 AR, Light"},
+                    {text: "May have one of:"},
+                    {name: "Fur Shield", text: "BR 7 / Frost BR 5, Light"},
+                    {name: "Chitin Shield", text: "BR 7 / Fire BR 5, Light"},
+                    {name: "Iron Shield", text: "BR 9, Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Hedge Mage can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Fire Bolt 3", text: "8 MP; 1d8 Fire; Ranged (100m), Attack, Overload"},
+                    {name: "Frost Bolt 3", text: "8 MP; 1d8 Frost; Ranged (100m), Attack, Overload"},
+                    {name: "Shock Bolt 3", text: "8 MP; 1d8 Shock; Ranged (100m), Attack, Overload"},
+                    {name: "Ward 1", text: "3 MP; Reinforce, Instant; Generate shield with 6 Magical and Physical BR. Cannot Power Block."},
+                    {name: "Fire Ball 2", text: "10 MP; 1d6 Fire; AoE (2m, sphere), Attack, Overload, Target point in 100m"},
+                    {name: "Frost Ball 2", text: "10 MP; 1d6 Frost; AoE (2m, sphere), Attack, Overload, Target point in 100m"},
+                    {name: "Shock Ball 2", text: "10 MP; 1d6 Shock; AoE (2m, sphere), Attack, Overload, Target point in 100m"},
+                ]},
+        ],
+    },
+    "Bandit Ringleader": {
+        name: "Bandit Ringleader",
+        flavour: "Ringleaders of bandit encampments or factions are fierce combatants who inspire other miscreants to follow their cause.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "35"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "35"], ["Personality", "30"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "24"], ["Wound Thr.", "14"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "30"], ["Evade", "35"], ["Observe", "55"], ["Stealth", "55"], ["Knowledge", "30"], ["Social", "35"], ["Physical", "55"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel Broadsword", text: "1d8+1; Slashing, Reach 2m, 1H"},
+                    {name: "Steel War Axe", text: "1d8+1; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Steel Mace", text: "1d8+1; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {text: "With one of these enchantments:"},
+                    {name: "Firebite", text: "Deal 2 additional Fire damage on successful hit."},
+                    {name: "Pillager", text: "Absorb 1 HP on successful hit."},
+                    {name: "Stormbringer", text: "Can cast Chain Lightning Lvl 2 (13 MP; 1d6 Shock; Ranged (50m), Attack. Has 100 Soul Energy (can cast up to 9 times before recharging)."},
+                    {text: "May also have one of:"},
+                    {name: "Partial Steel", text: "4 AR, Medium"},
+                    {name: "Full Bonemold", text: "4 AR, Medium"},
+                    {text: "May also have one of:"},
+                    {name: "Fur Shield", text: "BR 7 / Frost BR 5, Light"},
+                    {name: "Chitin Shield", text: "BR 7 / Fire BR 5, Light"},
+                    {name: "Iron Shield", text: "BR 9, Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Ringleader (1 AP + 1 SP)", text: "As a Primary Action, the Bandit Ringleader can call their ruffians to arms. All Bandits within 10m may immediately make a free Attack action."},
+                ]},
+        ],
+    },
     "Imp": {
         name: "Imp",
         flavour: "Imps are small, winged humanoids who are slightly intelligent and can cast a variety of spells.",
