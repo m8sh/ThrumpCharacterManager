@@ -7,9 +7,9 @@ For example: Wound rules and how they interact with the healing mechanics are ve
 
 
 TODO:
-- Create a GM initiative tracker with all the players in the room
-- Upload all of the Inhabitants of wtv, NPC statblocks with an easy search function to check what they are doing
-- Keep track of all enemy and player HP and AP as necessary
-- Whenever it is an NPC's turn their actions are visible so that the GM can just pick out what to do
+- Finish uploading all of the statblocks
+- Create a way to make custom statblocks that are kept permanently
+- Add all of the combat rules to the bottom of statblocks for easy GM reference
+- Create a way to directly message the GM
 
 
