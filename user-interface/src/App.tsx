@@ -52,6 +52,629 @@ type Statblock = {
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Barbarian": {
+        name: "Barbarian",
+        flavour: "Barbarians are the proud, savage warrior elite of the plains nomads, mountain tribes and sea reavers. They tend to be brutal and direct, lacking civilized graces, but they revel in heroic feats, and excel in fierce and frenzied combat.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "45"], ["Agility", "40"], ["Intelligence", "30"], ["Willpower", "35"], ["Perception", "40"], ["Personality", "30"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "12"], ["Magicka", "30"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "-"], ["Evade", "50"], ["Observe", "60"], ["Stealth", "20"], ["Knowledge", "30"], ["Social", "30"], ["Physical", "80"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Persuade", text: "80"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "One of:"},
+                    {name: "Iron Greatsword", text: "1d12; Slashing, Unwieldy, Concussive; Reach 3m, 2H"},
+                    {name: "Iron Great Axe", text: "1d12; Splitting, Unwieldy, Shield Splitter, Concussive; Reach 3m, 2H"},
+                    {name: "Iron Maul", text: "1d12; Crushing, Unwieldy, Shield Splitter, Concussive; Reach 3m, 2H"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Barbaric Rage (1 AP + 1 SP)", text: "The Barbarian works themselves into a frenzy as a Primary Action, during which they are immune to Fear, roll damage twice and pick the highest, and add +3 to all melee damage. This rage lasts until the Barbarian chooses to calm down, or is Stunned or Dazed."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Barbaric Domination", text: "+1 DoS to Combat tests when engaged in melee."},
+                    {name: "Skyclad", text: "Has the Natural Toughness (4) Trait while not wearing armor."},
+                    {name: "Resistance (Poison, 2)"},
+                ]},
+        ],
+    },
+    "Bard": {
+        name: "Bard",
+        flavour: "Bards are loremasters and storytellers. Intelligent and personable, they prefer to accomplish tasks with their words first, and sword second.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "35"], ["Agility", "40"], ["Intelligence", "45"], ["Willpower", "40"], ["Perception", "40"], ["Personality", "50"], ["Morale", "20"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "10"], ["Magicka", "45"], ["Stamina", "3"], ["Initiative", "+12"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "40"], ["Magic", "60"], ["Evade", "40"], ["Observe", "70"], ["Stealth", "20"], ["Knowledge", "75"], ["Social", "75"], ["Physical", "35"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Persuade", text: "90"},
+                    {name: "Lore", text: "80"},
+                    {name: "Profession[Musicianship]", text: "80"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "May have one of:"},
+                    {name: "Steel Rapier", text: "1d6+1; Slashing, Dueling Weapon, Exploit Weakness; 1H, Reach 2m"},
+                    {name: "Silver Rapier", text: "1d6+1; Slashing, Dueling Weapon, Exploit Weakness, Silvered; 1H, Reach 2m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Wordsmith (1 SP)", text: "May add up to 3 DoS to a successful Social test."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Big Words", text: "Can test Lore in place of Social where applicable."},
+                    {name: "Tale-crafting", text: "Cannot get less than 3 DoS on Social or Knowledge skill tests meant to inspire, entice, or distract their target(s)."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Charm 2", text: "8 MP; Direct, Instant; Next character to attempt Persuade/Deceive on target character within 50m within 1 minute receives a +10 bonus."},
+                    {name: "Chameleon 2", text: "7 MP; Upkeep, Instant; Caster gains the Chameleon (-10) condition for 1 minute."},
+                    {name: "Night Eye 2", text: "7 MP; Upkeep; Caster gains the ability to see in the dark up to 20m away for 1 minute"},
+                    {name: "Sanctuary 2", text: "15 MP; Upkeep, Instant; Caster gains 2 DoS on defense tests for 1 round, can move 1m further when successfully evading AoE effects."},
+                    {name: "Silence 2", text: "10 MP; Upkeep, Direct; Target character within 50m must test Wp at +10 or be Silenced for 1 round."},
+                ]},
+        ],
+    },
+    "Battlemage": {
+        name: "Battlemage",
+        flavour: "Battlemages are wizard-warriors, trained in both lethal spellcasting and heavily armored combat. They sacrifice mobility and versatility for the ability to supplement melee and ranged attacks with summoned creatures.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "40"], ["Agility", "40"], ["Intelligence", "40"], ["Willpower", "45"], ["Perception", "35"], ["Personality", "35"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "12"], ["Magicka", "50"], ["Stamina", "4"], ["Initiative", "+13"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "65"], ["Evade", "50"], ["Observe", "55"], ["Stealth", "20"], ["Knowledge", "70"], ["Social", "65"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Command", text: "70"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel Battleaxe", text: "1d8(1d10) +1; Splitting, Unwieldy; 1.5H; Reach 2m"},
+                    {name: "Steel Longsword", text: "1d8(1d10) +1; Slashing, 1.5H; Reach 2m"},
+                    {name: "Steel Warhammer", text: "1d8(1d10) +1; Crushing, Unwieldy; 1.5H; Reach 2m"},
+                    {text: "Also has:"},
+                    {name: "Full Steel", text: "6 AR, Heavy"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Aetheric Adjustment (1 SP)", text: "When casting a spell, the Battlemage may choose to either add 1 round to the duration, or add 1m to the AoE range of a spell, but risks backfire upon failure."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Battlemage can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Brawler", text: "+1 DoS to Combat tests when engaged in melee with 2+ opponents."},
+                    {name: "Spell Sword", text: "can cast spells with one hand at no penalty."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Shock Bite 3", text: "7 MP; 1d8 Shock; Melee (1m), Attack, Overload"},
+                    {name: "Fire Bite 3", text: "7 MP; 1d8 Fire; Melee (1m), Attack, Overload"},
+                    {name: "Frost Bite 3", text: "7 MP; 1d8 Frost; Melee (1m), Attack, Overload"},
+                    {name: "Shock Bolt 3", text: "8 MP; 1d8 Shock; Ranged (100m), Attack, Overload"},
+                    {name: "Fire Bolt 3", text: "8 MP; 1d8 Fire; Ranged (100m), Attack, Overload"},
+                    {name: "Frost Bolt 3", text: "8 MP; 1d8 Frost; Ranged (100m), Attack, Overload"},
+                    {name: "Shock Ball 3", text: "12 MP; 1d8 Shock; AoE (2m, sphere), Attack, Overload"},
+                    {name: "Fire Ball 3", text: "12 MP; 1d8 Fire; AoE (2m, sphere), Attack, Overload"},
+                    {name: "Frost Ball 3", text: "12 MP; 1d8 Frost; AoE (2m, sphere), Attack, Overload"},
+                    {name: "Shock Cone 2", text: "11 MP; 1d6 Shock; AoE (5m, cone), Attack, Overload"},
+                    {name: "Fire Cone 2", text: "11 MP; 1d6 Fire; AoE (5m, cone), Attack, Overload"},
+                    {name: "Frost Cone 2", text: "11 MP; 1d6 Frost; AoE (5m, cone), Attack, Overload"},
+                    {name: "Armor 3", text: "16 MP; Upkeep, Reinforce, Instant; Caster gains 3 AR for 1 minute."},
+                    {name: "Magic Armor 3", text: "19 MP; Upkeep, Reinforce, Instant; Caster gains 3 Magic AR for 1 minute"},
+                    {name: "Shield 3", text: "7 MP; Upkeep, Defensive Overload; Target character within 50m gains a magical barrier with 3 HP for physical damage for 1 round. (See original spell for details)."},
+                    {name: "Magic Shield 3", text: "7 MP; Upkeep, Reinforce, Instant; Target character within 50m gains a magical barrier with 3 HP for magical damage for 1 round. (See original spell for details)."},
+                    {name: "Ward 4", text: "9 MP; Reinforce, Instant; Does not provoke Attack of Opportunity. Generate shield with 9 Magical and Physical BR. Cannot Power Block."},
+                ]},
+            {head: "Variant: Conjurer", kind: "list", items: [
+                    {text: "Additional Skills"},
+                    {name: "Conjuration", text: "95"},
+                    {text: "Traits"},
+                    {name: "Seasoned Conjurer", text: "always has at least 3 DoS on Conjuration tests."},
+                    {name: "Taskmaster", text: "Reduce AP cost from the Mindlock trait by 1 (to a minimum of 1)."},
+                    {text: "Spells"},
+                    {text: "Replaces existing. Summon Daedra spells for the following. Each spell has Upkeep, see original spell for details.", subs: [
+                            "Daedrat: 7 MP; Upkeep, Mindlock(1)",
+                            "Scamp: 8 MP; Upkeep, Mindlock (1)",
+                            "Banekin: 9 MP; Upkeep, Mindlock (1)",
+                            "Hell Hound: 12 MP; Upkeep, Mindlock (1)",
+                            "Clannfear: 13 MP; Upkeep, Mindlock (1)",
+                            "Flame Atronach: 16 MP; Upkeep, Mindlock (2)",
+                            "Hunger: 16 MP; Upkeep, Mindlock (1)",
+                            "Dremora Churl: 17 MP; Upkeep, Mindlock (1)",
+                            "Dremora Caitiff: 18 MP; Upkeep, Mindlock (1)",
+                            "Frost Atronach: 19 MP; Upkeep, Mindlock (2)",
+                            "Ogrim: 20 MP; Upkeep, Mindlock (2)",
+                            "Spider Daedra: 20 MP; Upkeep, Mindlock (2)",
+                            "Dremora Kynmarcher: 23 MP; Upkeep, Mindlock (2)",
+                            "Auroran: 24 MP; Upkeep, Mindlock (2)",
+                        ]},
+                ]},
+            {head: "Variant: Destroyer", kind: "list", items: [
+                    {text: "Additional Skills"},
+                    {name: "Destruction", text: "95"},
+                    {text: "Traits"},
+                    {name: "Destruction Incarnate", text: "Increase the damage by any destruction spell that has a damaging effect by 1."},
+                    {text: "Spells"},
+                    {text: "Replaces Existing. Knows any conventional Destruction spell up to SL 5."},
+                ]},
+            {head: "Variant: Mystic", kind: "list", items: [
+                    {text: "Additional Skills"},
+                    {name: "Mysticism", text: "95"},
+                    {text: "Spells"},
+                    {text: "Replaces Existing."},
+                    {name: "Absorb Life 5", text: "16 MP; 2d6 magic; Melee (1m), Attack, Overload; Caster regenerates HP equal to half the damage dealt."},
+                    {name: "Absorb Magicka 5", text: "19 MP; Direct; Target tests Wp, losing 2d6 MP on failure. Caster regenerates MP equal to the amount lost."},
+                    {name: "Dispel 3", text: "13 MP; Remove all magical effects from any source of level 3 or lower from the caster. Constant enchantments reactivate after 1d4 rounds."},
+                    {name: "Reflect 3", text: "10 MP; Upkeep, Instant; For 1 round, if the caster is hit by a spell, roll 1d10. If the result is 3 or lower, resolve the spell against the original caster."},
+                    {name: "Soul Trap", text: "16 MP; Upkeep, Direct; If target within 50m dies within 1 minute, their soul is trapped within an appropriate gem. See original spell for details."},
+                    {name: "Spell Absorption 3", text: "10 MP; Upkeep, Instant; Caster gains Spell Absorption (3) trait for 1 round."},
+                ]},
+            {head: "Variant: Warden", kind: "list", items: [
+                    {text: "Additional Skills"},
+                    {name: "Restoration", text: "95"},
+                    {text: "Traits"},
+                    {name: "Healer", text: "Can pay 10 magicka and spend 1 hour to test restoration, treating a single wound on a success."},
+                    {text: "Spells"},
+                    {text: "Replaces Existing. Knows any restoration spell up to SL 5."},
+                ]},
+        ],
+    },
+    "Bureaucrat": {
+        name: "Bureaucrat",
+        flavour: "Bureaucrats are the managers, scribes, and other officials that keep governments across Tamriel running.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "40"], ["Willpower", "30"], ["Perception", "35"], ["Personality", "40"], ["Morale", "10"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "40"], ["Stamina", "3"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "10"], ["Magic", "-"], ["Evade", "30"], ["Observe", "65"], ["Stealth", "15"], ["Knowledge", "70"], ["Social", "50"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Investigate", text: "80"},
+                    {name: "Lore [Specialization: Law]", text: "80"},
+                    {name: "Profession [Bureaucracy]", text: "80"},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Heartless Bureaucrat", text: "Can oppose Deceive with Investigate, and use Knowledge or Lore in place of Social skill tests when acting on behalf of their respective institution."},
+                ]},
+            {head: "Variant: Sorcerocrat", kind: "list", items: [
+                    {text: "Magic Skill TN Becomes 60"},
+                    {text: "Spells"},
+                    {name: "Lock 1", text: "4 MP; Lock a door or container within 1m. Defeating the lock requires an extended Subterfuge test with a threshold of 2."},
+                    {name: "Open 1", text: "4 MP; Unlock a door or container within 1m if the extended test threshold is 2 or less."},
+                    {name: "Charm 2", text: "8 MP; Direct, Attack; Next character to attempt to Persuade or Deceive a target within 50m within 1 minute receives a +10 bonus."},
+                    {name: "Light 1", text: "2 MP; Upkeep; Creates a light orbiting the caster for 1 minute. Illuminates within 10m."},
+                    {name: "Silence 2", text: "7 MP; Upkeep, Direct, Attack; Target within 50m must test Willpower at +10 or be Silenced for 1 round."},
+                    {name: "Telekinesis 1", text: "4 MP; Upkeep; Caster gains the Telekinesis(1) trait for 1 minute."},
+                    {name: "Telepathy 1", text: "4 MP; Upkeep; Caster gains the Telepathy(1) trait for 1 minute."},
+                    {name: "Fortify Intelligence 2", text: "17 MP; Upkeep; Caster increases their Intelligence by 10 for 1 round."},
+                ]},
+        ],
+    },
+    "Commoner": {
+        name: "Commoner",
+        flavour: "The average folk of Tamriel.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "30"], ["Personality", "30"], ["Morale", "10"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "-"], ["Evade", "30"], ["Observe", "40"], ["Stealth", "10"], ["Knowledge", "50"], ["Social", "40"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Profession [Any One]", text: "60"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "(Optional) Frying Pan", text: "1d4; Reach 1m."},
+                    {text: "Because what else will they use?"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Fool\u2019s Luck (3 SP)", text: "The commoner can spend 3 Stamina to re-roll any one failed test with a +20 bonus as fortune seems to smile on the unfortunate fool. To be used sparingly."},
+                    {name: "Gang Up (1 SP)", text: "Can gang up by spending a Stamina Point when an enemy in Reach is attacked by another allied Commoner. Ganging up imposes a -10 on the target\u2019s Defense roll. Additionally, each ganging up Commoner adds +1 damage to the attacking Commoner\u2019s damage roll."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Teamwork", text: "Gains 1 DoS on any attack rolls made while an ally with Teamwork is in Reach of the same target."},
+                ]},
+        ],
+    },
+    "Crusader": {
+        name: "Crusader",
+        flavour: "Any heavily armored warrior with spell casting powers and a good cause may call himself a Crusader. Crusaders do well by doing good. They hunt monsters and villains, making themselves rich by plunder as they rid the world of evil.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "45"], ["Agility", "40"], ["Intelligence", "40"], ["Willpower", "40"], ["Perception", "35"], ["Personality", "35"], ["Morale", "70"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "12"], ["Magicka", "40"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "70"], ["Evade", "50"], ["Observe", "55"], ["Stealth", "20"], ["Knowledge", "70"], ["Social", "35"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Persuade (Specialization: Intimidation)", text: "65"},
+                    {name: "Profession [Medicine]", text: "60"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel War Axe", text: "1d8+1; Splitting, Unwieldy, Focus; Reach 2m, 1H"},
+                    {name: "Steel Broadsword", text: "1d8+1; Slashing, Focus; Reach 2m, 1H"},
+                    {name: "Steel Mace", text: "1d8+1; Crushing, Unwieldy, Focus; Reach 2m, 1H"},
+                    {text: "Also has:"},
+                    {name: "Full Steel Armor", text: "6 AR, Heavy"},
+                    {name: "Steel Shield", text: "10 BR/5 MR, Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Searing Radiance(1 SP)", text: "A Crusader can channel pure magicka through their blades when fighting iniquity, dealing an extra 1d4 Fire Damage that counts as Sunlight after making a successful melee attack."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Spell Sword", text: "Can cast spells with only one hand at no penalty."},
+                    {name: "Brawler", text: "Adds 1 DoS to Combat tests when engaged in melee with 2+ opponents."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Heal 2", text: "5 MP; Caster regains 4 HP"},
+                    {name: "Heal Ally 2", text: "8 MP; Direct; Target within 50m regains 4 HP"},
+                    {name: "Healing Touch 2", text: "5 MP; Direct; Target within 1m regains 4 HP"},
+                    {name: "Replenish 2", text: "7 MP; Target within 1m regains 4 MP or [Casting Cost] MP, whichever is lower"},
+                    {name: "Sanctuary 2", text: "15 MP; Upkeep; Caster gains 2 DoS on all successful defense tests for 1 round. They also move 1m further than normal to avoid AoE attacks on successful Evade tests."},
+                    {name: "Resistance to Magic 2", text: "5 MP; Upkeep; Caster gains the Resistance (magic, 2) trait for 1 round."},
+                    {name: "Ward 2", text: "5 MP; Does not provoke Attack of Opportunity. Generate shield with 7 Magical and Physical BR. Cannot Power Block."},
+                ]},
+        ],
+    },
+    "Cultist": {
+        name: "Cultist",
+        flavour: "A cultist can be part of countless cults - whether they are a proponent of the Imperial Cult or a follower of a Daedric Prince, cultists are devoted to their religion with zealous belief.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "30"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "35"], ["Perception", "30"], ["Personality", "30"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "45"], ["Magic", "-"], ["Evade", "35"], ["Observe", "40"], ["Stealth", "35"], ["Knowledge", "50"], ["Social", "50"], ["Physical", "45"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Deceive", text: "70"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Iron Wakizashi", text: "1d4 (1d6); Slashing, Expose Weakness; Reach 1m, 1H"},
+                    {name: "Iron Quarterstaff", text: "1d6 (1d8); Concussive, Reach 2m, 1.5H"},
+                    {name: "Partial Leather", text: "1 AR/1 Fire AR; Light"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Gang Up (1 SP)", text: "Can gang up by spending a Stamina Point when an enemy within Reach is attacked by another allied Cultist. Ganging up imposes a -10 on the target\u2019s Defense roll. Additionally, each ganging up Cultist adds +1 damage to the attacking Cultist damage roll."},
+                ]},
+        ],
+    },
+    "Cultist Fanatic": {
+        name: "Cultist Fanatic",
+        flavour: "These cultists are the most devout of their group.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "35"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "35"], ["Perception", "30"], ["Personality", "30"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "-"], ["Evade", "45"], ["Observe", "40"], ["Stealth", "15"], ["Knowledge", "50"], ["Social", "50"], ["Physical", "45"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Deceive", text: "70"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Iron Warhammer", text: "1d8 (1d10) Crushing; Unwieldy; Reach 2m, 1.5H"},
+                    {name: "Iron Flail", text: "1d6 (1d8); Crushing, Flail; Reach 2-3m; 1.5H"},
+                    {text: "Also has one of:"},
+                    {name: "Full Leather Armor", text: "3 AR, 1 Fire; Light"},
+                    {name: "Partial Iron Armor", text: "3 AR; Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Fanatical Frenzy (1 SP)", text: "After attacking or being attacked, a Fanatic may become enraged, gaining the Savage trait, which allows them to roll damage twice and pick the highest number."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Zealotry", text: "The Fanatic\u2019s zealous dedication protects them from mundane fear. They receive a +40 bonus to Fear tests."},
+                ]},
+        ],
+    },
+    "Cultist Mage": {
+        name: "Cultist Mage",
+        flavour: "Cultist Mages are normally ceremony leaders or those that keep the masses in line.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "32"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "35"], ["Perception", "30"], ["Personality", "30"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "60"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "35"], ["Magic", "55"], ["Evade", "35"], ["Observe", "50"], ["Stealth", "15"], ["Knowledge", "50"], ["Social", "50"], ["Physical", "45"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Deceive", text: "70"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Iron Wakizashi", text: "1d4 (1d6); Slashing, Expose Weakness; Reach 1m, 1.5H"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Magical Exertion (1 SP)", text: "When the Cultist Mage casts any spell they can do so at one Spell Level higher than listed, but they suffer -10 to cast and risk backfire upon failure and any other usual costs of casting a spell higher than their skill rank."},
+                    {name: "Inferno (2 SP)", text: "After successfully casting a Fire spell, the Cultist Mage can use this ability to deal the maximum possible damage."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Cultist Mage can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Pyromancer", text: "Add 1 Fire damage to any Fire spell cast."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Fire Ball 2", text: "10 MP; 1d6 Fire; AoE (2m, sphere), Attack, Overload (+WpB to Damage), Target point in 100m"},
+                    {name: "Fire Bolt 2", text: "6 MP; 1d6 Fire, Attack, Overload (+WpB to Damage), Ranged (100m)"},
+                    {name: "Fire Bite 2", text: "5 MP; 1d6 Fire; Attack, Overload (+WpB to Damage), Melee (1m)"},
+                    {name: "Heal 2", text: "5 MP; Caster regains 4 HP"},
+                    {name: "Healing Touch 1", text: "3 MP; Direct; Target within 1m regains 2 HP"},
+                    {name: "Weakness to Magic 2", text: "10 MP; Upkeep, Direct; Target within 50m gains the Weakness (Magic, 2) trait for 1 round"},
+                    {name: "Summon Flame Atronach", text: "16 MP; Upkeep, Mindlock(2); See original spell for details"},
+                    {name: "Summon Clannfear", text: "13 MP; Upkeep, Mindlock(1); See original spell for details"},
+                    {name: "Conjure Weapon (Wakizashi) 1", text: "15 MP; Upkeep; 1d4 (1d6) +4 Slashing, Primitive, Reach 1m, 1.5H; See original spell for details"},
+                    {name: "Conjure Body Armor 2", text: "15 MP; Upkeep; Inferior Partial Daedric, 6 AR/6 Magic, Super-Heavy; See original spell for details"},
+                ]},
+        ],
+    },
+    "City/Town Guard": {
+        name: "City/Town Guard",
+        flavour: "Guards are either volunteered militia or trained professionals whose sole job is to protect the citizens of Tamriel.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "45"], ["Personality", "35"], ["Morale", "70"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "11"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "70"], ["Magic", "-"], ["Evade", "35"], ["Observe", "75"], ["Stealth", "15"], ["Knowledge", "30"], ["Social", "55"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Persuade", text: "70"},
+                    {name: "Athletics", text: "70"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel War Axe", text: "1d8+1; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Steel Broadsword", text: "1d8+1; Slashing; Reach 2m, 1H"},
+                    {name: "Steel Mace", text: "1d8+1; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {text: "May also have one of:"},
+                    {name: "Wood Longbow", text: "1d8; (10/250/250)m Range; Reload(2)", subs: ["Includes 20 iron arrows; Slashing or Splitting"]},
+                    {name: "Wood Crossbow", text: "1d6; Crushing(4); (20/100/200)m Range; Reload(1)", subs: ["Includes 20 bolts"]},
+                    {text: "May also have:"},
+                    {name: "Steel Shield", text: "10 BR/5 MR; Medium"},
+                    {text: "Also has:"},
+                    {name: "Partial Steel Armor", text: "4 AR; Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Warning Shout (1 SP)", text: "When a guard shouts, they summon any additional guards within hearing range to their aid."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dead or Alive", text: "Guards gain +1 DoS to offensive and defensive Combat rolls when they have at least 2 other guards supporting them, and gain a +20 bonus to grapple or otherwise restrain their target without killing them."},
+                    {name: "Who did it?!", text: "When investigating a crime, a guard cannot score less than 3 DoS on a successful Social skill test when interrogating witnesses."},
+                ]},
+        ],
+    },
+    "Legion Zero Watchman": {
+        name: "Legion Zero Watchman",
+        flavour: "City guards in Cyrodiil are just like any other. Cyrodiil does feature, however, a unique kind: the Legion Zero watchman, bearing the iconic Imperial Plate. Their equipment is made from Silver and they are generally much better trained than the typical guard.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "45"], ["Personality", "35"], ["Morale", "70"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "11"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "-"], ["Evade", "35"], ["Observe", "75"], ["Stealth", "15"], ["Knowledge", "30"], ["Social", "55"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Persuade", text: "70"},
+                    {name: "Athletics", text: "70"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Silver Longsword", text: "1d8(1d10)+1; Slashing, Silvered; Reach 2m, 1.5H"},
+                    {name: "Wood Longbow", text: "1d8; (10/250/250)m Range; Reload(2)", subs: ["Includes 20 Silver (+1 Damage, Silvered) arrows; Slashing or Splitting"]},
+                    {name: "Steel Shield", text: "10 BR/5 MR; Medium"},
+                    {name: "Full Steel Armor", text: "6 AR; Heavy"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Warning Shout (1 SP)", text: "When a guard shouts, they summon any additional guards within hearing range to their aid."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dead or Alive", text: "Guards gain +1 DoS to offensive and defensive Combat rolls when they have at least 2 other guards supporting them, and gain a +20 bonus to grapple or otherwise restrain their target without killing them."},
+                    {name: "Who did it?!", text: "When investigating a crime, a guard cannot score less than 3 DoS on a successful Social skill test when interrogating witnesses."},
+                ]},
+        ],
+    },
+    "Healer": {
+        name: "Healer",
+        flavour: "Healers are equal parts herbalist and mage, using their knowledge of local flora and restoration magic to help the sick and wounded.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "40"], ["Willpower", "35"], ["Perception", "35"], ["Personality", "40"], ["Morale", "15"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "40"], ["Stamina", "3"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "75"], ["Evade", "30"], ["Observe", "55"], ["Stealth", "15"], ["Knowledge", "60"], ["Social", "60"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Profession [Medicine]", text: "70"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Triage (1 AP + 1 SP)", text: "The Healer can quickly examine critical patients as a Secondary Action, treating them in order to stop bleeding, burning, or poison."},
+                    {name: "Administer Aid (1 AP + 1 SP)", text: "The Healer can very quickly and efficiently patch up themselves or a wounded comrade as a Secondary Action. The target is healed for 2d4 HP and the passive effects of any Wounds it might be suffering from are negated until the end of the combat encounter."},
+                    {name: "Alchemist (1 AP + 1 SP)", text: "The healer quickly throws together ingredients to create a makeshift potion as a Secondary Action. Any spells the Healer can cast may be a potion that they can take themselves or give to an ally."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Healer can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Healer", text: "10 MP, 1 hour, and test Restoration to treat 1 wound."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Cure Paralysis", text: "9 MP; Direct; Removes the Paralyzed condition from target character within 1m."},
+                    {name: "Heal Ally 3", text: "10 MP; Direct; Target character within 50m regains 6 HP."},
+                    {name: "Healing Touch 3", text: "7 MP; Direct; Target within 1m regains 6 HP."},
+                    {name: "Heal 3", text: "7 MP; Caster regains 6 HP."},
+                    {name: "Rejuvenate", text: "17 MP; Direct; Target character within 1m regains 1 SP or removes 1 level of fatigue."},
+                    {name: "Replenish 3", text: "10 MP; Target character within 1m regains 6 MP or [Casting Cost] MP, whichever is lower."},
+                    {name: "Stabilize", text: "2 MP; Stabilize target dying character within 1m."},
+                    {name: "Cure Disease 2", text: "7 MP; Caster removes the Diseased (Common) Condition from self."},
+                    {name: "Curing Touch 2", text: "7 MP; Direct; Caster removes the Diseased (Common) Condition from target within 1m."},
+                ]},
+        ],
+    },
+    "Knight": {
+        name: "Knight",
+        flavour: "Of noble birth, or distinguished in battle or tourney, knights are civilized warriors, schooled in letters and courtesy, governed by the codes of chivalry. In addition to the art of war, knights study the lore of healing and enchantment.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "45"], ["Agility", "40"], ["Intelligence", "45"], ["Willpower", "35"], ["Perception", "35"], ["Personality", "40"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "11"], ["Magicka", "45"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "65"], ["Evade", "60"], ["Observe", "55"], ["Stealth", "20"], ["Knowledge", "75"], ["Social", "70"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Command", text: "85"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel War Axe", text: "1d8+1; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Steel Longsword", text: "1d8+1; Slashing; Reach 2m, 1H"},
+                    {name: "Steel Mace", text: "1d8+1; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {text: "Also has:"},
+                    {name: "Full Steel Armor", text: "6 AR; Heavy"},
+                    {name: "Steel Shield", text: "10 BR/5 MR, Medium"},
+                    {text: "May also have:"},
+                    {name: "Enchantment", text: "The chosen weapon has one of the following strike enchantments:", subs: [
+                            "Fire 1: deals 1 additional Fire damage.",
+                            "Frost 1: deals 1 additional Frost damage.",
+                            "Shock 1: deals 1 additional Shock damage.",
+                        ]},
+                    {name: "Steel Lance (If mounted)", text: "1d12+1; Splitting, Crushing(3), Mounted, Unwieldy; Reach 2-3m, 2H"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Charge (1 AP + 1 SP)", text: "The Knight moves twice their speed towards a target and makes a melee attack with a +2 damage bonus."},
+                    {name: "Rally (1 SP)", text: "The Knight rallies all allies who can hear them as a Free Action, granting them the benefits of the Teamwork talent until the Knight\u2019s next turn."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Duelist", text: "+1 DoS to Combat tests when engaged in melee with 1 Opponent"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Healing Touch 3", text: "7 MP; Direct; Target within 1m regains 6 HP."},
+                    {name: "Heal 3", text: "7 MP; Caster regains 6 HP."},
+                ]},
+        ],
+    },
+    "Mage": {
+        name: "Mage",
+        flavour: "Most mages claim to study magic for its intellectual rewards, but they also often profit from its practical applications. Varying widely in temperament and motivation, mages share but one thing in common - an avid love of spellcasting.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "50"], ["Willpower", "50"], ["Perception", "35"], ["Personality", "30"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "11"], ["Magicka", "50"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "70"], ["Evade", "30"], ["Observe", "45"], ["Stealth", "15"], ["Knowledge", "90"], ["Social", "40"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Quarterstaff", text: "1d6(1d8); Concussive; Reach 2m, 1.5H", subs: ["May also have a Cast Magic enchantment of [Frost/Shock/Fire] Bolt Spell Level 3 (100m Range, Attack, 1d8 damage), 5 charges."]},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Overcharge (1 SP)", text: "The Mage rolls damage twice and uses the highest when calculating the next spell\u2019s damage."},
+                    {name: "Learned Scholar (1 SP)", text: "The Mage may use their Knowledge skill in place of Social to persuade others."},
+                    {name: "Magical Exertion (1 SP)", text: "When the Mage casts any spell they can do so at one Spell Level higher than listed, but they suffer -10 to cast and risk backfire upon failure and any other usual costs of casting a spell higher than their skill rank."},
+                    {name: "Magic over Might", text: "The Mage may spend one of their spells or 10 MP to replace their Physical or Social score with their Magic score for a single Skill test."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Mage can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {text: "Has up to 6 spells of any school up to Spell Level 4."},
+                ]},
+        ],
+    },
+    "Archmage": {
+        name: "Archmage",
+        flavour: "Archmages are at the pique of their craft and will most often lead a mages\u2019 guild of some kind - usually the official Imperial Mages\u2019 Guild of the 2nd and 3rd era, or the Synod or College of Whispers of the 4th era.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "50"], ["Willpower", "60"], ["Perception", "35"], ["Personality", "30"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "11"], ["Magicka", "60"], ["Stamina", "3"], ["Initiative", "+12"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "100"], ["Evade", "30"], ["Observe", "45"], ["Stealth", "15"], ["Knowledge", "90"], ["Social", "40"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Quarterstaff", text: "1d6(1d8); Concussive; Reach 2m, 1.5H", subs: ["May also have a Cast Magic enchantment of [Frost/Shock/Fire] Bolt Spell Level 3 (100m Range, Attack, 1d8 damage), 5 charges."]},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Overcharge (1 SP)", text: "The Archmage rolls damage twice and uses the highest when calculating the next spell\u2019s damage."},
+                    {name: "Learned Scholar (1 SP)", text: "The Archmage may use their Knowledge skill in place of Social to persuade others."},
+                    {name: "Magical Exertion (1 SP)", text: "When the Archmage casts any spell they can do so at one Spell Level higher than listed, but they suffer -10 to cast and risk backfire upon failure and any other usual costs of casting a spell higher than their skill rank."},
+                    {name: "Magic over Might", text: "The Archmage may spend one of their spells or 10 MP to replace their Physical or Social score with their Magic score for a single Skill test."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Archmage can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {text: "Knows all spells within a single school of magic up to Spell Level 6"},
+                ]},
+        ],
+    },
+    "Necromancer": {
+        name: "Necromancer",
+        flavour: "Necromancers are those mages who study the profane art of Necromancy, which they use to raise undead servants and increase their own lifespan, hoping to ultimately attain Lichdom.",
+        tags: "Any Race, Humanoid; Average; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "45"], ["Willpower", "50"], ["Perception", "35"], ["Personality", "30"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "11"], ["Magicka", "65"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "65"], ["Evade", "30"], ["Observe", "45"], ["Stealth", "15"], ["Knowledge", "75"], ["Social", "40"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Necromancy", text: "85"},
+                    {name: "Destruction", text: "85"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Quarterstaff", text: "1d6(1d8); Concussive; Reach 2m, 1.5H", subs: ["May also have a Cast Magic enchantment of [Frost/Shock/Fire] Bolt Spell Level 3 (100m Range, Attack, 1d8 damage), 5 charges."]},
+                    {name: "Ritual Dagger", text: "1d4+1; Slashing, Exploit Weakness, Thrown (5/10/15), Small; Reach 1m, 1H"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Villainous Spell (2 SP)", text: "The Necromancer can spend two Stamina Points to cast a Spell as a Reaction."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Necromancer can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {text: "Knows all spells from the Necromancy school up to Spell Level 4 and 3 spells from the Destruction school up to Spell Level 3."},
+                ]},
+        ],
+    },
+    "Hedge Mage": {
+        name: "Hedge Mage",
+        flavour: "Hedge mages have learned their craft outside the bounds of traditional learning.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "50"], ["Willpower", "45"], ["Perception", "35"], ["Personality", "30"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "10"], ["Magicka", "50"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "75"], ["Evade", "30"], ["Observe", "30"], ["Stealth", "30"], ["Knowledge", "60"], ["Social", "45"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Quarterstaff", text: "1d6(1d8); Concussive; Reach 2m, 1.5H", subs: ["May also have a Cast Magic enchantment of [Frost/Shock/Fire] Bolt Spell Level 3 (100m Range, Attack, 1d8 damage), 5 charges."]},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Overcharge (1 SP)", text: "The Hedge Mage rolls damage twice and uses the highest when calculating the next spell\u2019s damage."},
+                    {name: "Learned Scholar (1 SP)", text: "The Hedge Mage may use their Knowledge skill in place of Social to persuade others."},
+                    {name: "Magical Exertion (1 SP)", text: "When the Hedge Mage casts any spell they can do so at one Spell Level higher than listed, but they suffer -10 to cast and risk backfire upon failure and any other usual costs of casting a spell higher than their skill rank."},
+                    {name: "Magic over Might", text: "The Hedge Mage may spend one of their spells or 10 MP to replace their Physical or Social score with their Magic score for a single Skill test."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Hedge Mage can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Control", text: "If a spell that the Hedge Mage casts would backfire, they can test Wp to negate the effects."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {text: "Has any 3 Spells at Spell Level 3 and one at Spell Level 2. Any or all of these may be unconventional."},
+                ]},
+        ],
+    },
+    "Merchant": {
+        name: "Merchant",
+        flavour: "Merchants and traders can be found peddling their wares in marketplaces across tamriel.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "35"], ["Willpower", "30"], ["Perception", "35"], ["Personality", "45"], ["Morale", "10"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "35"], ["Stamina", "3"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "-"], ["Evade", "30"], ["Observe", "65"], ["Stealth", "15"], ["Knowledge", "65"], ["Social", "85"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Traits", kind: "list", items: [
+                    {name: "Businessman", text: "When the character passes a Commerce skill test they always get a minimum of 4 DoS."},
+                ]},
+            {head: "Variant: Master Salesman", kind: "list", items: [
+                    {text: "Social skill becomes 95"},
+                    {text: "Traits"},
+                    {name: "Upsell", text: "This Merchant knows their trade and how to talk others down, they negate the ability to use the Businessman talent against them."},
+                ]},
+        ],
+    },
     "Acrobat": {
         name: "Acrobat",
         flavour: "\u201cAcrobat\u201d is a polite euphemism for agile burglars and second-story men. These thieves avoid detection by stealth and rely on mobility and cunning to avoid capture.",
