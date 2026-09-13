@@ -52,6 +52,528 @@ type Statblock = {
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Monk": {
+        name: "Monk",
+        flavour: "Monks are students of the ancient martial arts of hand-to-hand combat and unarmored self defense. Monks avoid detection by stealth, mobility, and Agility, and are skilled with a variety of ranged and close-combat weapons.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "50"], ["Agility", "40"], ["Intelligence", "35"], ["Willpower", "45"], ["Perception", "40"], ["Personality", "35"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "13"], ["Magicka", "35"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "-"], ["Evade", "80"], ["Observe", "70"], ["Stealth", "80"], ["Knowledge", "65"], ["Social", "35"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "May have one of:"},
+                    {name: "Cestus", text: "1d4+1; Crushing(1), Hand to Hand, Small; Reach 1m, 1H."},
+                    {name: "Punch Dagger", text: "1d4+1; Slashing(1), Exploit Weakness, Hand to Hand, Small; Reach 1m, 1H"},
+                    {name: "Wood Quarterstaff", text: "1d6 (1d8); Concussive, Reach 2m, 1.5H"},
+                    {text: "Also has:"},
+                    {name: "Wood Longbow", text: "1d8; (10/250/350)m Range, Reload (2);"},
+                    {text: "Includes 20 iron arrows; Slashing or Splitting"},
+                    {name: "Heavy Partial Robes", text: "AR 1; Light, Partial"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Martial Revenge (1 AP + 1 SP)", text: "The Monk can use this ability to immediately make a counter attack as a Reaction using a hand-to-hand weapon or unarmed strike. This does not count towards that character\u2019s maximum number of attacks that they can make per round."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Martial Traditions", text: "Monks base unarmed damage is 1d6+4, increases the slashing or crushing of any hand-to-hand weapon by 1, and has no penalties to actions normally penalized while wielding hand-to-hand weapons."},
+                    {name: "Martial Domination", text: "Can parry any melee or non magic ranged attack while unarmed, and gains a minimum of 4 DoS when grappling, restraining or entangling an opponent."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Heal 2", text: "5 MP; Caster regains 4 HP"},
+                ]},
+        ],
+    },
+    "Two-Moons Dance Monk": {
+        name: "Two-Moons Dance Monk",
+        flavour: "The Two-Moons Dance Monks are a mostly Khajiit order of monks, dedicated to Riddle-Thar and the art of unarmed battle. Those known to have mastered this style of combat are renowned across Tamriel as unmatched in weaponless combat. Even those that face them with magical enhancement are seen as inferior combatants in their eyes.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "50"], ["Agility", "60"], ["Intelligence", "35"], ["Willpower", "45"], ["Perception", "40"], ["Personality", "35"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "13"], ["Magicka", "35"], ["Stamina", "4"], ["Initiative", "+13"], ["Action Pts.", "4"], ["Speed", "16m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "-"], ["Evade", "80"], ["Observe", "70"], ["Stealth", "80"], ["Knowledge", "65"], ["Social", "35"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "May have one of:"},
+                    {name: "Cestus", text: "1d4+1; Crushing(1), Hand to Hand, Small; Reach 1m, 1H."},
+                    {name: "Punch Dagger", text: "1d4+1; Slashing(1), Exploit Weakness, Hand to Hand, Small; Reach 1m, 1H"},
+                    {name: "Wood Quarterstaff", text: "1d6 (1d8); Concussive, Reach 2m, 1.5H"},
+                    {text: "Also has:"},
+                    {name: "Wood Longbow", text: "1d8; (10/250/350)m Range, Reload (2);"},
+                    {text: "Includes 20 iron arrows; Slashing or Splitting"},
+                    {name: "Heavy Partial Robes", text: "AR 1; Light, Partial"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Martial Revenge (1 AP + 1 SP)", text: "The Monk can use this ability to immediately make a counter attack as a Reaction using a hand-to-hand weapon or unarmed strike. This does not count towards that character\u2019s maximum number of attacks that they can make per round."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Eye of Night", text: "Two-Moons Dance monks deal 1d8+4 base damage while unarmed and can make a free Precision Strike with their first attack made while Hidden at night time or in total darkness."},
+                    {name: "Martial Traditions", text: "Monks base unarmed damage is 1d6+4, increases the slashing or crushing of any hand-to-hand weapon by 1, and has no penalties to actions normally penalized while wielding hand-to-hand weapons."},
+                    {name: "Martial Domination", text: "Can parry any melee or non magic ranged attack while unarmed, and gains a minimum of 4 DoS when grappling, restraining or entangling an opponent."},
+                    {name: "Sky-high", text: "Reduce falls by 6 meters and ignore all penalties on Combat rolls due to unusual terrain except underwater."},
+                    {name: "Sugar-Rush", text: "Can evade all attacks of opportunity for free until hit, which costs AP, and can evade Area of Effect attacks completely if the AoE is less than 6 meters."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Heal 2", text: "5 MP; Caster regains 4 HP"},
+                ]},
+        ],
+    },
+    "Nightblade": {
+        name: "Nightblade",
+        flavour: "Nightblades are spellcasters who use their magics to enhance their mobility, concealment and stealthy close combat.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "35"], ["Agility", "50"], ["Intelligence", "40"], ["Willpower", "40"], ["Perception", "40"], ["Personality", "35"], ["Morale", "60"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "10"], ["Magicka", "40"], ["Stamina", "3"], ["Initiative", "+12"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "70"], ["Magic", "70"], ["Evade", "60"], ["Observe", "70"], ["Stealth", "80"], ["Knowledge", "60"], ["Social", "55"], ["Physical", "55"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Illusion", text: "80"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Steel Dagger", text: "1d4+1; Slashing, Exploit Weakness Thrown(5/10/15), Small; Reach 1m, 1H"},
+                    {name: "Steel Shortsword", text: "1d6+1; Slashing, Exploit Weakness; Reach 1m, 1H"},
+                    {name: "Wood Shortbow", text: "1d6; (20/100/200)m Range; Reload(1)", subs: ["Includes 12 Steel Arrows (+1 Damage, Splitting or Slashing)"]},
+                    {name: "Padded Leather", text: "2 AR, 1 Fire; Full, Light"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Obfuscation (1 AP + 1 SP)", text: "Allows the Nightblade to roll for Stealth so that they can hide in plain sight as a Secondary Action. Onlookers see them vanish in a smoky blur, as they throw a smoke bomb on the ground at their location."},
+                    {name: "Leap Away (1 SP)", text: "Allows the Nightblade to dodge in any direction for 2m as part of their normal movement. This movement does not provoke attacks of opportunity."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Nightblade can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Spellsword", text: "May cast spells with only one hand without penalty."},
+                    {name: "Shadow Strike", text: "+3 damage inflicted against unaware or surprised targets"},
+                    {name: "Assassin Strike", text: "If the character successfully inflicts damage with an attack (after mitigation) then the target of that attack cannot make an attack of opportunity against the character during that turn."},
+                    {name: "Master of Illusions", text: "Can test Illusion instead of Deceive or Evade."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Chameleon 2", text: "7 MP; Upkeep; Caster gains the Chameleon(-10) condition for 1 minute."},
+                    {name: "Invisibility 4", text: "13 MP; Upkeep; Caster gains the Invisible condition for 1 round. This condition is lost if they attack or cast another spell."},
+                    {name: "Night Eye 2", text: "8 MP; Upkeep; Caster gains the ability to see in the dark up to 20m away for 1 minute."},
+                    {name: "Poison Bolt 2", text: "6 MP; 1d6 Poison; Unconventional, Ranged(100m), Attack, Overload (+WB to Dmg)"},
+                    {name: "Poison Bite 2", text: "5 MP; 1d6 Poison; Unconventional, Melee(1m), Attack, Overload (+WB to Dmg)"},
+                    {name: "Sanctuary 3", text: "22 MP; Upkeep; Caster gains 3 DoS on defense tests for 1 round, can move 1m further when successfully evading AoE effects"},
+                    {name: "Feather", text: "11 MP; Upkeep; Caster lowers their Encumbrance by one for 1 round and their armor is one weight class lighter."},
+                    {name: "Burden 2", text: "10 MP; Upkeep, Direct; Target within 50m must test Strength at +10 or raise the Encumbrance level by one for 1 round."},
+                ]},
+        ],
+    },
+    "Pilgrim": {
+        name: "Pilgrim",
+        flavour: "Pilgrims are travelers, seekers of truth and enlightenment. They fortify themselves for the road and wilderness with arms, armor and magic, and through wide experience of the world, they become shrewd in commerce and persuasion.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "30"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "30"], ["Personality", "30"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "9"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "50"], ["Evade", "30"], ["Observe", "40"], ["Stealth", "15"], ["Knowledge", "60"], ["Social", "50"], ["Physical", "55"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel Shortsword", text: "1d6+1; Slashing, Exploit Weakness; Reach 1m, 1H"},
+                    {name: "Steel Mace", text: "1d8+1; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {text: "Also has:"},
+                    {name: "Steel Shield", text: "BR 10 / MR 5; Medium"},
+                    {name: "Partial Steel Armor", text: "4 AR; Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Blessing of the Nine (1 SP)", text: "The Pilgrim gains a +10 to the Pilgrim\u2019s next test."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Pilgrim recites a short prayer to their patron which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Heal 2", text: "5 MP; Caster regains 4 HP"},
+                    {name: "Healing Touch 2", text: "5 MP; Direct; Target within 1m regains 4 HP"},
+                    {name: "Heal Ally 2", text: "8 MP; Direct; Target within 50m regains 4 HP"},
+                    {name: "Turn Undead 2", text: "10 MP; Target with the Undead trait within 50m must test Wp +10 to not flee from the caster for 1 round"},
+                    {name: "Ward 1", text: "3 MP; Does not provoke Attack of Opportunity. Generate shield with 6 Magical and Physical BR. Cannot Power Block."},
+                ]},
+        ],
+    },
+    "Priest": {
+        name: "Priest",
+        flavour: "Priests tend to the spiritual needs of their communities, and are trained in the healing arts.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "35"], ["Willpower", "35"], ["Perception", "30"], ["Personality", "40"], ["Morale", "35"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "35"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "55"], ["Evade", "30"], ["Observe", "40"], ["Stealth", "15"], ["Knowledge", "75"], ["Social", "70"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Sermon (1 SP)", text: "The Priest makes a Social test. If successful a targeted ally can reroll their next failed roll."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Priest recites a short prayer to their patron which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Heal 2", text: "5 MP; Caster regains 4 HP"},
+                    {name: "Healing Touch 2", text: "5 MP; Direct; Target within 1m regains 4 HP"},
+                    {name: "Heal Ally 2", text: "8 MP; Direct; Target within 50m regains 4 HP"},
+                    {name: "Turn Undead 2", text: "10 MP; Direct, Attack, Upkeep; Target with the Undead trait within 50m must test Wp +10 to not flee from the caster for 1 round"},
+                    {name: "Curing Touch 2", text: "7 MP; Direct; Removes common Disease from target within 1m."},
+                ]},
+        ],
+    },
+    "Archer": {
+        name: "Archer",
+        flavour: "An expert marksman, making a living with bow and arrow in various professions.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "30"], ["Agility", "45"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "45"], ["Personality", "30"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "10"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "-"], ["Evade", "55"], ["Observe", "75"], ["Stealth", "65"], ["Knowledge", "40"], ["Social", "40"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel Longsword", text: "1d8(1d10)+1; Slashing; Reach 2m, 1.5H"},
+                    {name: "Steel Dagger", text: "1d4+1; Slashing, Exploit Weakness, Thrown (5/10/15), Small; Reach 1m, 1H"},
+                    {text: "Additionally, may have one of:"},
+                    {name: "Wood Shortbow", text: "1d6; (20/100/200)m Range; Reload (1); 2H", subs: ["Includes 12 Steel Splitting or Slashing Arrows (+1 dmg)"]},
+                    {name: "Wood Longbow", text: "1d8; (10/150/250)m Range; Reload (2); 2H", subs: ["Includes 12 Steel Splitting or Slashing Arrows (+1 dmg)"]},
+                    {text: "Also has:"},
+                    {name: "Leather Armor", text: "AR 1 / Fire 1; Light, Partial"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Aimed Shot (2 SP)", text: "The Archer may add their Perception bonus to the damage of their next aimed ranged attack. If this attack has stacked the maximum amount of aim bonuses (+30), they double their Perception bonus."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Rapid Reload", text: "Reduce Reload trait by 1."},
+                    {name: "Eye of Vengeance", text: "Treat target\u2019s WT as being 1 lower when resolving ranged attacks."},
+                    {name: "Precise", text: "The Archer can make Precision Strikes without the associated penalty."},
+                ]},
+        ],
+    },
+    "Hunter": {
+        name: "Hunter",
+        flavour: "Hunters track their prey using a guile and precision honed by their experience with previous prey. Many make their living by selling the spoils of their quarries, like hide, meat, and anything they might not be able to make use of.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "30"], ["Agility", "45"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "45"], ["Personality", "30"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "10"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "-"], ["Evade", "55"], ["Observe", "75"], ["Stealth", "65"], ["Knowledge", "40"], ["Social", "40"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Survival", text: "70"},
+                    {name: "Profession [Animal Trainer]", text: "60"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel Longsword", text: "1d8(1d10)+1; Slashing; Reach 2m, 1.5H"},
+                    {name: "Steel Dagger", text: "1d4+1; Slashing, Exploit Weakness, Thrown (5/10/15), Small; Reach 1m, 1H"},
+                    {text: "Additionally, may have one of:"},
+                    {name: "Wood Shortbow", text: "1d6; (20/100/200)m Range; Reload (1); 2H", subs: ["Includes 12 Steel Splitting or Slashing Arrows (+1 dmg)"]},
+                    {name: "Wood Longbow", text: "1d8; (10/150/250)m Range; Reload (2); 2H", subs: ["Includes 12 Steel Splitting or Slashing Arrows (+1 dmg)"]},
+                    {text: "Also has:"},
+                    {name: "Fur Armor", text: "AR 1 / Frost 1; Light, Partial"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Aimed Shot (2 SP)", text: "The Hunter may add their Perception bonus to the damage of their next aimed ranged attack. If this attack has stacked the maximum amount of aim bonuses (+30), they double their Perception bonus."},
+                    {name: "Expert Tracking (1 SP)", text: "When tracking a target, the Hunter may reroll a failed Stealth test."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Eye of Vengeance", text: "Treat target\u2019s WT as being 1 lower when resolving ranged attacks."},
+                    {name: "Invisible", text: "Survival tests made to track the character suffer a -20 penalty."},
+                    {name: "Precise", text: "The Archer can make Precision Strikes without the associated penalty."},
+                ]},
+        ],
+    },
+    "Bounty Hunter": {
+        name: "Bounty Hunter",
+        flavour: "A Bounty Hunter specializes in immobilizing a target and bringing them in alive in exchange for a reward with local beneficiaries.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "30"], ["Agility", "45"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "45"], ["Personality", "30"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "10"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "-"], ["Evade", "55"], ["Observe", "75"], ["Stealth", "65"], ["Knowledge", "40"], ["Social", "40"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel Longsword", text: "1d8(1d10)+1; Slashing; Reach 2m, 1.5H"},
+                    {name: "Steel Dagger", text: "1d4+1; Slashing, Exploit Weakness, Thrown (5/10/15), Small; Reach 1m, 1H"},
+                    {text: "Additionally, may have one of:"},
+                    {name: "Wood Shortbow", text: "1d6; (20/100/200)m Range; Reload (1); 2H", subs: ["Includes 12 Steel Splitting or Slashing Arrows (+1 dmg)"]},
+                    {name: "Wood Longbow", text: "1d8; (10/150/250)m Range; Reload (2); 2H", subs: ["Includes 12 Steel Splitting or Slashing Arrows (+1 dmg)"]},
+                    {text: "Also has:"},
+                    {name: "Iron Armor", text: "AR 3; Medium, Partial"},
+                    {name: "Bola", text: "Thrown (5/10/15), Snare, 1H"},
+                    {name: "Net", text: "Thrown (3/4/5), Entangling; Reach 2m, 1H"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Aimed Shot (2 SP)", text: "The Bounty Hunter may add their Perception bonus to the damage of their next aimed ranged attack. If this attack has stacked the maximum amount of aim bonuses (+30), they double their Perception bonus."},
+                    {name: "Shackling Shot (1 SP)", text: "The Bounty Hunter\u2019s next attack with a bow gains the Snare quality."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Rapid Reload", text: "Reduce Reload trait by 1."},
+                    {name: "Eye of Vengeance", text: "Treat target\u2019s WT as being 1 lower when resolving ranged attacks."},
+                    {name: "Precise", text: "The Archer can make Precision Strikes without the associated penalty."},
+                ]},
+        ],
+    },
+    "Rogue": {
+        name: "Rogue",
+        flavour: "Rogues are adventurers and opportunists with a gift for getting in and out of trouble. Relying variously on charm and dash, blades and business sense, they thrive on conflict and misfortune, trusting to their luck and cunning to survive.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "30"], ["Agility", "45"], ["Intelligence", "35"], ["Willpower", "30"], ["Perception", "40"], ["Personality", "45"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "35"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "-"], ["Evade", "75"], ["Observe", "70"], ["Stealth", "75"], ["Knowledge", "55"], ["Social", "65"], ["Physical", "45"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Persuade", text: "75"},
+                    {name: "Deceive", text: "75"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel Shortsword", text: "1d6+1; Slashing, Exploit Weakness; Reach 1m, 1H"},
+                    {name: "Steel Rapier", text: "1d6+1; Slashing, Exploit Weakness, Dueling Weapon; Reach 2m, 1H"},
+                    {text: "Also has:"},
+                    {name: "Superior Full Leather Armor", text: "AR 3, Fire 1; Light"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Dodging Dash (1 SP)", text: "The Rogue moves rapidly, doubling their Speed for this turn. Additionally, they imposes a -20 penalty to all attacks of opportunity made against them."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Assassin Strike", text: "If the character successfully inflicts damage with an attack (after mitigation) then the target of that attack cannot make an attack of opportunity against the character during that turn."},
+                    {name: "Fleet Footwork", text: "The rogue moves at normal speed when hidden and can evade as a free action until they fail. Once they fail an evade test after hiding, evading costs the normal 1 AP until they successfully hide again."},
+                    {name: "Charlatan", text: "May use Deceive in place of Commerce."},
+                ]},
+        ],
+    },
+    "Scholar": {
+        name: "Scholar",
+        flavour: "Scholars are the learned elite. Their studies sometimes take them outside the safety of their universities and into the wilds of Tamriel.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "50"], ["Willpower", "30"], ["Perception", "35"], ["Personality", "35"], ["Morale", "5"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "50"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "10"], ["Magic", "-"], ["Evade", "30"], ["Observe", "45"], ["Stealth", "15"], ["Knowledge", "90"], ["Social", "35"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Investigate", text: "80"},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Big Words", text: "The character can use the Lore skill in place of the Deceive skill in appropriate situations (GM discretion)."},
+                    {name: "Attention to Detail", text: "The character can use the Investigate skill to oppose attempts to deceive them."},
+                ]},
+        ],
+    },
+    "Scout": {
+        name: "Scout",
+        flavour: "Scouts rely on stealth to survey routes and opponents, using ranged weapons and skirmish tactics when forced to fight.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "40"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "40"], ["Personality", "30"], ["Morale", "10"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "11"], ["Magicka", "30"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "-"], ["Evade", "50"], ["Observe", "70"], ["Stealth", "70"], ["Knowledge", "30"], ["Social", "30"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Athletics", text: "80"},
+                    {name: "Acrobatics", text: "80"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Wood Shortbow", text: "1d6; Reload(1), Range(20/100/200); 2H", subs: ["Includes 12 Iron Splitting or Slashing Arrows"]},
+                    {name: "Steel Dagger", text: "1d4+1; Slashing, Exploit Weakness, Thrown (5/10/15), Small; Reach 1m, 1H"},
+                    {name: "Partial Leather Armor", text: "1 AR, Light"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Quick Shot (1 SP)", text: "The Scout ignores the -20 ranged shot penalty when Dashing imposed by Guerrilla Tactics."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Guerrilla Tactics", text: "The Scout moves at their normal speed when hidden, and also reduces Reload by 1. Additionally, they can make a free ranged attack at a -20 penalty when they Dash."},
+                ]},
+        ],
+    },
+    "Sorcerer": {
+        name: "Sorcerer",
+        flavour: "Though spellcasters by vocation, sorcerers rely most on summoning and enchantments. They are greedy for magic scrolls, rings, armor and weapons, and commanding undead and Daedric servants gratifies their egos.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "30"], ["Intelligence", "50"], ["Willpower", "50"], ["Perception", "35"], ["Personality", "30"], ["Morale", "60"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "11"], ["Magicka", "50"], ["Stamina", "3"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "70"], ["Magic", "80"], ["Evade", "30"], ["Observe", "45"], ["Stealth", "15"], ["Knowledge", "70"], ["Social", "40"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Partial Steel Armor", text: "4 AR, Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Oblivion Carapace (1-3 SP)", text: "The Sorcerer immediately summons a full suit of Daedric Armor as Secondary Action. This armor lasts for a number of turns equal to the SP spent up to a maximum of 3."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Sorcerer can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Bladecaller", text: "Slashing, Splitting, and Crushing extra damage values are all 5 on all Bound Weapons."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Conjure [Any Weapon] 4", text: "29 MP; Upkeep; [Chosen Weapon] (with ammo) appears in the caster\u2019s hands for 1 round. This weapon is not loaded when summoned, but the first reload action AP cost is reduced by 1."},
+                    {name: "Sunder Binding 3", text: "7 MP; Direct; Target within 50m with the Summoned trait makes an opposed Wp test vs the caster at +0 or be sent back to the place from whence it came."},
+                    {name: "Conjure [Armor] 3", text: "22 MP; Upkeep; Summons Inferior Full Daedric armor of one of the following: both arms, both legs, body, or head."},
+                ]},
+        ],
+    },
+    "Spellsword": {
+        name: "Spellsword",
+        flavour: "Spellswords are spellcasting specialists trained to support imperial troops in skirmish and in battle. Veteran spellswords are prized as mercenaries, and well-suited for careers as adventurers and soldiers-of-fortune.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "40"], ["Intelligence", "40"], ["Willpower", "40"], ["Perception", "35"], ["Personality", "35"], ["Morale", "60"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "12"], ["Magicka", "40"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "60"], ["Evade", "50"], ["Observe", "55"], ["Stealth", "20"], ["Knowledge", "60"], ["Social", "55"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Steel Longsword", text: "1d8(1d10)+1; Slashing; Reach 2m, 1H"},
+                    {name: "Partial Steel Armor", text: "AR 4, Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Shielding Ward (2 SP)", text: "The Spellsword may activate this ability after casting the Ward spell. This causes the Ward spell to affect up to 2 other creatures within 3m of the Spellsword\u2019s choosing. This effect lasts until the end of the Spellsword\u2019s next turn or until the Ward breaks."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Spellsword can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Spellsword", text: "Cast magic with 1 hand without penalty."},
+                    {name: "Brawler", text: "+1 DoS when engaging in melee combat with 2+ opponents."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Ward 3", text: "7 MP; Defensive Overload; Does not provoke Attack of Opportunity. Generate shield with 6 Magical and Physical BR. Cannot Power Block."},
+                    {name: "Shield 3", text: "9 MP; Upkeep, Defensive Overload; Target character within 50m gains a magical barrier with 3 HP for physical damage for 1 round. (See original spell for details)."},
+                    {name: "Armor 3", text: "17 MP; Upkeep, Defensive Overload; Caster gains 3 AR for 1 minute."},
+                    {name: "[Any Type] Bite 3", text: "7 MP; 1d8 [type]; Attack, Overload (+WpB to Damage), Melee (1m)"},
+                    {name: "[Any Type] Cloak 3", text: "11 MP; 1d8 [type]; Upkeep, Overload (+WpB to dmg); Deals 1d8 [type] damage to targets within 1m at the end of the caster\u2019s turn."},
+                    {name: "Heal 2", text: "5 MP; Caster regains 4 HP"},
+                    {name: "Healing Touch 2", text: "5 MP; Direct; Target within 1m regains 4 HP"},
+                ]},
+        ],
+    },
+    "Thief": {
+        name: "Thief",
+        flavour: "Profiting from the losses of others is their love. Able to be swift in shadow, and crafty in bartering. Locks are enemies, and lock-picks are their swords.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "40"], ["Agility", "45"], ["Intelligence", "35"], ["Willpower", "35"], ["Perception", "40"], ["Personality", "40"], ["Morale", "35"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "10"], ["Magicka", "35"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "45"], ["Magic", "-"], ["Evade", "65"], ["Observe", "70"], ["Stealth", "75"], ["Knowledge", "45"], ["Social", "50"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Acrobatics", text: "75"},
+                    {name: "Subterfuge", text: "85"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Wood Shortbow", text: "1d6; Reload(1); Range(20/100/200), 2H", subs: ["Includes 12 Steel Splitting or Slashing Arrows (+1 dmg)"]},
+                    {name: "Steel Shortsword", text: "1d6+1; Slashing, Exploit Weakness; Reach 1m, 1H"},
+                    {name: "10 Steel Darts", text: "1d4+1. Thrown, Small, Range (5/10/15)"},
+                    {name: "Partial Leather Armor", text: "1 AR / 1 fire, Light"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Stash and Slash (1 SP)", text: "After a melee attack that deals damage, as a Free Action, the Thief may roll Subterfuge against the target\u2019s Observe in order to grab something that is on the target\u2019s person, such as a potion hanging off their belt or a coin pouch. The desired item has to be within reach and not stashed anywhere that would require extensive effort to acquire, such as inside a backpack."},
+                    {name: "Dodging Dash (1 SP)", text: "The Thief moves rapidly, doubling their Speed for this turn. Additionally, they imposes a -20 penalty to all attacks of opportunity made against them."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Ghost", text: "This character moves at normal speed when hidden."},
+                    {name: "Sneak Attack", text: "The character deals +3 damage to successful attacks if they were hidden from the target when they made the attack."},
+                ]},
+        ],
+    },
+    "Warrior": {
+        name: "Warrior",
+        flavour: "Warriors are the professional men-at-arms, soldiers, mercenaries, and adventurers of Tamriel, trained with various weapons and armor styles, conditioned by long marches, and hardened by ambush, skirmish and battle.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "45"], ["Agility", "40"], ["Intelligence", "30"], ["Willpower", "35"], ["Perception", "35"], ["Personality", "30"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "11"], ["Magicka", "30"], ["Stamina", "4"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "-"], ["Evade", "50"], ["Observe", "55"], ["Stealth", "20"], ["Knowledge", "30"], ["Social", "40"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Steel War Axe", text: "1d8+1; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Steel Longsword", text: "1d8+1; Slashing, Reach 2m, 1H"},
+                    {name: "Steel Mace", text: "1d8+1; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {name: "Steel Spear", text: "1d8(1d10); Impaling, Unwieldy; Reach 2m, 1.5H"},
+                    {text: "Also has:"},
+                    {name: "Full Steel Armor", text: "6 AR; Heavy, Full"},
+                    {name: "Steel Shield", text: "BR 10 / MR 5; Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Full Circle Swing (1 AP + 2 SP)", text: "The Warrior swings their weapon in a 360 degree arc around themselves as part of a Primary Melee Attack Action. This strikes all targets in reach. The Warrior rolls once for the attack, but damage is resolved separately against each target."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Brawler", text: "+1 DoS to Combat tests when engaged in melee with 2+ opponents."},
+                    {name: "Arms Master", text: "The character never suffers the usual -20 untrained penalty for using weapons not included in one of their Combat Styles."},
+                    {name: "Weapons Prowess", text: "The Warrior may have any kind of weapon talent appropriate to their specific weapon they are using."},
+                ]},
+        ],
+    },
+    "Witchhunter": {
+        name: "Witchhunter",
+        flavour: "Witch Hunters are dedicated to rooting out and destroying the perverted practices of dark cults and profane sorcery. They train for martial, magical, and stealthy war against vampires, witches, warlocks and necromancers.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "35"], ["Agility", "40"], ["Intelligence", "40"], ["Willpower", "45"], ["Perception", "40"], ["Personality", "25"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "11"], ["Magicka", "40"], ["Stamina", "3"], ["Initiative", "+12"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "65"], ["Evade", "60"], ["Observe", "70"], ["Stealth", "60"], ["Knowledge", "60"], ["Social", "35"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Alchemy", text: "70"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Wooden Crossbow", text: "1d10, Complex, Reload (2, min 1), Crushing (4), Range (20/100/250)", subs: ["Includes 12 Iron Splitting or Slashing Arrows"]},
+                    {name: "Steel Shortsword", text: "1d6+1; Slashing, Exploit Weakness; Reach 1m, 1H"},
+                    {name: "Steel Mace", text: "1d8+1; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {name: "Full Leather Armor", text: "3 AR / Fire 1; Medium, Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Mage Slayer (1 AP)", text: "As a reaction, the Witch Hunter can make an attack against any opponent within their range that casts a spell."},
+                    {name: "Refresh (1 AP + 1 SP)", text: "The Witchunter can drink a potion which either refreshes their MP to full or regain all of the casts for their Spellcaster trait as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Occultist\u2019 Bane", text: "The Witch Hunter reduces the Reload trait by 1, and gains +1 DoS when in melee with 1 opponent. Lastly, during a dash action, they may make a free ranged attack with a -20 penalty to the roll."},
+                    {name: "Favored Enemy(The Cursed, Dark Arts Practitioners)", text: "Gains a +10 to any tests made to bring harm to their preferred enemy. Examples include vampires, lycanthropes, witches, warlocks, and necromancers."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Conjure [Any Weapon] 2", text: "15 MP; Upkeep; [Chosen Weapon] (with ammo) with the Primitive quality appears in the caster\u2019s hands for 1 round. This weapon is not loaded when summoned, but the first reload action AP cost is reduced by 1."},
+                    {name: "Dispel 2", text: "9 MP; Remove all magical effects from any source of level 2 or lower from the caster. Constant enchantments reactivate after 1d4 rounds."},
+                    {name: "Reflect 2", text: "7 MP; Upkeep; If the caster would be hit by a spell, roll a d10. If the result is 2 or lower, resolve the spell against the original caster. Lasts 1 round."},
+                    {text: "Summon Daedra spells for the following. Each spell has Upkeep, see original spell for details.", subs: [
+                            "Daedrat: 7 MP; Upkeep, Mindlock(1)",
+                            "Scamp: 8 MP; Upkeep, Mindlock (1)",
+                            "Banekin: 9 MP; Upkeep, Mindlock (1)",
+                            "Hell Hound: 12 MP; Upkeep, Mindlock (1)",
+                            "Clannfear: 13 MP; Upkeep, Mindlock (1)",
+                            "Flame Atronach: 16 MP; Upkeep, Mindlock (2)",
+                        ]},
+                ]},
+        ],
+    },
+    "Slave": {
+        name: "Slave",
+        flavour: "Slaves are found throughout Tamriel, though the Empire has outlawed slavery in most provinces.",
+        tags: "Any Race, Humanoid; Minor; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "35"], ["Agility", "30"], ["Intelligence", "25"], ["Willpower", "25"], ["Perception", "30"], ["Personality", "25"], ["Morale", "5"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "25"], ["Stamina", "3"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "-"], ["Evade", "30"], ["Observe", "40"], ["Stealth", "15"], ["Knowledge", "35"], ["Social", "25"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Additional Skills", kind: "list", items: [
+                    {name: "Profession [Any]", text: "70"},
+                ]},
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Any combination of:"},
+                    {name: "Pickaxe", text: "1d4; Splitting; 2H"},
+                    {name: "Woodsman\u2019s axe", text: "1d4; Splitting; 2H"},
+                    {name: "Shackles", text: "While wearing these, Encumbrance level is always 1 level higher and Combat Style is TN is lowered by 10"},
+                    {name: "Enchanted Shackles", text: "While wearing these, Encumbrance level is always 1 level higher and Combat Style TN is lowered by 10, Constant drain Magicka 10pts/round."},
+                ]},
+        ],
+    },
     "Barbarian": {
         name: "Barbarian",
         flavour: "Barbarians are the proud, savage warrior elite of the plains nomads, mountain tribes and sea reavers. They tend to be brutal and direct, lacking civilized graces, but they revel in heroic feats, and excel in fierce and frenzied combat.",
