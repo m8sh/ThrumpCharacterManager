@@ -48,10 +48,486 @@ type Statblock = {
     tags: string,
     stats: {group: string, rows: [string, string][]}[],
     sections: {head: string, kind: "list" | "prose" | "table",
-        items: {name?: string, text?: string, subs?: string[]}[], cols?: string[], rows?: string[][]}[],
+        items: {name?: string, text?: string, subs?: (string | {text: string, subs: string[]})[]}[],
+        cols?: string[], rows?: string[][]}[],
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Bonelord": {
+        name: "Bonelord",
+        flavour: "A four armed revenant, purposefully assembled from the bones of the sacred dead. They are often found protecting the ancestral tombs of Morrowind.",
+        tags: "Bonelord, Undead; Average; White Soul (400)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "45"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "40"], ["Perception", "20"], ["Personality", "5"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "11"], ["Magicka", "30"], ["Stamina", "4"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "40"], ["Magic", "60"], ["Evade", "20"], ["Observe", "30"], ["Stealth", "20"], ["Knowledge", "30"], ["Social", "-"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Skeletal Claws", text: "1d8; Slashing; Reach 1m"},
+                    {text: "May also have:"},
+                    {name: "Paired Ritual Daggers", text: "1d4+1; Slashing, Exploit Weakness, Thrown (5/10/15), Small; Reach 1m, 1H; wields one in each hand"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Bladestorm (1 SP)", text: "As part of a melee weapon attack, a Bonelord can strike up to three targets in Reach as a single action. This counts as a single attack."},
+                    {name: "Refresh Spells (1 SP)", text: "The Bonelord can, as a free action, refresh MP equal to half their max MP. If they have the optional Spellcaster trait, they refresh all of their spell uses instead."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Skeletal"},
+                    {name: "Undead"},
+                    {name: "Ancestor\u0027s Wrath", text: "Any time the Bonelord spends an AP to perform an action, it can resolve a second action afterwards for free. Additionally, a Bonelord can make up to 4 attacks per round."},
+                    {name: "Diseased (+20)", text: "If this creature deals at least one point of damage after mitigation to another character with their natural weapons then that character must test Endurance +20 or contract a Common Disease."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                    {name: "Immunity (Normal Weapons)"},
+                    {name: "Resistance (Frost, Shock, 4)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Fire Bite 2", text: "5 MP, 1d6 Fire, M Attack (1m), Overload (+WB to Dmg)"},
+                    {name: "Fire Bite 3", text: "7 MP,1d8 Fire, M Attack (1m), Overload (+WB to Dmg)"},
+                    {name: "Ward 3", text: "7 MP; Defensive Overload; Does not provoke Attack of Opportunity. Generate shield with 6 Magical and Physical BR. Cannot Power Block."},
+                    {name: "Fatigue 3", text: "10 MP, +0 Endurance, Fail, Lose 1 SP."},
+                ]},
+            {head: "Encountering Bonelords", kind: "prose", items: [
+                    {text: "Bonelords are complex undead constructs created by Dunmer priests and sorcerers, using sacred rites to raise holy servants to guard the ancestral tombs and burial grounds of their people. Creating a bonelord is a great deal of work, and requires multiple intact skeletons, which are combined to create a multi-armed monstrosity that attacks with unrivaled speed and ferocity, and is imbued with basic spells."},
+                    {text: "Bonelords patrol their stations for the entirety of their existence; when first created, bonelords are bound to a sacred location forever, which is often also the site of their fabrication. Nothing, not even the commanding will of their creator can remove a bonelord from their post. Once given a charge, they will defend it for time unending."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A Bonelord carries simple talismans and sacred chimes, worth d10 drakes."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can harvest and powder DoS doses of the Bonelord\u2019s sacred bonemeal, which are Very Rare Alteration ingredients."},
+                ]},
+        ],
+    },
+    "Ancient Bonelord": {
+        name: "Ancient Bonelord",
+        flavour: "These four-armed revenants are imbued with powerful magics that have allowed them to serve as the guardians of Dunmer ancestral tombs beyond living memory.",
+        tags: "Bonelord, Undead; Major; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "80"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "40"], ["Perception", "20"], ["Personality", "5"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "40"], ["Wound Thr.", "15"], ["Magicka", "30"], ["Stamina", "8"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "40"], ["Magic", "80"], ["Evade", "20"], ["Observe", "30"], ["Stealth", "20"], ["Knowledge", "30"], ["Social", "-"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Skeletal Claws", text: "1d8; Slashing; Reach 1m"},
+                    {text: "May also have:"},
+                    {name: "Paired Ritual Daggers", text: "1d4+1; Slashing, Exploit Weakness, Thrown (5/10/15), Small; Reach 1m, 1H; wields one in each hand"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Bladestorm (1 SP)", text: "As part of a melee weapon attack, a Bonelord can strike up to three targets in Reach as a single action. This counts as a single attack."},
+                    {name: "Refresh Spells (1 SP)", text: "The Bonelord can, as a free action, refresh MP equal to half their max MP. If they have the optional Spellcaster trait, they refresh all of their spell uses instead."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Skeletal"},
+                    {name: "Undead"},
+                    {name: "Ancient Fury", text: "Any time the Ancient Bonelord spends an AP to perform an action, it can resolve a second and third action afterwards for free. Additionally, a Bonelord can make up to 6 attacks per round."},
+                    {name: "Diseased (+20)", text: "Undead with this trait are diseased, and if this creature deals at least one point of damage after mitigation to another character with their natural weapons then that character must test Endurance +20 or contract a Common Disease."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                    {name: "Immunity (Normal Weapons)"},
+                    {name: "Resistance (Frost, Shock, 4)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Fire Bite 2", text: "5 MP; 1d6 Fire; M Attack (1m), Overload (+WB to Dmg)"},
+                    {name: "Fire Bite 3", text: "7 MP; 1d8 Fire; M Attack (1m), Overload (+WB to Dmg)"},
+                    {name: "Ward 3", text: "7 MP; Defensive Overload; Does not provoke Attack of Opportunity. Generate shield with 6 Magical and Physical BR. Cannot Power Block."},
+                    {name: "Fatigue 3", text: "10 MP; +0 Endurance, Fail, Lose 1 SP."},
+                ]},
+            {head: "Encountering Ancient Bonelords", kind: "prose", items: [
+                    {text: "Ancient Bonelords were created in ages long past by powerful Dunmer priests and sorcerers, principally to guard the tombs of the most sacred and revered dead."},
+                    {text: "The knowledge of how to make these powerful undead constructs has been lost to time, however this does not stop Ancient Bonelords from carrying out their sacred duties. Ancient Bonelords will patrol the halls of their tombs for their entire existence, falling upon intruders with speed and ferocity unmatched by even the most terrible beasts."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "An Ancient Bonelord carries simple talismans and sacred chimes, worth d10 drakes."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can harvest and powder DoS doses of the Bonelord\u2019s sacred bonemeal, which are Very Rare Alteration ingredients."},
+                ]},
+        ],
+    },
+    "Bonewalker": {
+        name: "Bonewalker",
+        flavour: "Bonewalkers are hulking, zombie like revenants that can inflict powerful curses. They typically guard tombs.",
+        tags: "Bonewalker; Undead; Average; White Soul (300)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "50"], ["Agility", "30"], ["Intelligence", "30"], ["Willpower", "40"], ["Perception", "20"], ["Personality", "5"], ["Morale", "45"]]},
+            {group: "Attributes", rows: [["Hit Points", "35"], ["Wound Thr.", "13"], ["Magicka", "35"], ["Stamina", "5"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "5m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "60"], ["Evade", "30"], ["Observe", "20"], ["Stealth", "10"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Rending Claws", text: "1d4; Splitting; Reach 1m"},
+                    {name: "Natural Toughness (2)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Paralyzing Touch (1 AP + 2 SP)", text: "The Bonewalker magically paralyzes a target within 1m as an attack. The target can attempt to resist Paralysis with a -20 Willpower test."},
+                    {name: "Drain Strength / Endurance (1 AP + 1 SP)", text: "The Bonewalker targets a creature within 50m and magically drains either their Strength or Endurance as an attack. The target suffers a -10 on all tests that use the afflicted Characteristic for 1 minute, and the bonewalker gains a +10 on all tests that use the afflicted Characteristic for the same amount of time. This effect is cumulative. The target can attempt to resist the Drain with a -20 Willpower test."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Diseased (+20)", text: "If this creature deals at least one point of damage after mitigation to another character with their natural weapons then that character must test Endurance +20 or contract a Common Disease."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Grabbing", text: "A Bonewalker\u0027s successful melee attacks automatically initiate a Grapple with the target."},
+                    {name: "Resistance (Frost, Shock, 2)", text: "Characters with this trait are resistant to Shock and Frost Damage. They reduce damage of Shock and Frost by 2 after any other mitigation and gain a +20 bonus to tests made to resist non-damaging Shock and Frost effects."},
+                    {name: "Spiked Hide", text: "Any creature Grappling or Grappled by a Bonewalker take d4 damage on their turn that ignores armor."},
+                ]},
+            {head: "Encountering Bonewalkers", kind: "prose", items: [
+                    {text: "Bonewalkers are found guarding tombs in Morrowind and may be summoned by magicians. The bonewalker inspires dread through the terrible curses it can lay."},
+                    {text: "Large and heavily altered compared to the typical undead construct, Bonewalkers are revenant ancestors of Dunmer who guard the hallowed burial grounds and are created from the sacred dead to watch over their hallowed ground. The bonewalker attacks with infectious claws and magics that allow them to drain their foes of their strength and endurance."},
+                    {text: "These traits mean that Bonewalkers make for a deadly foe, and a welcome ally in the right circumstances."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +10 Alchemy test over a Short Rest, a character can harvest and powder DoS doses of the bonewalker\u2019s bonemeal, which are Common Alteration ingredients."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can harvest and preserve a sample of Mort Flesh, which is an Uncommon Destruction ingredient. If the character fails this test, they instead contract Common Disease."},
+                ]},
+        ],
+    },
+    "Greater Bonewalker": {
+        name: "Greater Bonewalker",
+        flavour: "Stronger and more deadly than typical Bonewalkers, these hulking undead abominations can cripple a foes abilities and levy extremely deleterious curses upon them.",
+        tags: "Bonewalker, Undead; Average; White Soul (400)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "60"], ["Endurance", "50"], ["Agility", "30"], ["Intelligence", "30"], ["Willpower", "40"], ["Perception", "20"], ["Personality", "5"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "45"], ["Wound Thr.", "15"], ["Magicka", "35"], ["Stamina", "5"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "5m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "60"], ["Evade", "30"], ["Observe", "20"], ["Stealth", "10"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Rending Claws", text: "1d4; Splitting; Reach 1m"},
+                    {name: "Natural Toughness (2)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Paralyzing Touch (1 AP + 2 SP)", text: "The Greater Bonewalker magically paralyzes a target within 1m as an attack. The target can attempt to resist Paralysis with a -20 Willpower test."},
+                    {name: "Curse of the Ancients (1 AP + 1 SP)", text: "The Greater Bonewalker targets a creature within 50m and magically drains either their Strength or Endurance as an attack. The target suffers a -10 on all tests that use the afflicted Characteristic, and the bonewalker gains a +10 on all tests that use the afflicted Characteristic. This effect is cumulative. The target can attempt to resist the Drain with a -20 Willpower test. This affect can only be removed by a level 4 or greater Dispel effect."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Diseased (+20)", text: "If this creature deals at least one point of damage after mitigation to another character with their natural weapons then that character must test Endurance +20 or contract a Common Disease."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Grabbing", text: "A Bonewalker\u0027s successful melee attacks automatically initiate a Grapple with the target."},
+                    {name: "Resistance (Frost, Shock, 2)", text: "Characters with this trait are resistant to Shock and Frost Damage. They reduce damage of Shock and Frost by 2 after any other mitigation and gain a +20 bonus to tests made to resist non-damaging Shock and Frost effects."},
+                    {name: "Spiked Hide", text: "Any creature Grappling or Grappled by a Bonewalker take d4 damage on their turn that ignores armor."},
+                ]},
+            {head: "Encountering Greater Bonewalkers", kind: "prose", items: [
+                    {text: "Greater Bonewalkers are a stronger, sturdier cousins of their more common counterpart. Their magical might can cripple victims, stunting their physical capabilities outright rather than merely sapping them temporarily. Unlike the curses of the lesser Bonewalker, the greater Bonewalker\u2019s curses are permanent until dispelled by a skilled healer."},
+                    {text: "These foul undead are typically found guarding the tombs of particularly powerful or influential Dunmer houses, however those skilled in necromancy are known to summon them to serve their profane wills."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +10 Alchemy test over a Short Rest, a character can harvest and powder DoS doses of the bonewalker\u2019s bonemeal, which are Common Alteration ingredients."},
+                    {text: "On a +0 Alchemy test over a Short Rest, a character can harvest and preserve a sample of Mort Flesh, which is an Uncommon Destruction ingredient. If the character fails this test, they instead contract Common Disease."},
+                ]},
+        ],
+    },
+    "Bonewolf": {
+        name: "Bonewolf",
+        flavour: "",
+        tags: "Undead; Minor; White Soul (120)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "25"], ["Endurance", "25"], ["Agility", "40"], ["Intelligence", "10"], ["Willpower", "20"], ["Perception", "30"], ["Personality", "5"], ["Morale", "60"]]},
+            {group: "Attributes", rows: [["Hit Points", "13"], ["Wound Thr.", "6"], ["Magicka", "10"], ["Stamina", "2"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Small"]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "-"], ["Evade", "50"], ["Observe", "50"], ["Stealth", "50"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "35"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Bite", text: "1d6; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Latch On (1 SP)", text: "If the creature successfully Bites a target which results in a grapple, it latches on as a free action. As a result, the grappled character receives a -20 penalty to their attempts to break free. Alternatively, the grappled target can instead end the grapple as a free action. In doing so, they suffer the Bleeding (2) Condition and must test for Disease."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Skeletal"},
+                    {name: "Undead"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Diseased (+20)", text: "If this creature deals at least one point of damage after mitigation to another character with their natural weapons then that character must test Endurance +20 or contract a Common Disease."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Quadruped"},
+                    {name: "Teamwork", text: "The character adds a bonus degree of success to any successful Combat Style tests made to attack or defend against opponents in melee range as long as that opponent is also within melee range of an ally who also has this talent."},
+                    {name: "Unrelenting", text: "Enemies within melee range of the character cannot take the disengage action."},
+                ]},
+            {head: "Encountering Bonewolves", kind: "prose", items: [
+                    {text: "Bonewolves are the reanimated skeletons of wolves. Beyond the obvious undead features Bonewolves are rather similar to their previous living forms, as such most strategies used in fighting wolves can be used against bonewolves as well."},
+                    {text: "Bonewolves retain much of the cunning they had in life, and attack in violent packs, unfettered by notions of self preservation, driven on by an insatiable hunger for flesh. They will attack as a pack, strategically crippling and dragging superior foes to the ground with numbers, wit, and ferocity."},
+                    {text: "Bonewolves can be encountered in and around the lairs of potent and clever necromancers, wise enough to create the bonewolves as a first line of security. Bonewolves will typically patrol the region immediately surrounding their master\u2019s lair, which they consider their den, and treat much as a wolf would be expected to treat their own territory. As such, they become violently territorial and will attack on sight, and will hound their prey for miles, restlessly."},
+                    {text: "A necromancer will also use bonewolves as a means to hunt for food to provide the necromancer with much needed sustenance; while the areas of meat immediately in contact with the bonewolves\u2019 jaws will certainly necrotize and spoil, the rest of the flesh is salvageable, and provides a necromancer with a reliable food supply that they doesn\u2019t need to lift a finger to acquire."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "Over a Short Rest, a character can test Alchemy +10 to grind up DoS doses of bonemeal, which are Common Alteration ingredients."},
+                ]},
+        ],
+    },
+    "Death Hound": {
+        name: "Death Hound",
+        flavour: "Death Hounds are monstrous, undead canines who can often be found in the company of vampires.",
+        tags: "Undead; Minor; White Soul (150)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "25"], ["Endurance", "30"], ["Agility", "40"], ["Intelligence", "10"], ["Willpower", "20"], ["Perception", "30"], ["Personality", "5"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "7"], ["Magicka", "10"], ["Stamina", "3"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "-"], ["Evade", "40"], ["Observe", "50"], ["Stealth", "40"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Chilling Bite", text: "1d6 Frost; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Latch On (1 SP)", text: "If the creature successfully Bites a target which results in a grapple, it latches on as a free action. As a result, the grappled character receives a -20 penalty to their attempts to break free. Alternatively, the grappled target can instead end the grapple as a free action. In doing so, they suffer the Bleeding (2) Condition and must test for Disease."},
+                    {name: "Grave Fang (1 SP)", text: "After dealing damage with a Chilling Bite, a Death Hound can spend an SP to immediately drain 1 SP from the target."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Strong Jaws", text: "A Bite attack made by this character that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Diseased (+0, Sanguinare Vampiris)", text: "If this creature deals at least one point of damage after mitigation to another character with their natural weapons then that character must test Endurance +0 or contract Sanguinare Vampiris."},
+                    {name: "Dark Sight"},
+                    {name: "Quadruped"},
+                    {name: "Teamwork", text: "The character adds a bonus degree of success to any successful Combat Style tests made to attack or defend against opponents in melee range as long as that opponent is also within melee range of an ally who also has this talent."},
+                    {name: "Unrelenting", text: "Enemies within melee range of the character cannot take the disengage action."},
+                ]},
+            {head: "Encountering Death Hounds", kind: "prose", items: [
+                    {text: "Death Hounds are a type of undead canine found across Tamriel as guard dogs for those who engage in black magic. Vampires seem to be especially fond of using Death Hounds as companions."},
+                    {text: "With its large, bright red eyes, jet-black skin and impressive teeth, the Death Hound makes for an intimidating guard dog, which makes it a popular choice for many aspiring necromancers and vampires."},
+                    {text: "It is unknown to scholarly sources how Death Hounds came into existence, but it is strongly theorized that they are dogs that have been conventionally infected with a canine-strain of Sanguinare Vampiris, or a similar version of vampirism."},
+                    {text: "The Death Hound\u2019s bite is reputedly extremely chilling, and causes flash-frostbite which blackens and brittles the flesh."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "On a +0 Survival test, a character can remove the Death Hound\u2019s hide, worth 20 drakes, over the course of a Short Rest. If the character fails this test, the hide is spoiled, halving its worth."},
+                    {text: "On a +20 Survival test, a character can, over the course of a Long Rest, turn a Death Hound hide into one piece of Full Death Hound Hide armor. Death Hound Hide armor is exactly the same as regular Hide."},
+                    {text: "On a +20 Simple Survival test over a Short Rest, a character can harvest DoS days\u2019 rations of Death Hound meat, which will spoil within a day if not properly preserved. A character must test Endurance +20 when consuming Death Hound meat or else take 1 Frost damage that ignores resistances."},
+                ]},
+        ],
+    },
+    "Draugr Thrall": {
+        name: "Draugr Thrall",
+        flavour: "Draugr are a form of Nord dead found in Skyrim and Solstheim. Buried alive with their masters, they exist in a state between life and death endlessly performing their ancient rites.",
+        tags: "Draugr, Undead; Minor; White Soul (150)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "40"], ["Agility", "30"], ["Intelligence", "10"], ["Willpower", "25"], ["Perception", "30"], ["Personality", "5"], ["Morale", "45"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "10"], ["Magicka", "10"], ["Stamina", "4"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "25"], ["Evade", "30"], ["Observe", "50"], ["Stealth", "30"], ["Knowledge", "10"], ["Social", "5"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Ancient Nord War Axe", text: "1d8; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Ancient Nord Broadsword", text: "1d8; Slashing; Reach 2m, 1H"},
+                    {name: "Ancient Nord Mace", text: "1d8; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {name: "Ancient Nord Spear", text: "1d8(1d10); Impaling, Unwieldy; Reach 2-3m, 1.5H"},
+                    {name: "Ancient Nord Great Axe", text: "1d12; Splitting, Unwieldy, Shield Splitter, Concussive; Reach 3m, 2H"},
+                    {name: "Ancient Nord Maul", text: "1d12; Crushing, Unwieldy, Shield Splitter, Concussive; Reach 2m, 2H"},
+                    {name: "Ancient Nord Greatsword", text: "1d12; Slashing, Concussive; Reach 3m, 2H"},
+                    {name: "Ancient Nord Shortbow", text: "1d6; Reload(1), Range (20/100/200); 2H", subs: ["Includes 24 Ancient Nord Splitting or Slashing Arrows"]},
+                    {text: "Additionally, may have one of:"},
+                    {name: "Partial Ancient Nord Armor", text: "AR 3 / Frost 1; Medium"},
+                    {name: "Full Ancient Nord Armor", text: "AR 4 / Frost 1; Medium"},
+                    {text: "Also may have:"},
+                    {name: "Ancient Nord Shield", text: "BR 9 / MR 5 (Frost 6); Medium"},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Resistance (Frost, 2)"},
+                ]},
+            {head: "Encountering Draugr Thrall", kind: "prose", items: [
+                    {text: "Draugr are the shriveled, restless husks of ancient Nords, dating back to the age when the Dragon Cult ruled over Skyrim. Brought to undeath by the dark magicks of the Dragon Priests, Draugr guard the tombs of their lords and masters for eternity."},
+                    {text: "Draugr can be found guarding ancient Nordic ruins, including haunted barrows, sunken cities, and sprawling temples. Draugr are bound to the will of their Lord, and by extension the Dragon Priests, and will follow their leadership without question or complaint. They have been given everlasting life of questionable quality by their masters, and continue to serve them in their undeath."},
+                    {text: "Draugr typically patrol their burial grounds, or the areas immediately around them, either alone or in small groups. They typically lack the drive or motive to attack settlements, but under the command of a Draugr Lord they may become a roaming, aggressive force that needs no food, rest, or medicine. When encountered in their burial grounds, Draugr will fight ferociously, but will also not hesitate to retreat to better positions, or go to warn the rest of the undead garrison."},
+                    {text: "Draugr are intelligent undead, and as such can plan and strategize, though their greater faculties have mostly been drained away over the centuries, leaving them primitive and easily fooled. However, in the presence of a greater Draugr, even the lowest thralls of the Dragons become something to be feared."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A group of Draugr often carry treasures worth a number of rolls on the Treasure Table determined by the GM."},
+                    {text: "A character can harvest a Draugr\u0027s tongue, which is a Common Destruction ingredient."},
+                ]},
+        ],
+    },
+    "Draugr Wight": {
+        name: "Draugr Wight",
+        flavour: "Draugr Wights are undead minions of the Dragon Cult who were skilled warriors in life. In death, they continue to serve their masters without question or hesitation.",
+        tags: "Draugr, Undead; Minor; White Soul (200)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "40"], ["Agility", "30"], ["Intelligence", "10"], ["Willpower", "25"], ["Perception", "30"], ["Personality", "5"], ["Morale", "45"]]},
+            {group: "Attributes", rows: [["Hit Points", "30"], ["Wound Thr.", "14"], ["Magicka", "10"], ["Stamina", "4"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "25"], ["Evade", "30"], ["Observe", "50"], ["Stealth", "30"], ["Knowledge", "10"], ["Social", "5"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Natural Toughness (2)"},
+                    {text: "Has one of:"},
+                    {name: "Ancient Nord War Axe", text: "1d8; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Ancient Nord Broadsword", text: "1d8; Slashing; Reach 2m, 1H"},
+                    {name: "Ancient Nord Mace", text: "1d8; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {name: "Ancient Nord Spear", text: "1d8(1d10); Impaling, Unwieldy; Reach 2-3m, 1.5H"},
+                    {name: "Ancient Nord Great Axe", text: "1d12; Splitting, Unwieldy, Shield Splitter, Concussive; Reach 3m, 2H"},
+                    {name: "Ancient Nord Maul", text: "1d12; Crushing, Unwieldy, Shield Splitter, Concussive; Reach 2m, 2H"},
+                    {name: "Ancient Nord Greatsword", text: "1d12; Slashing, Concussive; Reach 3m, 2H"},
+                    {name: "Ancient Nord Shortbow", text: "1d6; Reload(1), Range (20/100/200); 2H", subs: ["Includes 24 Ancient Nord Splitting or Slashing Arrows"]},
+                    {text: "Additionally, may have one of:"},
+                    {name: "Partial Ancient Nord Armor", text: "AR 3 / Frost 1; Medium"},
+                    {name: "Full Ancient Nord Armor", text: "AR 4 / Frost 1; Medium"},
+                    {text: "Also may have:"},
+                    {name: "Ancient Nord Shield", text: "BR 9 / MR 5 (Frost 6); Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Cleave (1 SP)", text: "As part of a melee attack with a two handed weapon, a Draugr Wight can strike up to three targets in Reach as a single action. Roll once for the attack."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Resistance (Frost, 2)"},
+                ]},
+            {head: "Encountering Draugr Wights", kind: "prose", items: [
+                    {text: "Draugr Wights are stronger and and more resilient undead servants of the Dragon Cult than the more common Thrall. Much like other Draugr, Wights can be found endlessly patrolling the tombs of their lords in search of intruders and grave robbers."},
+                    {text: "Wights can often be found leading small groups of Thrall, typically under the command of a Draugr Lord, and will follow their orders without hesitation. While countless centuries of undeath have drained their faculties, Wights are not mindless. They make use of simple tactics when in battle and will even retreat to warn others of their kind should a foe prove powerful enough."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A group of Draugr often carry treasures worth a number of rolls on the Treasure Table determined by the GM."},
+                    {text: "A character can harvest a Draugr\u0027s tongue, which is a Common Destruction ingredient."},
+                ]},
+        ],
+    },
+    "Draugr Scourge": {
+        name: "Draugr Scourge",
+        flavour: "Draugr Scourges are the nordic revenants of fallen heroes of the Dragon Cult, and all have a simple grasp of the Thu\u2019um.",
+        tags: "Draugr, Undead; Average; White Soul (350)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "50"], ["Agility", "30"], ["Intelligence", "20"], ["Willpower", "45"], ["Perception", "30"], ["Personality", "5"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "13"], ["Magicka", "20"], ["Stamina", "5"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "65"], ["Evade", "40"], ["Observe", "60"], ["Stealth", "30"], ["Knowledge", "20"], ["Social", "5"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Paired Ancient Nord Hero\u2019s War Axes", text: "1d8+1; Splitting, Unwieldy, Magic; Reach 2m, 1H; wields one in each hand"},
+                    {name: "Ancient Nord Hero\u2019s Great Axe", text: "1d12+1; Splitting, Unwieldy, Shield Splitter, Concussive, Magic; Reach 3m, 2H"},
+                    {name: "Ancient Nord Hero\u2019s Greatsword", text: "1d12+1; Slashing, Concussive, Magic; Reach 3m, 2H"},
+                    {text: "Additionally, may have:"},
+                    {name: "Full Ancient Nord Hero Armor", text: "AR 6 / Frost 1; Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Cleave (1 SP)", text: "As part of a melee attack with a two handed weapon, a Draugr Scourge can strike up to three targets in Reach as a single action. Roll once for the attack."},
+                    {name: "Riposte (1 SP)", text: "After successfully parrying while using a pair of one handed weapons, the Draugr Scourge can immediately make a free Attack against the target they parried, as long as the target is in Reach."},
+                    {name: "Dragon Tongue (1 AP + 1 SP)", text: "Can use an Primary Action to Shout. The Draugr knows the words of the shouts below. Test magic at the indicated difficulty:", subs: [
+                            {text: "Disarm:", subs: ["Zun (+0): All characters within a 15m cone in front of the character must make an Agility test or drop any weapons and/or shields they\u2019re holding."]},
+                            {text: "Frost Breath:", subs: ["Fo (+0): Deals 1d8 frost damage to all targets within a 10m cone in front of them. Counts as a ranged, area of effect attack for the purposes of evasion."]},
+                            {text: "Unrelenting Force:", subs: ["Fus (-10): Dazes all targets within a 3m wide, 15m long beam for one round. Counts as a ranged, area of effect attack for the purposes of evasion."]},
+                        ]},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Resistance (Frost, 2)"},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                ]},
+            {head: "Encountering Draugr Scourges", kind: "prose", items: [
+                    {text: "Draugr Scourges dwell amongst the Draugr, standing head and shoulders above their lesser peers. During the time of the Dragon Cult, the gifted children of cultists were indoctrinated into the cult and taught the powers of the Thu\u0027um by their Dovah masters. Draugr Scourges simply represent all manner of such greater Draugr, who retain the mystical knowledge of the past."},
+                    {text: "Draugr Scourges can be encountered amongst normal Draugr, often leading a small warband and using the prestige and clout they had in life to seize a sort of basic leadership role in battle."},
+                    {text: "A Draugr Scourge is a champion of melee combat, and a practitioner of the Thu\u0027um, making them a deadly opponent to an unprepared adventurer. A Draugr Scourge excels at both dueling and fighting against groups, and is comfortable using a diverse set of weapons for different jobs. They can be thought of as being champion level Draugr, more than an even match for a heroic character."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A group of Draugr often carry treasures worth a number of rolls on the Treasure Table determined by the GM."},
+                    {text: "A character can harvest a Draugr\u0027s tongue, which is a Common Destruction ingredient."},
+                ]},
+        ],
+    },
+    "Draugr Wight Lord": {
+        name: "Draugr Wight Lord",
+        flavour: "Draugr Wight Lords were warriors of great renown in life, now eternally serving the will of their masters in death.",
+        tags: "Draugr, Undead; Average; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "50"], ["Agility", "30"], ["Intelligence", "20"], ["Willpower", "45"], ["Perception", "30"], ["Personality", "5"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "13"], ["Magicka", "20"], ["Stamina", "5"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "65"], ["Evade", "40"], ["Observe", "60"], ["Stealth", "30"], ["Knowledge", "20"], ["Social", "5"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Paired Ancient Nord Lord\u2019s Warhammers", text: "1d8+1; Crushing, Unwieldy; Reach 2m, 1H; wields one in each hand"},
+                    {name: "Ancient Nord Lord\u2019s Great Axe", text: "1d12+1; Splitting, Unwieldy, Shield Splitter, Concussive; Reach 3m, 2H"},
+                    {name: "Ancient Nord Lord\u2019s Broadsword", text: "1d8+1; Slashing, Magic; Reach 2m, 1H"},
+                    {text: "Additionally, may have up to two of:"},
+                    {name: "Full Ancient Nord Lord\u2019s Armor", text: "AR 8 / Frost 1; Medium, Magic"},
+                    {name: "Ancient Nord Shield", text: "BR 9 / MR 5 (Frost 6); Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Cleave (1 SP)", text: "As part of a melee attack with a two handed weapon, a Draugr Wight Lord can strike up to three targets in Reach as a single action. Roll once for the attack."},
+                    {name: "Riposte (1 SP)", text: "After successfully parrying while using a pair of one handed weapons, the Draugr Wight Lord can immediately make a free Attack against the target they parried, as long as the target is in Reach."},
+                    {name: "Command Death (1 AP + 1 SP)", text: "As a Primary Action, the Draugr Wight Lord can spend a Stamina Point to call their Draugr to fight harder. All Draugr within 10m can immediately make an Attack action for free."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Resistance (Frost, 2)"},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                ]},
+            {head: "Encountering Draugr Wight Lords", kind: "prose", items: [
+                    {text: "Draugr Wight Lords are deadly foes, champions of the Dragon Cult in life and some of their greatest warriors in death. They often serve as leaders to the lesser Draugr, charging into battle against any who would intrude upon their sacred tombs without mercy."},
+                    {text: "Despite lacking the gift of the Thu\u2019um, a Wight Lord can be a formidable foe on its own. When accompanied by others of it\u2019s kind, however, they can become a challenge for even the most experienced and well-equipped adventurers."},
+                    {text: "When not patrolling the halls of their crypts Wight Lords often serve as bodyguards to Deathlords and Dragon Priests, wielding their martial prowess against any who would approach."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A group of Draugr often carry treasures worth a number of rolls on the Treasure Table determined by the GM."},
+                    {text: "A character can harvest a Draugr\u0027s tongue, which is a Common Destruction ingredient."},
+                ]},
+        ],
+    },
+    "Draugr Deathlord": {
+        name: "Draugr Deathlord",
+        flavour: "Amongst the Dragon Cultists were leaders of great skill and power, some are known now as the Draugr Deathlords. These Deathlords direct their undead brethren and often pose a great threat, especially those who have learned the language of Dragons.",
+        tags: "Draugr, Undead; Major; White Soul (800)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "55"], ["Agility", "40"], ["Intelligence", "35"], ["Willpower", "55"], ["Perception", "45"], ["Personality", "5"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "28"], ["Wound Thr.", "15"], ["Magicka", "35"], ["Stamina", "5"], ["Initiative", "+11"], ["Action Pts.", "4"], ["Speed", "13m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "90"], ["Magic", "80"], ["Evade", "60"], ["Observe", "65"], ["Stealth", "30"], ["Knowledge", "45"], ["Social", "5"], ["Physical", "80"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Paired Ancient Nord Lord\u2019s Warhammers", text: "1d8+2; Crushing, Unwieldy; Reach 2m, 1H; wields one in each hand"},
+                    {name: "Ancient Nord Lord\u2019s Great Axe", text: "1d12+2; Splitting, Unwieldy, Shield Splitter, Concussive; Reach 3m, 2H"},
+                    {name: "Ancient Nord Lord\u2019s Broadsword", text: "1d8+2; Slashing, Magic; Reach 2m, 1H"},
+                    {text: "Which may have one of these enchantments:"},
+                    {name: "Frostbiten", text: "Deals 4 bonus Frost damage on Strike."},
+                    {name: "Heartdrinker", text: "The wielder heals up to 4 HP on Strike, limited by the damage of the attack."},
+                    {name: "Mage-Killer", text: "The target tests a -10 Willpower or is Silenced for two Rounds on Strike."},
+                    {text: "Additionally, may have two of:"},
+                    {name: "Full Ancient Nord Lord\u2019s Armor", text: "AR 8 / Frost 1; Medium, Magic"},
+                    {name: "Ancient Nord Shield", text: "BR 9 / MR 5 (Frost 6); Medium"},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Resistance (Frost, 2)"},
+                    {name: "Resistance (Magic, 4)"},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Cleave (1 SP)", text: "As part of a melee attack with a two handed weapon, a Draugr Deathlord can strike up to three targets in Reach as a single action. Roll once for the attack."},
+                    {name: "Riposte (1 SP)", text: "After successfully parrying while using a pair of one handed weapons, the Draugr Deathlord can immediately make a free Attack against the target they parried, as long as the target is in Reach."},
+                    {name: "Command Death (1 AP + 1 SP)", text: "As a Primary Action, the Draugr Wight Lord can spend a Stamina Point to call their Draugr to fight harder. All Draugr within 10m can immediately make an Attack action for free."},
+                    {name: "Dragon Tongue (1 AP + 1 SP)", text: "Can use an Primary Action to Shout. The Draugr knows the words of the shouts below. Test magic at the indicated difficulty:", subs: [
+                            {text: "Dismay:", subs: [
+                                    "Faas (-10): Non-Draugr Characters within 15 meters must make a Panic +0 test.",
+                                    "Ru (-20): Same as above, except the Draugr Deathlord may choose to either double the range or increase the difficulty of the test by -20.",
+                                ]},
+                            {text: "Frost Breath:", subs: [
+                                    "Fo (+0): The Draugr Deathlord breathes frost, dealing 1d8 frost damage to all targets within a 10m cone in front of them. Counts as a ranged, area of effect attack for the purposes of evasion.",
+                                    "Krah (-10): Same as above, except deal 2d8 frost damage.",
+                                ]},
+                            {text: "Unrelenting Force:", subs: [
+                                    "Fus (-10): The Draugr Deathlord shouts with great force, Dazing all targets within a 3m wide, 15m long beam for one round. Counts as a ranged, area of effect attack for the purposes of evasion.",
+                                    "Ro (-20): Same as above, except the duration is doubled and the targets are knocked prone.",
+                                ]},
+                            {text: "Fleshrend:", subs: [
+                                    "Sosaal (+10): Target being within twenty five meters takes 1d8 damage that ignores armor and gains the Bleeding(1) Condition.",
+                                    "Kopraan (-0): Target being within twenty five meters takes 1d10 slashing damage that ignores armor, and gains the Bleeding(2) Condition.",
+                                ]},
+                            {text: "Slow Time:", subs: [
+                                    "Tiid (-20): The Draugr Deathlord increases their Maximum Action Points and Maximum Attacks per round limit by one until the end of the character\u2019s next turn.",
+                                    "Klo (-30): Same as above, except the duration becomes 4 rounds.",
+                                ]},
+                        ]},
+                ]},
+            {head: "Encountering Draugr Deathlords", kind: "prose", items: [
+                    {text: "A Draugr Deathlord is a fearsome foe. Both skilled at martial combat and with the use of the Thu\u0027um, a Deathlord is not easily bested. Combined with their ability to muster Draugr to give them bonus attacks, makes fighting a Deathlord in their home turf an absolutely brutal fight. Characters hunting a Draugr Deathlord should take special care to separate him from their retinue, or have a way to quickly deal with them or the Deathlord will overwhelm them with volume of attacks."},
+                    {text: "The Deathlord has 4 AP, meaning they have a LOT of potential attacks and defenses, and combined with their Slow Time shout, a Deathlord is more than a match for a party of adventurers."},
+                    {text: "Draugr Deathlords are often found in the deepest part of their ruins, often accompanying or protecting the sarcophagus of their Dragon Priest master, if they have one. Some more ambitious Deathlords occasionally attack settlements, but this hasn\u0027t happened in a long time. Because Deathlords are so often on the defensive, they have time to plot out elaborate and cruel defensive strategies, and have often designed their sanctums to be \u0022kill rooms,\u0022 built for the explicit purpose of absolutely halting any invading forces with extreme force."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A group of Draugr often carry treasures worth a number of rolls on the Treasure Table determined by the GM."},
+                    {text: "A character can harvest a Draugr\u0027s tongue, which is a Common Destruction ingredient."},
+                ]},
+        ],
+    },
     "Monk": {
         name: "Monk",
         flavour: "Monks are students of the ancient martial arts of hand-to-hand combat and unarmored self defense. Monks avoid detection by stealth, mobility, and Agility, and are skilled with a variety of ranged and close-combat weapons.",
@@ -5045,7 +5521,18 @@ function App() {
                                         {!item.name && item.text}
                                         {item.subs && (
                                             <ul>
-                                                {item.subs.map((sub, j) => <li key={j}>{sub}</li>)}
+                                                {item.subs.map((sub, j) => (
+                                                    <li key={j}>
+                                                        {typeof sub === "string" ? sub : (
+                                                            <>
+                                                                {sub.text}
+                                                                <ul>
+                                                                    {sub.subs.map((deep, k) => <li key={k}>{deep}</li>)}
+                                                                </ul>
+                                                            </>
+                                                        )}
+                                                    </li>
+                                                ))}
                                             </ul>
                                         )}
                                     </li>
