@@ -53,6 +53,485 @@ type Statblock = {
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Dragon Priest": {
+        name: "Dragon Priest",
+        flavour: "Of all the mortals within the Dragon Cult, the Dragon Priests were undeniably the greatest followers. Trained intensely in the ways of their Masters, with the strongest even earning sacred masks filled with power and status, Dragon Priests are the deadliest creatures within the Nordic Ruins.",
+        tags: "Draugr, Undead; Extreme; White Soul (1200)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "55"], ["Agility", "40"], ["Intelligence", "50"], ["Willpower", "60"], ["Perception", "40"], ["Personality", "5"], ["Morale", "90"]]},
+            {group: "Attributes", rows: [["Hit Points", "28"], ["Wound Thr.", "15"], ["Magicka", "50"], ["Stamina", "5"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "90"], ["Evade", "50"], ["Observe", "60"], ["Stealth", "30"], ["Knowledge", "90"], ["Social", "5"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Wretched Talons", text: "1d6; Slashing, Small, Magic; Reach 1m"},
+                    {text: "May have:"},
+                    {name: "Dragon Priest Staff", text: "1d6(1d8)+2; Concussive, Focus, Magic, Innate Spell (see Special Abilities); Reach 2m, 1.5H"},
+                    {text: "Also may have up to two of:"},
+                    {name: "Dragon Priest Robes", text: "AR 6 / Magic 6; Partial, Heavy, Magic"},
+                    {name: "Full Dragon Priest Mask", text: "AR 7 / Magic 7; Magic, Light"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Consume Thralls (1 AP + 1 SP)", text: "As a Primary Action Dragon Priest can consume the life of any nearby Draugr it chooses within 30m. The consumed Draugr immediately and irreversibly dies, unable to be raised, because its essence has been stripped bare by the Dragon Priest. The Dragon Priest can do this to as many Draugr in range as they wish. The Dragon Priest then gains Temporary Hit points that last until the end of the encounter equal to the remaining HP of the Draugr they consume."},
+                    {name: "Innate Spell (1 AP)", text: "The Dragon Priest\u2019s Staff is infused with a spell that can be cast for no Magicka cost, and always succeeds with 1 DoS. It may be infused with one of the following spells:", subs: [
+                            "Fire Bolt 3: 7 MP; 1d8 Fire; R Attack (100m), Overload (+WB to Dmg)",
+                            "Frost Bolt 3: 7 MP; 1d8 Frost; R Attack (100m), Overload (+WB to Dmg)",
+                            "Shock Bolt 3: 7 MP; 1d8 Shock; R Attack (100m), Overload (+WB to Dmg)",
+                        ]},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Bend Reality", text: "Can test Magic instead of Physical."},
+                    {name: "Imbued with Magicka", text: "Does not spend MP to cast spells."},
+                    {name: "Lord of Sorcery", text: "A Dragon Priest never backfires, and can cast any level of spell without penalty."},
+                    {name: "Master of the Voice", text: "Can use two word shouts without spending Stamina, can test Endurance at +0 to avoid spending Stamina on three word Shouts."},
+                    {name: "Resistance (Frost, 3)"},
+                    {name: "Resistance (Normal Weapons, 3)"},
+                ]},
+            {head: "Encountering Dragon Priests", kind: "prose", items: [
+                    {text: "Dragon Priests are so diverse and characterful, it would be a disservice to rigidly describe them here. Instead, it is up to GMs to develop their own Dragon Priests, since if one is included it is likely going to be a major villain for a campaign and deserves special attention."},
+                    {text: "Dragon Priests are both sorcerers, and Tongues, and combine the use of profane magicks with the reality bending potency of the Thu\u0027um. A Dragon Priest, being a creature of the Merethic Era, knows as many Shouts as the GM determines appropriate, up to the full power of the Shout. Additionally, a Dragon Priest is equally proficient in all Schools of magic, and as a result can take spells from any school. The GM is encouraged to create a creative and powerful spell list, and really take advantage of the Imbued with Magicka trait to really go crazy with spells. For example, while a Dragon Priest does not innately have the Fly trait, because it is able to cast without spending Magicka it can effectively have a level 7 Levitate at all times."},
+                    {text: "A party needs to be prepared with sufficient anti magic, because a Dragon Priest has no reason to hold back its awe-inspiring destructive powers, because it is not confined to the mortal understandings of magic. Even if a party somehow negates its sorceries, it still has a very powerful Thu\u0027um to reckon with."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "GMs should consider the treasure a Dragon Priest has in their sanctum. Additionally, they should design a unique enchantment for their Mask."},
+                ]},
+        ],
+    },
+    "Ghost": {
+        name: "Ghost",
+        flavour: "The soul of a dead mortal, trapped on Nirn.",
+        tags: "Undead; Minor; White Soul (100)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "35"], ["Agility", "30"], ["Intelligence", "35"], ["Willpower", "40"], ["Perception", "20"], ["Personality", "5"], ["Morale", "40"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "10"], ["Magicka", "35"], ["Stamina", "3"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "60"], ["Evade", "20"], ["Observe", "30"], ["Stealth", "20"], ["Knowledge", "30"], ["Social", "5"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Ghostly Touch", text: "1d4; Slashing, Magic; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Poltergeist (1 AP + 1 SP)", text: "As a Primary Action the Ghost can immediately gain the Telekinesis 3 trait, extinguish all non magical light within 10m, and force all characters within 10m to test Panic with a -10 penalty."},
+                    {name: "Refresh Spells (1 SP)", text: "The Ghost can, as a free action, refresh MP equal to half their max MP. If they have the optional Spellcaster trait, they refresh all of their spell uses instead."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Frightening", text: "At the start of an encounter with a Ghost, all characters must test Panic at +20."},
+                    {name: "Incorporeal", text: "Has the Flyer (Speed) trait. Can pass through solid objects, can only be damaged by Magic weapons or spells. Cannot normally affect the world except through attacks and Magic. Its attacks ignore non-magic AR."},
+                    {name: "Resistance (Frost, Shock, 4)"},
+                    {name: "Sun Scarred (0)", text: "If this character is exposed to normal sunlight they lose 1 SP each hour. Cloud cover or other such weather halves the rate of SP loss. The character must spend an hour in a dark place before they can remove levels of fatigue/regain SP lost in this manner."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Frost Bolt 2", text: "6 MP, 1d6 Frost, R Attack (100m), Overload (+WB to Dmg)"},
+                    {name: "Frost Bite 3", text: "7 MP, 1d8 Frost, M Attack (1m), Overload (+WB to Dmg)"},
+                    {name: "Dispel 3", text: "13 MP; Remove all magical effects from any source of level 3 or lower from the caster. Constant enchantments reactivate after 1d4 rounds."},
+                    {name: "Fatigue 3", text: "10 MP, +0 Endurance, Fail, Lose 1 SP. [Lvl]: Cost; Spell Attributes; Description."},
+                ]},
+            {head: "Variant: Ancient Ghost", kind: "list", items: [
+                    {text: "Special Abilities"},
+                    {name: "Vanish (1 SP)", text: "The Ancient Ghost becomes Invisible for d4 Rounds."},
+                ]},
+            {head: "Encountering Ghosts", kind: "prose", items: [
+                    {text: "Ghosts are the souls of those who have died and are now trapped within Nirn unable to leave. They can be found manifesting all across Tamriel. Ghost are most often found within ancient tombs or haunting graveyards. That said, they can also be found practically everywhere else either naturally or because of dark necromancies being cast to summon them."},
+                    {text: "Ghosts that naturally occur are bound to Mundus in ethereal form, often because of some unfinished business that needs attending before the spirit can move on. Usually, a ghost devolves into unending madness, their past life and the business that ties them to Mundus long forgotten and unresolved. The ghost\u2019s torment in reality, one foot in and one foot out, is agonizing and ceaseless until they are vanquished by the living, banished into death by force."},
+                    {text: "This in mind, slaying a ghost that has gone mad is a great and noble service, as it delivers them from the shackles of their endless anguish."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can test a -10 Alchemy test to gather one dose of Ectoplasm, which is a Very Rare Mysticism ingredient."},
+                ]},
+        ],
+    },
+    "Nether Lich": {
+        name: "Nether Lich",
+        flavour: "Weaker and less powerful than other liches, these undead necromancers have become spectral shadows of their former selves.",
+        tags: "Lich, Undead; Major; White Soul (900)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "50"], ["Agility", "40"], ["Intelligence", "60"], ["Willpower", "55"], ["Perception", "35"], ["Personality", "5"], ["Morale", "80"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "10"], ["Magicka", "110"], ["Stamina", "5"], ["Initiative", "+13"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "75"], ["Evade", "40"], ["Observe", "45"], ["Stealth", "20"], ["Knowledge", "85"], ["Social", "5"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Spectral Claws", text: "1d8; Slashing, Magic; Reach 1m"},
+                    {text: "May have:"},
+                    {name: "Lich Staff", text: "1d6(1d8)+2; Concussive, Focus, Magic, Innate Spell (see Special Abilities); Reach 2m, 1.5H"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Dark Ceremony (1 AP + 1 SP)", text: "The Lich can raise up to 10 corpses nearby as a Primary Action, using the Zombie profile."},
+                    {name: "Innate Spell (1 AP)", text: "The Lich\u2019s Staff is infused with a spell that can be cast for no Magicka cost, and always succeeds with 1 DoS. It may be infused with one of the following spells:", subs: [
+                            "Fire Bolt 3: 7 MP; 1d8 Fire; R Attack (100m), Overload (+WB to Dmg)",
+                            "Frost Bolt 3: 7 MP; 1d8 Frost; R Attack (100m), Overload (+WB to Dmg)",
+                            "Shock Bolt 3: 7 MP; 1d8 Shock; R Attack (100m), Overload (+WB to Dmg)",
+                        ]},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Bend Reality", text: "Can test Magic instead of Physical."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Incorporeal", text: "Has the Flyer (Speed) trait. Can pass through solid objects, can only be damaged by Magic weapons or spells. Cannot normally affect the world except through attacks and Magic. Its attacks ignore non-magic AR."},
+                    {name: "Immunity (Frost)"},
+                    {name: "Resistance (Shock, Normal Weapons, 3)"},
+                    {name: "Telepathy (3)", text: "Characters with this trait can communicate with others telepathically. They are capable of \u201cbroadcasting\u201d A full sentence to a maximum number of characters equal to their WB within a number of meters equal to one hundred times their WB. They must have line of sight to the character to whom they are broadcasting, unless the target character has this trait as well. Characters with this trait can make a Perception test as a free action to attempt to locate other characters with this trait within their broadcast range, though this test can be opposed by a Willpower test if a character wishes to remain hidden."},
+                    {name: "Thought Caster", text: "The character does not need to speak or have hands free in order to cast spells."},
+                ]},
+            {head: "Encountering Nether Liches", kind: "prose", items: [
+                    {text: "Nether Liches are weaker than other varieties of Lich, often appearing spectral when compared to others of their kind. The reason for this incorporeal form can vary; perhaps the Lich failed at some critical step in granting itself un-life, or maybe they sought to use powers they did not fully grasp to cheat death which backfired in some way."},
+                    {text: "In any case, Nether Liches can still prove challenging foes for a party to face. They can still raise hordes of the dead to defend themselves against adventurers and their abilities make them deadly enemies in their own right. GMs who wish to use Nether Liches in their game should outfit them with appropriately deadly spells, if perhaps less potent than those a Lich-proper can wield."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can test a -10 Alchemy test to gather one dose of ectoplasm, which is a Very Rare Mysticism ingredient."},
+                ]},
+        ],
+    },
+    "Lich": {
+        name: "Lich",
+        flavour: "Liches are undead necromancers who have traded their humanity for eternal life. They are intelligent, adept spellcasters with hordes of undead minions at their command. Formidable foes, they are not to be underestimated.",
+        tags: "Lich, Undead; Extreme; White Soul (1300)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "50"], ["Agility", "40"], ["Intelligence", "60"], ["Willpower", "55"], ["Perception", "35"], ["Personality", "5"], ["Morale", "80"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "14"], ["Magicka", "110"], ["Stamina", "5"], ["Initiative", "+13"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "85"], ["Evade", "40"], ["Observe", "45"], ["Stealth", "20"], ["Knowledge", "85"], ["Social", "5"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Skeletal Claws", text: "1d8; Slashing; Reach 1m"},
+                    {text: "May have:"},
+                    {name: "Lich Staff", text: "1d6(1d8)+2; Concussive, Focus, Magic, Innate Spell (see Special Abilities); Reach 2m, 1.5H"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Dark Ceremony (1 AP + 1 SP)", text: "The Lich can raise up to 10 corpses nearby as a Primary Action, using the Zombie profile."},
+                    {name: "Innate Spell (1 AP)", text: "The Lich\u2019s Staff is infused with a spell that can be cast for no Magicka cost, and always succeeds with 1 DoS. It may be infused with one of the following spells:", subs: [
+                            "Fire Bolt 3: 7 MP; 1d8 Fire; R Attack (100m), Overload (+WB to Dmg)",
+                            "Frost Bolt 3: 7 MP; 1d8 Frost; R Attack (100m), Overload (+WB to Dmg)",
+                            "Shock Bolt 3: 7 MP; 1d8 Shock; R Attack (100m), Overload (+WB to Dmg)",
+                        ]},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Skeletal"},
+                    {name: "Undead"},
+                    {name: "Bend Reality", text: "Can test Magic instead of Physical."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Immunity (Frost)"},
+                    {name: "Resistance (Shock, Normal Weapons, 3)"},
+                    {name: "Telepathy (3)", text: "Characters with this trait can communicate with others telepathically. They are capable of \u201cbroadcasting\u201d A full sentence to a maximum number of characters equal to their WB within a number of meters equal to one hundred times their WB. They must have line of sight to the character to whom they are broadcasting, unless the target character has this trait as well. Characters with this trait can make a Perception test as a free action to attempt to locate other characters with this trait within their broadcast range, though this test can be opposed by a Willpower test if a character wishes to remain hidden."},
+                    {name: "Thought Caster", text: "The character does not need to speak or have hands free in order to cast spells."},
+                ]},
+            {head: "Encountering Liches", kind: "prose", items: [
+                    {text: "Liches are extremely powerful foes, and make great villains, primarily because their nature as powerful mages allows the GM to be extremely creative. There is almost no limit to the kind of knowledge and skills that a Lich can acquire over its unnatural lifetime. For this reason, GMs should create custom magic items and develop their own spell list for a Lich. They are no throwaway monster of the week."},
+                    {text: "A Lich does not survive centuries without a measure of cunning. A Lich is not often going to be encountered outside its lair, which will functionally be its own private fortress. The Lich will be surrounded by powerful undead, acolytes, and will use its masterful knowledge of magicka to bend the environment and turn the dungeon or ruin itself into a dangerous foe."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "Over a Short Rest, a character can test Alchemy +10 to grind up DoS doses of bonemeal, which are Common Alteration ingredients."},
+                ]},
+        ],
+    },
+    "Ancient Lich": {
+        name: "Ancient Lich",
+        flavour: "Ancient Liches are powerful undead necromancers who have truly mastered that most foul magical art. They can command legions of the dead and are deadly foes in their own right.",
+        tags: "Lich, Undead; Extreme; White Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "50"], ["Agility", "40"], ["Intelligence", "60"], ["Willpower", "55"], ["Perception", "35"], ["Personality", "5"], ["Morale", "80"]]},
+            {group: "Attributes", rows: [["Hit Points", "50"], ["Wound Thr.", "20"], ["Magicka", "210"], ["Stamina", "5"], ["Initiative", "+13"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "85"], ["Evade", "40"], ["Observe", "45"], ["Stealth", "20"], ["Knowledge", "85"], ["Social", "5"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Skeletal Claws", text: "1d8; Slashing; Reach 1m"},
+                    {text: "May have:"},
+                    {name: "Lich Staff", text: "1d6(1d8)+2; Concussive, Focus, Magic, Innate Spell (see Special Abilities); Reach 2m, 1.5H"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Dark Ceremony (1 AP + 1 SP)", text: "The Lich can raise up to 10 corpses nearby as a Primary Action, using the Zombie profile."},
+                    {name: "Innate Spell (1 AP)", text: "The Lich\u2019s Staff is infused with a spell that can be cast for no Magicka cost, and always succeeds with 1 DoS. It may be infused with one of the following spells:", subs: [
+                            "Fire Bolt 3: 7 MP; 1d8 Fire; R Attack (100m), Overload (+WB to Dmg)",
+                            "Frost Bolt 3: 7 MP; 1d8 Frost; R Attack (100m), Overload (+WB to Dmg)",
+                            "Shock Bolt 3: 7 MP; 1d8 Shock; R Attack (100m), Overload (+WB to Dmg)",
+                        ]},
+                    {name: "Flow of Magicka (1 AP)", text: "As a reaction, can test -20 Magic. If the DoS on the test is equal or higher than the target spell\u2019s SL, the spell is negated."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Skeletal"},
+                    {name: "Undead"},
+                    {name: "Bend Reality", text: "Can test Magic instead of Physical."},
+                    {name: "Flow of Magicka", text: "As a reaction to a spell cast, the character may make a -20 Mysticism skill test. If their degrees of success exceed the spell level of the spell being cast, then the effect of the spell is negated."},
+                    {name: "Master of Magicka", text: "The character can overload a spell with the overload attribute even if they restrain that spell."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Immunity (Frost)"},
+                    {name: "Resistance (Shock, Normal Weapons, 3)"},
+                    {name: "Telepathy (3)", text: "Characters with this trait can communicate with others telepathically. They are capable of \u201cbroadcasting\u201d A full sentence to a maximum number of characters equal to their WB within a number of meters equal to one hundred times their WB. They must have line of sight to the character to whom they are broadcasting, unless the target character has this trait as well. Characters with this trait can make a Perception test as a free action to attempt to locate other characters with this trait within their broadcast range, though this test can be opposed by a Willpower test if a character wishes to remain hidden."},
+                    {name: "Thought Caster", text: "The character does not need to speak or have hands free in order to cast spells."},
+                ]},
+            {head: "Encountering Ancient Liches", kind: "prose", items: [
+                    {text: "Ancient Liches are powerful beyond measure. They are often relics of bygone eras; the most powerful necromancers of their age who used their talents to cheat death itself."},
+                    {text: "They are often reclusive, keeping to themselves as they pursue the higher mysteries of the universe or the interplay between life and death itself. To defend themselves and this pursuit of knowledge Ancient Liches will raise entire legions of undead to serve their will. Under the right set of calamitous circumstances they may even send these undead armies to war against the living of Nirn to see their insatiable appetite for power appeased, offering GMs a perfect villain for their campaign."},
+                    {text: "GMs who wish to use these powerful undead should outfit them with powerful spells and abilities beyond those suggested here to ensure they are appropriately dangerous foes for a party to encounter."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "Over a Short Rest, a character can test Alchemy +10 to grind up DoS doses of bonemeal, which are Common Alteration ingredients."},
+                ]},
+        ],
+    },
+    "Skeleton": {
+        name: "Skeleton",
+        flavour: "Skeletons are undead comprised of reanimated bones. They are found across Tamriel in the service of Necromancers, or guarding the ancient tombs.",
+        tags: "Skeleton, Undead; Minor; White Soul (100)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "35"], ["Agility", "30"], ["Intelligence", "10"], ["Willpower", "10"], ["Perception", "25"], ["Personality", "5"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "11"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "7m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "-"], ["Evade", "30"], ["Observe", "25"], ["Stealth", "30"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "50"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Ancient War Axe", text: "1d8; Splitting, Unwieldy; Reach 2m, 1H"},
+                    {name: "Ancient Broadsword", text: "1d8; Slashing; Reach 2m, 1H"},
+                    {name: "Ancient Mace", text: "1d8; Crushing, Unwieldy; Reach 2m, 1H"},
+                    {name: "Ancient Spear", text: "1d8(1d10); Impaling, Unwieldy; Reach 2-3m, 1.5H"},
+                    {name: "Ancient Battle Axe", text: "1d8(1d10); Splitting, Unwieldy; Reach 3m, 1.5H"},
+                    {name: "Ancient Shortbow", text: "1d6; Reload(1), Range (20/100/200); 2H", subs: ["Includes 24 Iron Splitting or Slashing Arrows"]},
+                    {text: "Additionally, may have one of:"},
+                    {name: "Partial Ancient Armor", text: "AR 3; Medium"},
+                    {name: "Ancient Shield", text: "BR 9 / MR 5; Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Rattlebones (1 AP + 2 SP)", text: "The Skeleton can ignore a single damaging hit with a non-crushing or magical weapon that strikes its Body as a Reaction."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Skeletal"},
+                    {name: "Undead"},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Immunity (Paralysis)"},
+                    {name: "Resistance (Frost, Normal Weapons, 2)"},
+                ]},
+            {head: "Encountering Skeletons", kind: "prose", items: [
+                    {text: "Skeletons are the reanimated bones that many necromancers and other dark magics can create and command. Usually found in or around ancient ruins or guarding a necromancer\u2019s lair, they can be potent foes against the average adventurer and pose a serious threat to untrained combatants. More experienced adventurers should have no problem disposing of them, but they tend to have numbers on their side. Additionally, due to their lack of internal organs and not needing core body muscles to function, many otherwise well-placed blows and thrusts will go cleanly between their ribs and other bones, leaving them mostly unscathed."},
+                    {text: "If encountered as a servant to a necromancer, a skeleton will fiercely fight to protect its master, as it is bound by the black magics holding it together to do so as its imperative task. Skeletons under direct control of a necromancer are able to fight intelligently, acting as an extension of the necromancer himself."},
+                    {text: "If found without a master, a skeleton will usually attack anything on sight for no apparent reason. In this case, skeletons are little more than wild animals. They may fight to the death or simply take a few swings and run when things get dangerous."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "Over a Short Rest, a character can test Alchemy +10 to grind up DoS doses of bonemeal, which are Common Alteration ingredients."},
+                ]},
+        ],
+    },
+    "Skeletal Champion": {
+        name: "Skeletal Champion",
+        flavour: "Skeletal Champions are the reanimated bones of old heroes, a small fragment of their old valor clinging to their shambling bones.",
+        tags: "Skeleton, Undead; Average; White Soul (200)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "45"], ["Agility", "35"], ["Intelligence", "15"], ["Willpower", "25"], ["Perception", "35"], ["Personality", "5"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "11"], ["Magicka", "30"], ["Stamina", "4"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "7m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "-"], ["Evade", "45"], ["Observe", "55"], ["Stealth", "35"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Champion\u2019s Battle Axe", text: "1d8(1d10)+1; Splitting, Unwieldy; Reach 2m, 1.5H"},
+                    {name: "Champion\u2019s Longsword", text: "1d8(1d10)+1; Slashing; Reach 2m, 1.5H"},
+                    {name: "Champion\u2019s Warhammer", text: "1d8(1d10)+1; Crushing, Unwieldy; Reach 2m, 1.5H"},
+                    {text: "Additionally, may have one of:"},
+                    {name: "Champion\u2019s Armor", text: "AR 5/ Magic 1; Medium, Magic"},
+                    {name: "Champion\u2019s Tower Shield", text: "BR 9 / MR 6; Heavy, Tower Shield"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Cleave (1 SP)", text: "As part of a melee attack with a two handed weapon, a Skeletal Champion can strike up to three targets in Reach as a single action. Roll once for the attack."},
+                    {name: "Rattlebones (1 AP + 2 SP)", text: "The Skeletal Champion can ignore a single damaging hit with a non-crushing or magical weapon that strikes its Body as a Reaction."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Skeletal"},
+                    {name: "Undead"},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Immunity (Paralysis)"},
+                    {name: "Resistance (Frost, Normal Weapons, 2)"},
+                ]},
+            {head: "Encountering Skeletal Champions", kind: "prose", items: [
+                    {text: "Skeletal Champions are an enemy not to be trifled with by lesser experienced adventurers. These monstrosities can and will cleave through even the strongest adventurers, and should be treated as such. They are often found leading bands of skeletons as a de facto leader, though whether its because the Champion is of greater intelligence or because it is simply imbued with greater power and projects an unnatural magnetism, is unknown."},
+                    {text: "These champions are to be feared far more than their normal counterparts. They are more powerful in every single aspect, including the use of magical weapons and armor, as well as more advanced fighting techniques."},
+                    {text: "Skeletal Champions can be very potent guards for necromancers as well. Used only by more powerful necromancers, they often act as personal bodyguards for the dark mage that creates them. If a Skeletal Champion is without a master, it will act with independence and autonomy, unlike a masterless skeleton. A lone Skeletal Champion will be smarter and more powerful, and can often use this cunning to even find other skeletons or other undead to lead by itself."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "Over a Short Rest, a character can test Alchemy +10 to grind up DoS doses of bonemeal, which are Common Alteration ingredients."},
+                ]},
+        ],
+    },
+    "Wraith": {
+        name: "Wraith",
+        flavour: "The phantoms of dead sorcerers, their malice and hatred binds them to Nirn.",
+        tags: "Wraith, Undead; Average; White Soul (350)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "45"], ["Agility", "40"], ["Intelligence", "40"], ["Willpower", "45"], ["Perception", "25"], ["Personality", "5"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "13"], ["Wound Thr.", "12"], ["Magicka", "40"], ["Stamina", "4"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "75"], ["Evade", "40"], ["Observe", "25"], ["Stealth", "40"], ["Knowledge", "60"], ["Social", "5"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Spectral Claws", text: "1d8; Slashing, Magic; Reach 1m"},
+                    {text: "May have one of:"},
+                    {name: "Gloom Longsword", text: "1d8(1d10); Slashing, Magic; Reach 2m, 1.5H"},
+                    {name: "Ethereal Saber", text: "1d8; Slashing, Dueling Weapon, Magic; Reach 2m, 1H"},
+                    {text: "May also have:"},
+                    {name: "Partial Phantom Armor", text: "AR 3/ Magic 3; Medium, Magic"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Malicious Intent (1 SP)", text: "The Wraith can roll damage twice and take the highest result on any damage rolls it makes until its next turn."},
+                    {name: "Refresh Spells (1 SP)", text: "The Wraith can, as a free action, refresh MP equal to half their max MP. If they have the optional Spellcaster trait, they refresh all of their spell uses instead."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Howling Shrieks", text: "This creature cannot be Silenced."},
+                    {name: "Immunity (Frost)"},
+                    {name: "Incorporeal", text: "Has the Flyer (Speed) trait. Can pass through solid objects, can only be damaged by Magic weapons or spells. Cannot normally affect the world except through attacks and Magic. Its attacks ignore non-magic AR."},
+                    {name: "Sun Scarred (5)", text: "Any damage inflicted on a character with this trait after mitigation by an attack that counts as sunlight is increased by 5 before calculating the effects of the damage. If this character is exposed to normal sunlight they lose 1 SP each hour. Cloud cover or other such weather halves the rate of SP loss. The character must spend an hour in a dark place before they can remove levels of fatigue/regain SP lost in this manner."},
+                    {name: "True Sight", text: "A creature with this trait can see and act normally in areas with dim or no light. Additionally, the creature can see through all illusions, including invisibility."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Frost Cone 2", text: "11 MP; 1d6 Frost; R Attack (5m), Overload (+WB to Dmg)"},
+                    {name: "Frost Bolt 3", text: "8 MP; 1d8 Frost; R Attack (100m), Overload (+WB to Dmg)"},
+                    {name: "Frost Bite 4", text: "9 MP; 1d10 Frost; M Attack (1m), Overload (+WB to Dmg)"},
+                    {name: "Fatigue 3", text: "10 MP; +0 Endurance, Fail, Lose 1 SP."},
+                    {name: "Disintegrate Armor 3", text: "14 MP; Damaged (3), Ranged (100m), Attack"},
+                    {name: "Disintegrate Weapon 3", text: "14 MP; Damaged (3), Ranged (100m), Attack"},
+                    {name: "Silence 4", text: "16 MP; -10 Willpower, Silenced (1 Round), Upkeep, Direct, Attack"},
+                    {name: "Reflect 4", text: "13 MP; Reflect Spell 4 or lower (1 Round), Upkeep"},
+                ]},
+            {head: "Encountering Wraiths", kind: "prose", items: [
+                    {text: "Deep in the dark corners of Nirn, there are some spirits who know no rest. Some manifest into simple ghosts. Others, those whose hearts were full of spite and hatred, become wraiths."},
+                    {text: "Wraiths are devoid of reason, attacking all that lives with blind abandon. Their incorporeal nature make them dangerous to those in heavy armor, simply phasing through their opponent\u2019s armor with their ghostly claws. Along with their withering claws, wraiths are infamous for their fell magics. They have powers that can deaden flesh with cold, sap the energy from living creatures or steal their own voice."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "When a wraith dies, it vanishes, including its spectral armor and weapons."},
+                    {text: "A character can test a -10 Alchemy test to gather one dose of ectoplasm, which is a Very Rare Mysticism ingredient."},
+                ]},
+        ],
+    },
+    "Gloom Wraith": {
+        name: "Gloom Wraith",
+        flavour: "The phantoms of powerful dead sorcerers, their malice and hatred binds them to Nirn.",
+        tags: "Wraith, Undead; Major; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "45"], ["Agility", "40"], ["Intelligence", "40"], ["Willpower", "45"], ["Perception", "25"], ["Personality", "5"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "40"], ["Wound Thr.", "15"], ["Magicka", "150"], ["Stamina", "4"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "95"], ["Magic", "75"], ["Evade", "40"], ["Observe", "25"], ["Stealth", "40"], ["Knowledge", "60"], ["Social", "5"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Spectral Claws", text: "1d8; Slashing, Magic; Reach 1m"},
+                    {text: "May have one of:"},
+                    {name: "Gloom Longsword", text: "1d8(1d10); Slashing, Magic; Reach 2m, 1.5H"},
+                    {name: "Ethereal Saber", text: "1d8; Slashing, Dueling Weapon, Magic; Reach 2m, 1H"},
+                    {name: "Ghostly Staff", text: "1d6 (1d8); Concussive, Focus, Magic, Innate Spell (see Special Abilities), Reach 2m, 1.5H"},
+                    {text: "May also have:"},
+                    {name: "Partial Phantom Armor", text: "AR 3/ Magic 3; Medium, Magic"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Malicious Intent (1 SP)", text: "The Wraith can roll damage twice and take the highest result on any damage rolls it makes until its next turn."},
+                    {name: "Refresh Spells (1 SP)", text: "The Wraith can, as a free action, refresh MP equal to half their max MP. If they have the optional Spellcaster trait, they refresh all of their spell uses instead."},
+                    {name: "Innate Spell (1 AP)", text: "The Gloom Wraith\u2019s Ghostly Staff is infused with a spell that can be cast for no Magicka cost, and always succeeds with 1 DoS. It may be infused with one of the following spells:", subs: [
+                            "Fire Bolt 1: 4 MP; 1d4 Fire; R Attack (100m), Overload (+WB to Dmg)",
+                            "Frost Bolt 1: 4 MP; 1d4 Frost; R Attack (100m), Overload (+WB to Dmg)",
+                            "Shock Bolt 1: 4 MP; 1d4 Shock; R Attack (100m), Overload (+WB to Dmg)",
+                        ]},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Howling Shrieks", text: "This creature cannot be Silenced."},
+                    {name: "Immunity (Frost)"},
+                    {name: "Incorporeal", text: "Has the Flyer (Speed) trait. Can pass through solid objects, can only be damaged by Magic weapons or spells. Cannot normally affect the world except through attacks and Magic. Its attacks ignore non-magic AR."},
+                    {name: "Sun Scarred (5)", text: "Any damage inflicted on a character with this trait after mitigation by an attack that counts as sunlight is increased by 5 before calculating the effects of the damage. If this character is exposed to normal sunlight they lose 1 SP each hour. Cloud cover or other such weather halves the rate of SP loss. The character must spend an hour in a dark place before they can remove levels of fatigue/regain SP lost in this manner."},
+                    {name: "True Sight", text: "A creature with this trait can see and act normally in areas with dim or no light. Additionally, the creature can see through all illusions, including invisibility."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Frost Cone 2", text: "11 MP; 1d6 Frost; R Attack (5m), Overload (+WB to Dmg)"},
+                    {name: "Frost Bolt 3", text: "8 MP; 1d8 Frost; R Attack (100m), Overload (+WB to Dmg)"},
+                    {name: "Frost Bite 4", text: "9 MP; 1d10 Frost; M Attack (1m), Overload (+WB to Dmg)"},
+                    {name: "Fatigue 3", text: "10 MP; +0 Endurance, Fail, Lose 1 SP."},
+                    {name: "Disintegrate Armor 3", text: "14 MP; Damaged (3), Ranged (100m), Attack"},
+                    {name: "Disintegrate Weapon 3", text: "14 MP; Damaged (3), Ranged (100m), Attack"},
+                    {name: "Silence 4", text: "16 MP; -10 Willpower, Silenced (1 Round), Upkeep, Direct, Attack"},
+                    {name: "Reflect 4", text: "13 MP; Reflect Spell 4 or lower (1 Round), Upkeep"},
+                ]},
+            {head: "Encountering Gloom Wraiths", kind: "prose", items: [
+                    {text: "While they have many similarities with Wraiths, Gloom Wraiths are known to be much more dangerous due to their prowess with blade or claw and eldritch knowledge of magic. Their origin is not certain, but they most often appear to be wearing purple robes, the color of nobility, and are graced with crowns upon their heads. This has lead some necrologists to speculate that gloom wraiths are the cursed spirits of members of nobility, or even royalty."},
+                    {text: "They are deadly foes for any adventurer to face, as their powerful spells and war gear can make short work of the ill-prepared who venture into a Gloom Wraith\u2019s demesne. Their ancient and long forgotten nobility also means that Gloom Wraiths are often accompanied by other forms of undead; servants bound to their wills for all eternity."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "When a Gloom Wraith dies, it vanishes, including its spectral armor and weapons."},
+                    {text: "A character can test a -10 Alchemy test to gather one dose of Ectoplasm, which is a Very Rare Mysticism ingredient."},
+                ]},
+        ],
+    },
+    "Zombie": {
+        name: "Zombie",
+        flavour: "Zombies are animated, rotting corpses. Hordes of them can be found serving Necromancers across Tamriel.",
+        tags: "Zombie, Undead; Minor; White Soul (100)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "25"], ["Agility", "20"], ["Intelligence", "10"], ["Willpower", "10"], ["Perception", "20"], ["Personality", "5"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "13"], ["Wound Thr.", "6"], ["Magicka", "10"], ["Stamina", "2"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "7m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "45"], ["Magic", "-"], ["Evade", "20"], ["Observe", "20"], ["Stealth", "20"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "35"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Fetid Claws", text: "1d4; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Unstoppable (1 SP)", text: "As a Free Action to being reduced to 0 HP by any means, the Zombie can test Endurance at +25 with a TN of 50. If it passes, it instead is only reduced to 1 HP and continues to function as normal. Damage from weapons with the Crushing trait negate the +25 bonus."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Diseased (+20)", text: "If this creature deals at least one point of damage after mitigation to another character with their natural weapons then that character must test Endurance +20 or contract a Common Disease."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Grabbing", text: "A successful hit from a zombie automatically initiates a Grapple."},
+                    {name: "Swarm", text: "A zombie gains +1 damage for each other zombie within Reach of the target."},
+                    {name: "Resistance (Frost, 2)"},
+                    {name: "Resistance (Magic, 1)"},
+                    {name: "Weakness (Fire, 3)"},
+                ]},
+            {head: "Encountering Zombies", kind: "prose", items: [
+                    {text: "Zombies are what a commoner thinks of when they envision necromancy. They are generally encountered either naked or sparsely clothed, with visible wounds and openings rotted into their chest and abdomen. If a corpse is fresh enough, it could even pass as a living creature, given thick enough clothes and a particularly convincing master. They are cheap for necromancers to produce since they do not require weapons like a skeleton; only some magicka and a corpse with most of its flesh intact."},
+                    {text: "Though able to move via magic, their rotted forms make them frail and weak. As such, they are often used by necromancers in swarms, overwhelming their foes in a horde of gouging digits and flailing appendages."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can attempt a +0 Alchemy test during a Short Rest to harvest a dose of Mort Flesh, which is an Uncommon Destruction ingredient. If the character fails this test, they instead contract Common Disease."},
+                ]},
+        ],
+    },
+    "Dread Zombie": {
+        name: "Dread Zombie",
+        flavour: "Dread Zombies are more powerful undead corpses raised by necromancers, serving as fetid enforcers of their will.",
+        tags: "Zombie, Undead; Average; White Soul (200)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "55"], ["Endurance", "50"], ["Agility", "20"], ["Intelligence", "10"], ["Willpower", "10"], ["Perception", "20"], ["Personality", "5"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "11"], ["Magicka", "10"], ["Stamina", "5"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "7m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "75"], ["Magic", "-"], ["Evade", "20"], ["Observe", "20"], ["Stealth", "20"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "35"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Fetid Claws", text: "1d6; Slashing; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Unstoppable (1 SP)", text: "As a Free Action to being reduced to 0 HP by any means, the Zombie can test Endurance at +25 with a TN of 75. If it passes, it instead is only reduced to 1 HP and continues to function as normal. Damage from weapons with the Crushing trait negate the +25 bonus."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Undead"},
+                    {name: "Diseased (+0, Astral Vapors)", text: "If this creature deals at least one point of damage after mitigation to another character with their natural weapons then that character must test Endurance +0 or contract Astral Vapors."},
+                    {name: "Dark Sight", text: "A creature with this trait can see and act normally in areas with dim or no light."},
+                    {name: "Grabbing", text: "A successful hit from a zombie automatically initiates a Grapple."},
+                    {name: "Swarm", text: "A zombie gains +1 damage for each other zombie within Reach of the target."},
+                    {name: "Regeneration (5)", text: "Characters with this trait heal very quickly. They may make an Endurance test at the start of each round to heal 5 HP. This does not count as magical healing unless applied by some magical source."},
+                    {name: "Resistance (Frost, 4)"},
+                    {name: "Resistance (Magic, 3)"},
+                    {name: "Weakness (Fire, 2)"},
+                ]},
+            {head: "Encountering Dread Zombies", kind: "prose", items: [
+                    {text: "Despite most being minions that lack individual strength, some zombies break the mold. Dread Zombies are a particularly dangerous type of zombie. They are stronger, tougher, some say even smarter, than the average zombie. The magic that suffuses their being is also able to slowly heal any wounds acquired after their creation. Perhaps the most insidious feature of a dread zombie is a magical blight that infects its tissues called Astral Vapors."},
+                    {text: "GMs looking to utilize zombies as foes for a party to face may consider mixing in a few Dread Zombies into their hordes. This can add an extra edge players must avoid when fighting these otherwise weak foes."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can attempt a +0 Alchemy test during a Short Rest to harvest a dose of Mort Flesh, which is an Uncommon Destruction ingredient. If the character fails this test, they instead contract Common Disease."},
+                ]},
+        ],
+    },
     "Bonelord": {
         name: "Bonelord",
         flavour: "A four armed revenant, purposefully assembled from the bones of the sacred dead. They are often found protecting the ancestral tombs of Morrowind.",
