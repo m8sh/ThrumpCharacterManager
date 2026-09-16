@@ -53,6 +53,488 @@ type Statblock = {
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Flame Atronach": {
+        name: "Flame Atronach",
+        flavour: "A powerful fire elemental which can be summoned by mages.",
+        tags: "Atronach, Daedra; Average; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "25"], ["Endurance", "30"], ["Agility", "40"], ["Intelligence", "35"], ["Willpower", "50"], ["Perception", "35"], ["Personality", "5"], ["Morale", "70"]]},
+            {group: "Attributes", rows: [["Hit Points", "28"], ["Wound Thr.", "15"], ["Magicka", "-"], ["Stamina", "4"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "70"], ["Evade", "40"], ["Observe", "35"], ["Stealth", "20"], ["Knowledge", "35"], ["Social", "5"], ["Physical", "50"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Flickerflames", text: "1d4 Fire; Magic; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Overload (1 SP)", text: "After casting a Fire spell, the Atronach can spend a Stamina Point to add its WpB to the damage dealt."},
+                    {name: "Living Flames (1 SP)", text: "After hitting a target or targets with a Fire attack, the Atronach can spend a Stamina Point to force all hit targets to immediately test Evade at +0 as a free action. Targets that fail the test immediately gain Burning (3)."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Death Throes", text: "After dying, causes a 2m explosion dealing 1d10 Fire Damage to all targets in the area, exactly as an AoE attack that scores 1 Degree of Success."},
+                    {name: "Fiery Form", text: "Emits bright light in a 5m radius. Additionally, Fire damage not originating from the Atronach heals them for the damage done instead."},
+                    {name: "Float", text: "The Flame Atronach floats 1m off the ground."},
+                    {name: "From Beyond"},
+                    {name: "Immunity (Fire)"},
+                    {name: "Resistance (Normal Weapons, 3)"},
+                    {name: "Weakness (Frost, 3)"},
+                    {name: "Wreathed in Fire", text: "Characters hit by the Atronach\u2019s melee attacks, or end a round within 1m of the Atronach must test Evade as a free action or gain the Burning (1) condition."},
+                    {name: "Atronach", text: "The Flame Atronach does not track Magicka. Instead, they cast spells from their spell list without paying the magicka cost."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Fire Bite 4", text: "9 MP; 1d10 Fire; Attack, Overload (+WpB to Damage), Melee (1m)"},
+                    {name: "Fire Bolt 3", text: "8 MP; 1d8 Fire; Attack, Overload (+WpB to Damage), Ranged (100m)"},
+                    {name: "Fire Ball 2", text: "10 MP; 1d6 Fire; AoE (2m, sphere), Attack, Overload (+WB to Damage), Target point in 100m"},
+                    {name: "Fire Cone 2", text: "11 MP; 1d6 Fire; Attack, Overload (+WpB to Damage), AoE (5m, Cone)"},
+                    {name: "Fire Storm 1", text: "9 MP; 1d4 Fire; AoE(7m, sphere), Attack, Upkeep; Target within 100m explodes, dealing damage to all targets within 7m. Any characters who pass within through this zone or end their turn in it if they started there take the damage again."},
+                    {name: "Weakness to Fire 3", text: "7 MP; Upkeep, Direct; Target within 50m gains the Weakness (Fire, 3) trait for 1 round."},
+                ]},
+            {head: "Encountering Flame Atronachs", kind: "prose", items: [
+                    {text: "Flame Atronachs form one of the most common conjured Daedra in Tamrielic history, and are found under the employ of many different Princes. When facing a group of mages or a Daedric incursion, expect to find these creatures among the enemy. If in trouble fighting Flame Atronachs, remember to avoid using offensive fire spells and equip yourself to defend against them in turn, and keep your distance lest you end up burning alive with it as it explodes upon death."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can make a -30 Alchemy test to salvage the Fire Salts, which are an Extremely Rare Alteration ingredient."},
+                ]},
+        ],
+    },
+    "Frost Atronach": {
+        name: "Frost Atronach",
+        flavour: "A powerful frost elemental which can be summoned by mages.",
+        tags: "Atronach, Daedra; Major; White Soul (800)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "50"], ["Agility", "20"], ["Intelligence", "35"], ["Willpower", "50"], ["Perception", "35"], ["Personality", "5"], ["Morale", "80"]]},
+            {group: "Attributes", rows: [["Hit Points", "33"], ["Wound Thr.", "15"], ["Magicka", "-"], ["Stamina", "5"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "80"], ["Evade", "20"], ["Observe", "35"], ["Stealth", "20"], ["Knowledge", "35"], ["Social", "5"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Ice Fists", text: "1d12; +3 Frost on Strike; Crushing, Magic; Reach 2m"},
+                    {name: "Frozen Armour", text: "AR 6; Full"},
+                    {name: "Natural Toughness (5)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Permafrost (2 SP)", text: "After hitting and damaging a target with a Frost Bolt spell, the Atronach can spend two Stamina Points to force them to immediately pass a Strength test at +0 or be Immobilized. The target remains Immobilized until they pass the Strength test as a free action at the start of each turn. A target can reattempt the test as a Secondary Action."},
+                    {name: "Deep Freeze (1 AP + 1 SP)", text: "As a Secondary Action, the Frost Atronach can immediately heal itself for 1d10 HP. Additionally, all targets within 1m take the healed amount as Frost damage unless they pass a +0 Evade test as a Free Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Freezing Form", text: "Characters who Grapple, or are Grappled by the Frost Atronach much test Endurance at -10 or be Entangled until the Grapple ends as the frost overtakes them. They also take 1 irresistible Frost Damage at the start of each round while Grappled."},
+                    {name: "From Beyond"},
+                    {name: "Immunity (Frost)"},
+                    {name: "Resistance (Normal Weapons, 3)"},
+                    {name: "Weakness (Fire, 3)"},
+                    {name: "Atronach", text: "The Frost Atronach does not track Magicka. Instead, they cast spells from their spell list without paying the magicka cost."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Frost Bite 4", text: "9 MP; 1d10 Frost; Attack, Overload (+WpB to Damage), Melee (1m)"},
+                    {name: "Frost Bolt 3", text: "8 MP; 1d8 Frost; Attack, Overload (+WpB to Damage), Ranged (100m)"},
+                    {name: "Frost Cone 2", text: "11 MP; 1d6 Fire; Attack, Overload (+WpB to Damage), AoE (5m, Cone)"},
+                    {name: "Frost Cloak 1", text: "7 MP; 1d4 Frost; Upkeep, Overload (+WB to dmg); Deals 1d8 [type] damage to targets within 1m at the end of the caster\u2019s turn."},
+                ]},
+            {head: "Encountering Frost Atronachs", kind: "prose", items: [
+                    {text: "Another oft summoned Daedra, Frost Atronachs serve as the heavy bruisers that make up for a typical mages lack of physical prowess. With chilling impacts and thick icy \u2018flesh\u2019, these creatures thrive in melee as they sap warriors dry of their stamina and crush them beneath their massive limbs."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can make a -30 Alchemy test to salvage the Frost Salts, which are an Extremely Rare Alteration ingredient."},
+                ]},
+        ],
+    },
+    "Storm Atronach": {
+        name: "Storm Atronach",
+        flavour: "A powerful storm elemental which can be summoned by mages.",
+        tags: "Atronach, Daedra; Major; White Soul (900)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "60"], ["Endurance", "55"], ["Agility", "30"], ["Intelligence", "35"], ["Willpower", "60"], ["Perception", "35"], ["Personality", "5"], ["Morale", "80"]]},
+            {group: "Attributes", rows: [["Hit Points", "36"], ["Wound Thr.", "17"], ["Magicka", "-"], ["Stamina", "5"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "90"], ["Magic", "90"], ["Evade", "30"], ["Observe", "35"], ["Stealth", "30"], ["Knowledge", "35"], ["Social", "5"], ["Physical", "80"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Stormclaw", text: "1d8 Shock; Magic; Reach 3m."},
+                    {name: "Slam", text: "1d8; Crushing, Magic, Unwieldy; Reach 1m"},
+                    {name: "Natural Toughness (6)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Overload (1 SP)", text: "After casting a Shock spell, the Atronach can spend an SP to add its WpB to the damage dealt."},
+                    {name: "Chainclaw (1 SP)", text: "After successfully hitting a target with a Stormclaw melee attack, the Atronach can spend a Stamina Point to immediately affect up to 3 other targets within 2m of the original target. This cannot be reacted to."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Gale Form", text: "The Atronach treats all its Hit Locations as being Body. Additionally, all characters within 2m of the Storm Atronach take 1d10 Crushing damage at the start of each of their turns as they are bombarded by debris and stones."},
+                    {name: "Float", text: "The Storm Atronach floats 1m off the ground."},
+                    {name: "From Beyond"},
+                    {name: "Immunity (Shock)"},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Atronach", text: "The Storm Atronach does not track Magicka. Instead, they cast spells from their spell list without paying the magicka cost."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Shock Bolt 3", text: "8 MP; 1d8 Shock; Attack, Overload (+WpB to Damage), Ranged (100m)"},
+                    {name: "Shock Cone 3", text: "8 MP; 1d8 Shock; Attack, Overload (+WpB to Damage), Ranged (100m)"},
+                    {name: "Shock Storm 1", text: "9 MP; 1d4 Shock; AoE(7m, sphere), Attack, Upkeep; Target within 100m explodes, dealing damage to all targets within 7m. Any characters who pass within through this zone or end their turn in it if they started there take the damage again."},
+                    {name: "Weakness to Shock 4", text: "8 MP; Upkeep, Direct; Target within 50m gains the Weakness (Shock, 4) trait for 1 round."},
+                ]},
+            {head: "Encountering Storm Atronachs", kind: "prose", items: [
+                    {text: "While not as common as its Flame and Frost counterparts, the Storm Atronach is still well known for its affinity for summoners along with its affinity for its namesake element. Appearing as a cluster of rocks caught in a storm in a way that resembles some kind of humanoid, these Atronachs will fling deadly Shock spells at their foes, and at times will bash at foes with their own rocky forms if someone survives long enough to engage them in melee."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can make a -30 Alchemy test to salvage the Void Salts, which are an Extremely Rare Mysticism ingredient."},
+                ]},
+        ],
+    },
+    "Flesh Atronach": {
+        name: "Flesh Atronach",
+        flavour: "A Powerful golem of stitched flesh and bone, imbued with a Daedric soul and covered in arcane symbols. Despite bearing the name \u201cAtronach\u201d, these creatures are not truly Daedra.",
+        tags: "Atronach, Construct; Major; White Soul (750)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "60"], ["Endurance", "60"], ["Agility", "30"], ["Intelligence", "30"], ["Willpower", "50"], ["Perception", "35"], ["Personality", "5"], ["Morale", "100"]]},
+            {group: "Attributes", rows: [["Hit Points", "40"], ["Wound Thr.", "17"], ["Magicka", "-"], ["Stamina", "6"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "70"], ["Magic", "80"], ["Evade", "30"], ["Observe", "35"], ["Stealth", "20"], ["Knowledge", "30"], ["Social", "5"], ["Physical", "80"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has:"},
+                    {name: "Gnarled Fist", text: "1d6; Magic; Reach 1m"},
+                    {name: "Natural Toughness (4)"},
+                    {text: "Also has one of:"},
+                    {name: "Crude Mace", text: "1d10; Crushing, Magic, Concussive, Unwieldy; Reach 2m"},
+                    {name: "Crude Axe-Flail", text: "1d10; Splitting, Magic, Flail, Unwieldy; Reach 2m"},
+                    {name: "Crude Blade", text: "1d10; Slashing, Magic; Reach 2m"},
+                    {text: "Also has one of:"},
+                    {name: "Crude Iron Partial Plating", text: "AR 3; Partial"},
+                    {name: "Crude Iron Full Plating", text: "AR 5; Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Devouring Grasp (1 SP)", text: "After successfully hitting with a Gnarled Fist attack, the Flesh Atronach can immediately spend a Stamina Point to Grapple the target and deal 1d10 Magic damage. The Atronach heals for the amount of damage dealt."},
+                    {name: "Cleave (2 SP)", text: "As part of an All Out Attack, the Flesh Atronach can strike up to 3 targets in melee reach as a single attack. Roll once for the attack, and resolve damage separately against all struck targets."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Built in Weapons", text: "The Atronach cannot be voluntarily or involuntarily disarmed of its weapons or armor."},
+                    {name: "From Beyond"},
+                    {name: "Resistance (Normal Weapons, 4)"},
+                    {name: "Regeneration (DoS+3)", text: "At the start of each of its turns, the Flesh Atronach can test Endurance to regenerate up to DoS+3 HP as a free action."},
+                    {name: "Resistance (Fire, 4)"},
+                    {name: "Weakness (Shock, 4)"},
+                ]},
+            {head: "Encountering Flesh Atronachs", kind: "prose", items: [
+                    {text: "Unlike typical Atronachs, Flesh Atronachs are more often tailor made to their masters needs and desires, as such they are more likely to be found among mages with necromantic tendencies, as well as certain Daedric Princes."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can make a -30 Alchemy test to salvage the Void Essence, which are an Extremely Rare Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Hulking Flesh Atronach": {
+        name: "Hulking Flesh Atronach",
+        flavour: "A horrifying mass of stitched flesh and twisted metal, these massive and powerful constructs are powered by the malevolent soul of a Daedra.",
+        tags: "Atronach, Construct; Major; White Soul (850)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "90"], ["Endurance", "60"], ["Agility", "30"], ["Intelligence", "30"], ["Willpower", "50"], ["Perception", "35"], ["Personality", "5"], ["Morale", "100"]]},
+            {group: "Attributes", rows: [["Hit Points", "50"], ["Wound Thr.", "17"], ["Magicka", "-"], ["Stamina", "6"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Huge"]]},
+            {group: "Skills", rows: [["Combat", "90"], ["Magic", "80"], ["Evade", "30"], ["Observe", "35"], ["Stealth", "20"], ["Knowledge", "30"], ["Social", "5"], ["Physical", "80"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has:"},
+                    {name: "Gnarled Fist", text: "1d6; Magic; Reach 1m"},
+                    {name: "Natural Toughness (4)"},
+                    {text: "Also has two of:"},
+                    {name: "Crude Mace", text: "1d10; Crushing, Magic, Concussive, Unwieldy; Reach 2m"},
+                    {name: "Crude Axe-Flail", text: "1d10; Splitting, Magic, Flail, Unwieldy; Reach 2m"},
+                    {name: "Crude Blade", text: "1d10; Slashing, Magic; Reach 2m"},
+                    {text: "Also has one of:"},
+                    {name: "Crude Iron Partial Plating", text: "AR 3; Partial"},
+                    {name: "Crude Iron Full Plating", text: "AR 5; Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Devouring Grasp (1 SP)", text: "After successfully hitting with a Gnarled Fist attack, the Flesh Atronach can immediately spend a Stamina Point to Grapple the target and deal 1d10 Magic damage. The Atronach heals for the amount of damage dealt."},
+                    {name: "Cleave (2 SP)", text: "As part of an All Out Attack, the Flesh Atronach can strike up to 3 targets in melee reach as a single attack. Roll once for the attack, and resolve damage separately against all struck targets."},
+                    {name: "Reaping Blast (1 AP + 1 SP)", text: "As a ranged attack, the Hulking Atronach can deal 1d10 Magic damage in a 5m cone. The Atronach heals for the damage dealt."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Built in Weapons", text: "The Atronach cannot be voluntarily or involuntarily disarmed of its weapons or armor."},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                    {name: "From Beyond"},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Regeneration (DoS+3)", text: "At the start of each of its turns, the Flesh Atronach can test Endurance to regenerate up to DoS+3 HP as a free action."},
+                    {name: "Resistance (Fire, 4)"},
+                    {name: "Weakness (Shock, 4)"},
+                ]},
+            {head: "Encountering Flesh Atronachs", kind: "prose", items: [
+                    {text: "Unlike typical Atronachs, Flesh Atronachs are more often tailor made to their masters needs and desires, as such they are more likely to be found among mages with necromantic tendencies, as well as certain Daedric Princes."},
+                    {text: "Hulking Flesh Atronachs are larger and stronger than their standard equivalent. They are often created by powerful necromancers to guard important lairs or serve as unliving siege weapons to nefarious ends."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can make a -30 Alchemy test to salvage the Void Essence, which are an Extremely Rare Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Aureal, the Golden Saint": {
+        name: "Aureal, the Golden Saint",
+        flavour: "Golden Saints are humanoid, Matriarchal species of Daedra who primarily serve Sheogorath. They exhibit incredible martial prowess, embodying all of Sheogorath\u2019s might.",
+        tags: "Daedra; Major; White Soul (1000)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "55"], ["Endurance", "50"], ["Agility", "50"], ["Intelligence", "50"], ["Willpower", "65"], ["Perception", "50"], ["Personality", "50"], ["Morale", "95"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "16"], ["Magicka", "100"], ["Stamina", "5"], ["Initiative", "+15"], ["Action Pts.", "3"], ["Speed", "15m"], ["Size", "Med."]]},
+            {group: "Skills", rows: [["Combat", "105"], ["Magic", "95"], ["Evade", "90"], ["Observe", "70"], ["Stealth", "80"], ["Knowledge", "70"], ["Social", "70"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Golden Longsword", text: "1d8(1d10)+4; Slashing, Magic; Reach 2m, 1.5H"},
+                    {name: "Golden Shortblade", text: "1d6+4; Slashing, Magic, Exploit Weakness; Reach 1m, 1H"},
+                    {name: "Golden Mace", text: "1d8+4; Crushing, Magic, Unwieldy; Reach 2m, 1H"},
+                    {name: "Golden War Axe", text: "1d8+4; Splitting, Magic, Unwieldy; Reach 2m, 1H"},
+                    {text: "Also has:"},
+                    {name: "Golden Longbow", text: "1d8; Reload (2), Magic, Unwieldy; Range (25 / 265 / 365)m, 2H", subs: ["Includes 12 Golden Splitting or Slashing Arrows (+4 damage, Magic)"]},
+                    {name: "Golden Armor", text: "AR 7 / Magic 7; Magic; Medium, Partial"},
+                    {text: "May Also Have:"},
+                    {name: "Golden Shield", text: "12 BR / 9 MR, Heavy, Magic."},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Sunder Weapon (1 AP + 2 SP)", text: "As a primary action, the Golden Saint can touch a single weapon, which immediately gains the Damaged (10) quality."},
+                    {name: "Eagle Eye (1 SP)", text: "As a free action before attacking with a bow, the Aureal may add +20 to hit, and cause the target to be knocked prone if damaged unless they pass a -10 Endurance or Strength test."},
+                    {name: "Killing Blow (1-3 SP)", text: "Before rolling melee damage, the Golden Saint can spend SP to increase the damage by +3 for each Stamina Point spent, up to a maximum of 3 SP."},
+                    {name: "Refresh Spells (1 SP)", text: "The Golden Saint can spend a Stamina Point to either regain magicka points up to half their MP max or refresh all their used spellcasts used with the Spellcaster trait."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "Innate Magic", text: "Can cast spells even if one or both hands are occupied."},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "From Beyond"},
+                    {name: "Reflect Magic (1)"},
+                    {name: "Weakness (Poison, 5)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {text: "Has one of the following Spell Lists:"},
+                    {name: "List One", subs: [
+                            "Heal 6: 13 MP; Caster regains 12 HP",
+                            "Shock Bolt 7: 16 MP; 2d10 Shock; Attack, Overload (+WpB to Damage), Ranged (100m)",
+                            "Burden 3: 13 MP; Target within 50m tests Str at +0. On failure, their encumbrance level increases by one for one round.",
+                            "Shock Shield 3: 6 MP; Upkeep, Defensive Overload; Target character within 50m gains a magical barrier with 3 HP for Shock damage for 1 round. (See original spell for details).",
+                        ]},
+                    {name: "List Two", subs: [
+                            "Heal 6: 13 MP; Caster regains 12 HP",
+                            "Fire Cone 7: 21 MP; 2d10 Shock; Attack, Overload (+WpB to Damage), AoE (5m, Cone)",
+                            "Frost Shield 3: 6 MP; Upkeep, Defensive Overload; Target character within 50m gains a magical barrier with 3 HP for Frost damage for 1 round. (See original spell for details).",
+                            "Fire Shield 3: 6 MP; Upkeep, Defensive Overload; Target character within 50m gains a magical barrier with 3 HP for Fire damage for 1 round. (See original spell for details).",
+                        ]},
+                    {name: "List Three", subs: [
+                            "Heal 6: 13 MP; Caster regains 12 HP",
+                            "Drain Magicka 7: 18 MP; Upkeep, Direct, Attack; Target within 50m must succeed Wp +0 or lose 28 MP",
+                            "Disintegrate Armor 3: 14 MP; Ranged(100m), Attack; Target within 100m applies Damaged(3) quality to the piece of armor on the hit location (or shield, if blocked)",
+                            "Frost Bite 3: 7 MP; 1d8 Frost; Attack, Overload (+WpB to Damage), Melee (1m)",
+                        ]},
+                    {name: "List Four", subs: [
+                            "Heal 6: 13 MP; Caster regains 12 HP",
+                            "Frost Bolt 7: 16 MP; 2d10 Frost; Attack, Overload (+WpB to Damage), Ranged (100m)",
+                            "Armor 3: 17 MP; Upkeep, Defensive Overload; Caster gains 3 AR for 1 minute.",
+                            "Fire Armor 3: 17 MP; Upkeep, Defensive Overload; Caster gains 3 Fire AR for 1 minute.",
+                        ]},
+                ]},
+            {head: "Encountering Aureals", kind: "prose", items: [
+                    {text: "These golden clad warriors of the mad prince can be found most often within the Shivering isles, where they can be seen watching over the inhabitants of Mania. A matriarchal humanoid species of daedra, it is rare to even come across a male Aureal as within their society they are looked down upon when compared to their female counterparts. Being only one half of Sheogorath\u2019s army, these \u201csaints\u201d hold a large amount of distaste for the mortal races. For the most part this race is proud, arrogant, quick to anger, and they deal out very cruel punishments."},
+                    {text: "In combat most Golden Saints are very aggressive and not afraid to fight with the golden weapons they wield, but most of them also are proficient spellcasters and are not predisposed to burning, freezing, and shocking their adversaries."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a Golden Saint\u2019s weapons and armor will be recoverable, otherwise the Saint\u2019s body and equipment vanish back to Oblivion. Golden Saints\u2019 arms and armor have the same weight and enchant values as Malachite."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Auroran": {
+        name: "Auroran",
+        flavour: "Aurorans are golden armored daedra in the service of Meridia that wield powerful axes infused with lightning. They are resistant to both magic and lightning.",
+        tags: "Auroran, Daedra; Major; White Soul (1000)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "55"], ["Agility", "45"], ["Intelligence", "45"], ["Willpower", "55"], ["Perception", "40"], ["Personality", "30"], ["Morale", "85"]]},
+            {group: "Attributes", rows: [["Hit Points", "28"], ["Wound Thr.", "15"], ["Magicka", "90"], ["Stamina", "5"], ["Initiative", "+12"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "90"], ["Magic", "85"], ["Evade", "75"], ["Observe", "60"], ["Stealth", "45"], ["Knowledge", "65"], ["Social", "40"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Auroran Great Cleaver", text: "1d12+3, +4 Shock damage on Strike; Splitting, Unwieldy, Shield Splitter, Concussive, Magic; Reach 3m, 2H"},
+                    {name: "Auroran Plate", text: "AR 7 / Magic 3; Magic; Medium, Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "The Light that Burns (1 AP + 1 SP)", text: "As a Primary Action, the Auroran can touch a target to cause 1d8 Shock Damage, as well as cause the target to cast bright light within 10m for one round. The Auroran can spend a Stamina Point each round to maintain this damage and light."},
+                    {name: "The Light that Protects (1 AP + 1 SP)", text: "As a Reaction, the Auroran can reduce all incoming damage by 3, and become Immune to Shock until its next turn."},
+                    {name: "Killing Blow (1-3 SP)", text: "Before rolling melee damage, the Auroran can spend SP to increase the damage by +3 for each Stamina Point spent, up to a maximum of 3 SP."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Meridia\u2019s Wrath", text: "Aurorans deal 5 extra Shock damage on strike against targets illuminated by bright light."},
+                    {name: "Powerful", text: "The Auroran can treat two handed weapons as one handed. They may not dual wield two handed weapons. Additionally, they ignore the Unwieldy trait when parrying."},
+                    {name: "Resistance (Normal Weapons, Shock, 5)"},
+                    {name: "Resistance (Magic, 2)"},
+                    {name: "Weakness (Shadow, 5)"},
+                ]},
+            {head: "Encountering Aurorans", kind: "prose", items: [
+                    {text: "Be it heeding the call of the Ayleids or their master and creator Meridia, Aurorans will typically be found in Ayleid ruins, for whatever regal or divine purpose they may have been given. Their preference for heavy armor and shock enchanted weapons is universal, and as such any preparations dedicated to dealing with them can always take those factors into account. The Aurorans are well known for their universal and nearly inescapable true hatred of the undead, worshipers of the undead, and any that may raise or produce undead."},
+                    {text: "Aurorans were essential in the defeat of Molag Bol during the Planemeld during the Interregnum of the Second Era, and are as exalted for their deep and dear hatred of the undead as their mistress and creator, the former Magna-Ge, Merid-Nunda, or, the Daedric Prince of Light, Meridia."},
+                    {text: "They typically wield axes and look to be made of sunlight and bone, and lack any sort of perceptible facial features, known only for their helmeted heads, and lack of skin. They are ruthless and will slay any and all who may tread their masters\u2019 dwellings."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, an Auroran\u2019s weapons and armor will be recoverable, otherwise the Auroran\u2019s body and equipment vanish back to Oblivion."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Lesser Auroran": {
+        name: "Lesser Auroran",
+        flavour: "Aurorans are Daedric servants in the employ of Meridia.",
+        tags: "Daedra; Average; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "40"], ["Agility", "30"], ["Intelligence", "45"], ["Willpower", "50"], ["Perception", "35"], ["Personality", "25"], ["Morale", "70"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "13"], ["Magicka", "45"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "55"], ["Evade", "40"], ["Observe", "45"], ["Stealth", "15"], ["Knowledge", "45"], ["Social", "25"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Moonstone Great Cleaver", text: "1d12+2; +4 Shock Damage; Splitting, Unwieldy, Shield Splitter, Concussive; Reach 3m, 2H"},
+                    {name: "Full Auroran Plate", text: "AR 7 / Magic 3; Magic; Medium, Full"},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "From Beyond"},
+                    {name: "Resistance (Shock, 2)"},
+                    {name: "Resistance (Normal Weapons, 2)"},
+                    {name: "Weakness (Shadow Magic, 5)"},
+                    {name: "Powerful", text: "The Auroran may treat two-handed weapons as one handed. They may not dual wield two-handed weapons. Additionally, they ignore the Unwieldy weapon quality for parrying."},
+                ]},
+            {head: "Encountering Lesser Aurorans", kind: "prose", items: [
+                    {text: "Be it heeding the call of the Ayleids or their master and creator Meridia, Aurorans will typically be found in Ayleid ruins, for whatever regal or divine purpose they may have been given. Their preference for heavy armor and shock enchanted weapons is universal, and as such any preparations dedicated to dealing with them can always take those factors into account."},
+                    {text: "They typically wield axes and look to be made of sunlight and bone, and lack any sort of perceivable facial features, known only for their helmeted heads, and lack of skin. They\u2019re very ubiquitous looking, and genuinely seem to lack souls. They are ruthless and will slay any and all who may tread their masters\u2019 dwellings. Lesser Aurorans will typically be seen in the depths of Ayleid ruins, in the employ of a priest of Meridia or an Ayleid lord. They are one of few groups of Aurorans who will work with undead, as Meridia\u2019s influence is not very strong on them."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, an Auroran\u2019s weapons and armor will be recoverable, otherwise the Auroran\u2019s body and equipment vanish back to Oblivion."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Guardian of the Colored Rooms": {
+        name: "Guardian of the Colored Rooms",
+        flavour: "Guardians of the Colored Rooms serve as the main bodyguards of Meridia, Only wizards of great power can make them leave and force them into service on Nirn.",
+        tags: "Daedra; Extreme; White Soul (1000)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "75"], ["Endurance", "60"], ["Agility", "50"], ["Intelligence", "70"], ["Willpower", "75"], ["Perception", "50"], ["Personality", "45"], ["Morale", "80"]]},
+            {group: "Attributes", rows: [["Hit Points", "30"], ["Wound Thr.", "20"], ["Magicka", "95"], ["Stamina", "6"], ["Initiative", "+17"], ["Action Pts.", "4"], ["Speed", "17m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "95"], ["Magic", "90"], ["Evade", "85"], ["Observe", "65"], ["Stealth", "50"], ["Knowledge", "70"], ["Social", "45"], ["Physical", "80"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Auroran Great Cleaver", text: "1d12+3; +4 Shock Damage; Splitting, Unwieldy, Shield Splitter, Concussive, Focus; Reach 3m, 2H"},
+                    {name: "Full Auroran Plate", text: "AR 7 / Magic 3; Magic; Medium, Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "The Light that Burns (1 AP + 1 SP)", text: "As a Primary Action, the Auroran can touch a target to cause 1d8 Shock Damage, as well as cause the target to cast bright light within 10m for one round. The Auroran can spend a Stamina Point each round to maintain this damage and light."},
+                    {name: "The Light that Protects (1 AP + 1 SP)", text: "As a Reaction, the Auroran can reduce all incoming damage by 3, and become Immune to Shock until its next turn."},
+                    {name: "Killing Blow (1-3 SP)", text: "Before rolling melee damage, the Auroran can spend SP to increase the damage by +3 for each Stamina Point spent, up to a maximum of 3 SP."},
+                    {name: "Refresh Spells (1 SP)", text: "The Guardian of the Colored Rooms can spend a Stamina Point to either regain magicka points up to half their MP max or refresh all their used spellcasts used with the Spellcaster trait."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "From Beyond"},
+                    {name: "Resistance (Shock, 7)"},
+                    {name: "Weakness (Shadow Magic, 5)"},
+                    {name: "Resistance (Normal Weapons, 7)"},
+                    {name: "Resistance (Magic, 5)"},
+                    {name: "Powerful", text: "The Guardian may treat two-handed weapons as one handed. They may not dual wield two-handed weapons. Additionally, they ignore the Unwieldy weapon quality for parrying."},
+                    {name: "Meridia\u2019s Wrath", text: "Guardians deal 5 shock extra damage against targets that are illuminated or gain the conditions of a light spell. (by magical or mundane sources)."},
+                    {name: "Executioner", text: "The character adds 1d4 to their Strength bonus for the purposes of the Splitting quality when making All Out Attacks with great axes. Additionally, this character\u2019s foes suffer a -20 penalty to Shock tests made because of wounds inflicted by greataxes."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Chain Lightning 6", text: "21 MP; 2d8 Shock; R Attack (50m), Overload (+WB to Dmg)"},
+                    {name: "Fatigue 3", text: "10 MP; Direct, Attack; Target within 50m must succeed an End +0 test or lose 1 SP"},
+                    {name: "Drain Magicka 5", text: "14 MP; Upkeep, Direct, Attack; Target within 50m must pass a Wp test or lose 20 MP."},
+                    {name: "Poisonbloom 4", text: "14 MP; 1d10 Poison; Ranged(100m), Attack, AoE (2m, Sphere), Overload (+WB to Dmg)"},
+                    {name: "Sunbeam 5", text: "22 MP; 2d6 Fire; AoE (30m, beam), Attack, Overload (+WB to Dmg)"},
+                    {name: "Summon Frost Atronach 4", text: "37 MP; Upkeep, Mindlock (2); See original spell for details."},
+                ]},
+            {head: "Encountering Guardians", kind: "prose", items: [
+                    {text: "Aurorans typically wield axes and look to be made of sunlight and bone, and lack any sort of perceivable facial features, known only for their helmeted heads, and lack of skin. They are ruthlessly slay any who tread their masters\u2019 dwellings. Colored Guardians are an elite class of Auroran, whose duty is to guard their Creator, Meridia, and follow important orders with which they will give their lives. Colored Guardians will usually only be seen inside of Oblivion, but when called to Tamriel, they can serve as bosses on their own, not to mention potentially being under the control of powerful Sorcerer-Kings. They can be found in large, towering Ayleid citadels with a vast number of Lesser Aurorans."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, an Auroran\u2019s weapons and armor will be recoverable, otherwise the Auroran\u2019s body and equipment vanish back to Oblivion."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Banekin": {
+        name: "Banekin",
+        flavour: "A small Daedra resembling a winged humanoid. Banekin are associated with Molag Bal and use powerful shock spells in combat. They can speak Tamrielic, and are sometimes used as familiars by powerful wizards.",
+        tags: "Daedra; Average; White Soul (200)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "15"], ["Endurance", "25"], ["Agility", "40"], ["Intelligence", "50"], ["Willpower", "35"], ["Perception", "35"], ["Personality", "5"], ["Morale", "65"]]},
+            {group: "Attributes", rows: [["Hit Points", "13"], ["Wound Thr.", "6"], ["Magicka", "50"], ["Stamina", "2"], ["Initiative", "+12"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "70"], ["Evade", "40"], ["Observe", "55"], ["Stealth", "55"], ["Knowledge", "50"], ["Social", "5"], ["Physical", "15"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Shocking Claws", text: "1d4 + 2 Shock; Slashing, Exploit Weakness, Small, Magic; Reach 1m."},
+                    {name: "Natural Toughness (2)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Static Envelopment (1 AP + 1 SP)", text: "As a Secondary Action, the Banekin can conjure a crackling aura of electricity, dealing 1d4 shock damage to any character within 2m at the start of their turn. At the start of each of the Banekin\u0027s turns, they can test +20 Willpower to refresh the effect for free."},
+                    {name: "Refresh Spells (1 SP)", text: "The Banekin can spend a Stamina Point to either regain magicka points up to half their MP max or refresh all their used spellcasts used with the Spellcaster trait."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Resistance (Shock, 5)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Shock Bite 1", text: "3 MP; 1d4 Shock; Attack, Overload (+WpB to Damage), Melee (1m)"},
+                    {name: "Shock Bite 2", text: "5 MP; 1d6 Shock; Attack, Overload (+WpB to Damage), Melee (1m)"},
+                    {name: "Shock Bite 3", text: "7 MP; 1d8 Shock; Attack, Overload (+WpB to Damage), Melee (1m)"},
+                ]},
+            {head: "Encountering Banekin", kind: "prose", items: [
+                    {text: "The Banekin mainly serve Molag Bal, and aren\u2019t seen too much outside of their sphere of Influence in Oblivion, but within Tamriel there are many conjurers that summon this tiny devil to harass their opponents with shock damage. They can also be used to do minor menial tasks which is why they\u2019re popular as familiars to more powerful wizards."},
+                    {text: "Primarily a melee focused caster, the Banekin use Shock Bite spells in conjunction with its unique lightning ball to cause havoc in battle. Being one of the smallest Daedra, they\u2019re often overlooked, much to their targets misfortune though. A single Banekin may not seem like much, but when more are summoned they quickly become a very dangerous threat to those around them, through sheer weight of numbers and the volume of static electricity discharging violently through the air."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a Banekin\u2019s Claws, which are a Rare Illusion ingredient, can be harvested with a -10 Alchemy test. Otherwise, the Banekin\u2019s body vanishes back to Oblivion."},
+                    {text: "If slain while permanently bound to Mundus, a character can make a -10 Alchemy test to salvage the Banekin\u2019s Tiny Daedra Heart, which is a Rare Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Clannfear": {
+        name: "Clannfear",
+        flavour: "Clannfear are dinosaur-like Daedra that resemble a lizard with a large, bony crest on their head and a sharp beak and talons. They walk on two legs and use their clawed arms much like a predatory dinosaur would. They are generally thought to be of animal intelligence, though it is possible that they are intelligent enough to be communicated with at times.",
+        tags: "Daedra; Average; White Soul (400)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "45"], ["Agility", "50"], ["Intelligence", "25"], ["Willpower", "40"], ["Perception", "40"], ["Personality", "5"], ["Morale", "60"]]},
+            {group: "Attributes", rows: [["Hit Points", "27"], ["Wound Thr.", "13"], ["Magicka", "25"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "15m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "70"], ["Magic", "25"], ["Evade", "70"], ["Observe", "60"], ["Stealth", "50"], ["Knowledge", "25"], ["Social", "5"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Headbutt", text: "1d8; Crushing, Concussive; Reach 1m"},
+                    {name: "Clannfear Claws", text: "1d4; Slashing, Magic; Reach 1m"},
+                    {name: "Gnashing Beak", text: "1d8; Splitting, Unwieldy, Magic; Reach 2m"},
+                    {name: "Clannfear Hide", text: "Full AR 4"},
+                    {name: "Natural Toughness (2)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Charge (1 AP + 1 SP)", text: "The Clannfear can lower its head and barrel through its foes as a Primary Action. It can move up to triple its Speed in a straight line, and any characters Standard size or smaller caught in its path must test Evade as a free action or take 1d6 Crushing damage and be knocked Prone."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Daedric Reflection", text: "Any time the Clannfear is struck in melee that is fully or partially resisted by it\u2019s AR value, it causes 1d4 Magic damage on the attacker immediately."},
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Resistance (Fire, 5)"},
+                    {name: "Savage", text: "The creature rolls damage twice and keeps the highest roll."},
+                    {name: "Strong Jaws", text: "An attack with Gnashing Beak that deals damage automatically starts a Grapple. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Weakness (Shock, 3)"},
+                ]},
+            {head: "Encountering Clannfears", kind: "prose", items: [
+                    {text: "Clannfear are typically found in the Deadlands, and are mostly associated with the Daedric Prince Mehrunes Dagon. These monsters are among the more common variety of summoned monsters by conjurers, as they aren\u2019t too hard to handle. At the beginning of any fight this Daedra charges through its enemies, knocking them down and crushing through their armor. It also boasts a unique ability to reflect damage, another quality that makes it suitable to be used on the front lines of battle."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can test Alchemy at -10 to harvest the Clannfear\u2019s Claws, which are a Rare Destruction ingredient, otherwise the Clannfear vanished back to the realms of Oblivion."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can test Survival at -20 over the course of a Long Rest to flay the Clannfear\u2019s hide, worth 100 drakes. On a -30 Survival test over another Long Rest, a character can turn the Clannfear hide into one piece of Full Clannfear Leather Armor or two pieces of Partial Clannfear Leather Armor. Clannfear Leather Armor is exactly the same as Leather Armor but has +1 AR, and additionally grants the wearer the Daedric Reflection trait on the worn Hit Location. Clannfear Leather Armor cannot be Enchanted."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
     "Dragon Priest": {
         name: "Dragon Priest",
         flavour: "Of all the mortals within the Dragon Cult, the Dragon Priests were undeniably the greatest followers. Trained intensely in the ways of their Masters, with the strongest even earning sacred masks filled with power and status, Dragon Priests are the deadliest creatures within the Nordic Ruins.",
@@ -3942,6 +4424,23 @@ const creatureLibrary: {chapter: string, category: string, members: string[]}[] 
     {chapter: "Undead", category: "Skeletons", members: ["Skeleton", "Skeletal Champion"]},
     {chapter: "Undead", category: "Wraiths", members: ["Wraith", "Gloom Wraith"]},
     {chapter: "Undead", category: "Zombies", members: ["Zombie", "Dread Zombie"]},
+    {chapter: "Daedra", category: "Atronachs", members: ["Flame Atronach", "Frost Atronach", "Storm Atronach", "Flesh Atronach", "Hulking Flesh Atronach"]},
+    {chapter: "Daedra", category: "Aureal, the Golden Saint", members: ["Aureal, the Golden Saint"]},
+    {chapter: "Daedra", category: "Aurorans", members: ["Auroran", "Lesser Auroran", "Guardian of the Colored Rooms"]},
+    {chapter: "Daedra", category: "Banekin", members: ["Banekin"]},
+    {chapter: "Daedra", category: "Clannfear", members: ["Clannfear"]},
+    {chapter: "Daedra", category: "Daedrat", members: ["Daedrat"]},
+    {chapter: "Daedra", category: "Daedroth", members: ["Daedroth"]},
+    {chapter: "Daedra", category: "Dremora", members: ["Dremora Churl", "Dremora Caitiff", "Dremora Kynmarcher", "Dremora Lord"]},
+    {chapter: "Daedra", category: "Hell Hound", members: ["Hell Hound"]},
+    {chapter: "Daedra", category: "Hunger", members: ["Hunger"]},
+    {chapter: "Daedra", category: "Mazken, the Dark Seducer", members: ["Mazken, the Dark Seducer"]},
+    {chapter: "Daedra", category: "Ogrim", members: ["Ogrim"]},
+    {chapter: "Daedra", category: "Scamp", members: ["Scamp"]},
+    {chapter: "Daedra", category: "Spider Daedra", members: ["Spider Daedra"]},
+    {chapter: "Daedra", category: "Spiderling", members: ["Spiderling"]},
+    {chapter: "Daedra", category: "Winged Twilight", members: ["Winged Twilight"]},
+    {chapter: "Daedra", category: "Xivilai", members: ["Xivilai"]},
 ]
 
 // a search should find a skeever when you type rat, so the category and the chapter
