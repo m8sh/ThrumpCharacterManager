@@ -53,6 +53,698 @@ type Statblock = {
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Daedroth": {
+        name: "Daedroth",
+        flavour: "Daedroth are crocodile-headed bipedal Daedra, associated with Molag Bal and Mehrunes Dagon. They are a strong, more animalistic type of Daedra with powerful claws and magical ability.",
+        tags: "Daedra; Major; White Soul (1000)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "65"], ["Endurance", "60"], ["Agility", "40"], ["Intelligence", "20"], ["Willpower", "50"], ["Perception", "40"], ["Personality", "5"], ["Morale", "80"]]},
+            {group: "Attributes", rows: [["Hit Points", "52"], ["Wound Thr.", "20"], ["Magicka", "20"], ["Stamina", "6"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "15m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "85"], ["Magic", "20"], ["Evade", "50"], ["Observe", "60"], ["Stealth", "40"], ["Knowledge", "20"], ["Social", "5"], ["Physical", "85"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Crocodilian Jaws", text: "1d12; Slashing, Crushing, Magic; Reach 2m"},
+                    {name: "Ripping Claws", text: "2d8; Splitting, Magic; Reach 1m"},
+                    {name: "Reptilian Fists", text: "2d8; Crushing, Magic; Reach 1m"},
+                    {name: "Daedroth Hide", text: "AR 8; Full"},
+                    {name: "Natural Toughness (2)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Thrash (1 SP)", text: "If the Daedroth successfully Bites a target, it can spend a Stamina Point as a free action to violently thrash the target, dealing a bonus 1d12 damage that ignores armor immediately."},
+                    {name: "Fiery Breath (1 AP + 1 SP)", text: "The Daedroth can, as a Primary Action, spend an SP to breathe fire in a 5m cone. This deals 2d6 Fire damage to all targets within this area."},
+                    {name: "Oblivion\u0027s Bulwark (1 AP)", text: "The Daedroth can, as a Reaction, cast the Shield 3 spell without expending Magicka."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Apex Predator", text: "The Daedroth is not limited by the usual Attacks per-round restrictions."},
+                    {name: "Strong Jaws", text: "An attack with Crocodilian Jaws that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Frightening", text: "At the start of an encounter with a Daedroth, all other characters must immediately test for Panic at -20."},
+                    {name: "Savage", text: "The creature rolls damage twice and keeps the highest roll."},
+                    {name: "Resistance (Fire, Normal Weapons, 5)"},
+                    {name: "Weakness (Shock, 3)"},
+                ]},
+            {head: "Encountering Daedroths", kind: "prose", items: [
+                    {text: "These fearsome beasts are one the most physically powerful monstrosities that Oblivion can hold. Mostly associated with the Daedric princes Molag Bal and Mehrunes Dagon, these Daedra are the perfect shock troops to decimate any foe in their way."},
+                    {text: "With crocodile sized heads and enormous bodies larger than most mortal man and mer, a single bite from one of these could tear someone in two with ease. Some have even been known to wear armor and use weapons, but for the most part they prefer to use their claws and mouth to rip their foes apart. Boasting resistances to non-magical weapons and fire, this Daedra is also not easy to kill, and even possesses a fire breath that roasts their enemies alive. Do not take this Daedra lightly, as it will not hesitate to destroy any party of adventurers with ease."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can test Alchemy at -20 to harvest the Daedroth\u2019s Teeth, which are a Very Rare Alteration ingredient."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can test Survival at -10 over the course of a Long Rest to flay the Daedroth\u2019s hide, worth 1000 drakes."},
+                    {text: "A character can use a Daedroth hide to create a piece of Daedroth Scale Armor, which is Full Armor, with the same stats as Full Dwemer armor, but it also grants +5 Magic AR, and grants the wearer Resistance (Normal Weapons, Fire, 5) on the worn Hit Location, but also causes the wearer to have Weakness (Shock, 3) on all Hit Locations. Daedroth Scale Armor cannot be Enchanted."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Dremora Churl": {
+        name: "Dremora Churl",
+        flavour: "Dremora (also known as \u201cThe Kyn\u201d) are a warlike Daedric race associated with the Daedric Prince of Destruction, Mehrunes Dagon. They are commonly encountered throughout the planes of Oblivion. Dremora are known to be intelligent, sentient beings, and make capable warriors and mages. The Dremora Churl is thought to be the lowliest of the Dremora, outranked by all their peers, the Churls are the foot soldiers of Oblivion.",
+        tags: "Dremora, Daedra; Major; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "38"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "45"], ["Perception", "30"], ["Personality", "25"], ["Morale", "75"]]},
+            {group: "Attributes", rows: [["Hit Points", "19"], ["Wound Thr.", "11"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "55"], ["Evade", "45"], ["Observe", "50"], ["Stealth", "35"], ["Knowledge", "50"], ["Social", "45"], ["Physical", "60"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Dremora Longsword", text: "1d8(1d10)+3; Slashing, Magic; Reach 2m, 1.5H"},
+                    {name: "Dremora Mace", text: "1d8+3; Crushing, Unwieldy, Concussive, Magic; Reach 2m, 1H"},
+                    {name: "Dremora Field Bow", text: "1d6; Reload(1); Range (35/115/215)m; 2H", subs: ["Includes 12 Dremora Splitting or Slashing Arrows (+3 damage, Magic)"]},
+                    {text: "Also has:"},
+                    {name: "Dremora Plate Armor", text: "AR 7 / Magic 7; Magic; Super-Heavy, Full"},
+                    {text: "May also have:"},
+                    {name: "Dremora Shield", text: "BR 11 / MR 11; Magic; Heavy"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Killing Blow (1 SP)", text: "Before rolling melee damage, the Dremora can spend SP to increase the damage by +3 for each Stamina Point spent, up to a maximum of 1 SP."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Magic Resistant", text: "Re-rolls failed tests to resist magic."},
+                    {name: "Spell Reflect (2)", text: "Whenever the Dremora would be affected by a magic spell, roll a d10. On a 2 or less, the Dremora is unaffected and the caster of the spell is affected instead."},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Resistance (Magic, 3)"},
+                    {name: "Teamwork", text: "When fighting a target in Reach of another Dremora, the Churl gains a bonus +1 DoS on all Combat Style and Evade tests made against the target."},
+                ]},
+            {head: "Encountering Dremora Churls", kind: "prose", items: [
+                    {text: "Dremora can be seen all across Oblivion, in service to most of the Daedric princes, but the most common Princes you\u2019ll see them employed by are Molag Bal, Mehrunes Dagon, and Boethia. These fearsome warriors have a class based clan system, the more important to watch out for are the Kynreeve, Kynmarcher, Markynaz, and Valkynaz. These are more powerful Dremora that are leaders of the lesser Dremora of their clan."},
+                    {text: "Being very powerful warriors as well as mages, the Dremora are very formidable in battle and will not hesitate to utterly obliterate their enemies with a fireball in one hand a legendary sword in the other. Armed with some of the best crafted gear as well, It would be unwise to take on these Daedra head on in a fight."},
+                    {text: "Along with other Daedra the Dremora share a mutual hatred of the mortal race. Despite this Dremora are actually one of the few most commonly summoned Daedra, despite being among the strongest Daedra. They\u2019re employed by many powerful spellcasters to do their bidding for however long they are summoned, which can sometimes be indefinitely tied to the Spellcaster."},
+                    {text: "Dremora Churls are the lowest ranking of these Daedra, and from the bulk of the standing armies of Oblivion\u2019s most militant Princes."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a Dremora Churl\u2019s weapons and armor will be recoverable, otherwise the Dremora\u2019s body and equipment vanish back to Oblivion. Dremora arms and armor have the same enchant value and weight as Daedric."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Dremora Caitiff": {
+        name: "Dremora Caitiff",
+        flavour: "The Dremora Caitiff is but a hair\u2019s breadth above the lowly Churl. Ever vying for their own position, a Caitiff must continuously prove themselves in furious battle lest they fall through the ranks back to their humble beginnings.",
+        tags: "Dremora, Daedra; Average; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "44"], ["Agility", "38"], ["Intelligence", "30"], ["Willpower", "49"], ["Perception", "36"], ["Personality", "22"], ["Morale", "79"]]},
+            {group: "Attributes", rows: [["Hit Points", "22"], ["Wound Thr.", "12"], ["Magicka", "30"], ["Stamina", "4"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "70"], ["Magic", "35"], ["Evade", "55"], ["Observe", "50"], ["Stealth", "35"], ["Knowledge", "50"], ["Social", "45"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Dremora Claymore", text: "1d12+3; Slashing, Magic; Reach 3m; 2H"},
+                    {name: "Dremora Great-Mace", text: "1d12+3; Crushing, Unwieldy, Concussive, Shield Splitter, Magic; Reach 3m, 2H"},
+                    {name: "Pair of Dremora Maces", text: "1d8+3; Crushing, Unwieldy, Concussive, Magic; Reach 2m, 1H; Wields one in each hand"},
+                    {text: "Also has:"},
+                    {name: "Dremora Plate Armor", text: "AR 7 / Magic 7; Magic; Super-Heavy, Full"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Killing Blow (1-2 SP)", text: "Before rolling melee damage, the Dremora can spend SP to increase the damage by +3 for each Stamina Point spent, up to a maximum of 2 SP."},
+                    {name: "Daedric Fury (1 AP + 1 SP)", text: "The Dremora can work themselves into a frenzy as a Primary Action. During this time they roll all damage twice and pick the highest on all melee attacks until it is Stunned, Dazed, or willingly ends the fury."},
+                    {name: "Cleave (1 SP)", text: "As part of an All Out Attack, the Dremora can strike up to 3 targets in melee Reach as a single attack. Roll once for the attack, and resolve damage separately against all struck targets."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Magic Resistant", text: "Re-rolls failed tests to resist magic."},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Resistance (Magic, 3)"},
+                    {name: "Spell Reflect (2)", text: "Whenever the Dremora would be affected by a magic spell, roll a d10. On a 2 or less, the Dremora is unaffected and the caster of the spell is affected instead."},
+                    {name: "Teamwork", text: "When fighting a target in Reach of another Dremora, the Churl gains a bonus +1 DoS on all Combat Style and Evade tests made against the target."},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                ]},
+            {head: "Encountering Dremora Caitiffs", kind: "prose", items: [
+                    {text: "Dremora Caitiff are among the lowest ranking Dremora, and fight wildly on the front lines to maintain their low, but not the lowest, station among their war-like people."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a Dremora Caitiff\u2019s weapons and armor will be recoverable, otherwise the Dremora\u2019s body and equipment vanish back to Oblivion. Dremora arms and armor have the same enchant value and weight as Daedric."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Dremora Kynmarcher": {
+        name: "Dremora Kynmarcher",
+        flavour: "The Dremora Kynmarcher is an officer among the legions of Dremora. Something akin to Tamriel\u2019s knights or legion centurions, a Kynmarcher commands a fighting company of Dremora.",
+        tags: "Dremora, Daedra; Major; White Soul (800)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "50"], ["Agility", "45"], ["Intelligence", "40"], ["Willpower", "55"], ["Perception", "40"], ["Personality", "35"], ["Morale", "85"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "15"], ["Magicka", "40"], ["Stamina", "5"], ["Initiative", "+12"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "75"], ["Evade", "65"], ["Observe", "60"], ["Stealth", "55"], ["Knowledge", "60"], ["Social", "65"], ["Physical", "70"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Dremora Longsword", text: "1d8(1d10)+3; Slashing, Magic; Reach 2m, 1.5H"},
+                    {name: "Dremora Great-Mace", text: "1d12+3 Crushing, Unwieldy, Concussive, Shield Splitter, 2H, Magic, Reach 3m."},
+                    {name: "Dremora Field Bow", text: "1d6 (35/115/215)m Range; Reload (1), 1H, plus 12 Dremora Arrows (+3, Magic, Splitting or Slashing)."},
+                    {text: "Also has:"},
+                    {name: "Dremora Plate Armor", text: "AR 7 / Magic 7; Magic; Super-Heavy, Full"},
+                    {text: "May also have:"},
+                    {name: "Dremora Shield", text: "BR 11 / MR 11; Magic, Heavy"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Killing Blow (1-3 SP)", text: "Before rolling melee damage, the Dremora can spend SP to increase the damage by +3 for each Stamina Point spent, up to a maximum of 3 SP."},
+                    {name: "Power Block (1 SP)", text: "The Dremora can double their shield\u0027s BR against physical damage as part of a block action."},
+                    {name: "Cleave (1 SP)", text: "As part of an All Out Attack, the Dremora can strike up to 3 targets in melee Reach as a single attack. Roll once for the attack, and resolve damage separately against all struck targets."},
+                    {name: "Kynmarch (1 AP + 1 SP)", text: "As a Primary Action, the Kynmarcher can bark an order and command all friendly Dremora within 10m to immediately make a free Attack action that does not count towards the usual attack limit per round."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Magic Resistant", text: "Re-rolls failed tests to resist magic."},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Resistance (Magic, 3)"},
+                    {name: "Spell Reflect (2)", text: "Whenever the Dremora would be affected by a magic spell, roll a d10. On a 2 or less, the Dremora is unaffected and the caster of the spell is affected instead."},
+                    {name: "Teamwork", text: "When fighting a target in Reach of another Dremora, the Churl gains a bonus +1 DoS on all Combat Style and Evade tests made against the target."},
+                ]},
+            {head: "Variant: Dremora Warlock", kind: "list", items: [
+                    {text: "Weapons and Armor"},
+                    {text: "Replaces Dremora Plate Armor with Dremora Robes, which are plain black robes made of fine daedric silks."},
+                    {text: "Additionally, Gains one of the following enchanted rings:"},
+                    {name: "Ring of the Iron-Heart", text: "+2 AR, Constant"},
+                    {name: "Ring of the War-Mind", text: "Fortify Willpower +10, Constant"},
+                    {name: "Ring of the Spell-Drinker", text: "Absorb Magic (2), Constant"},
+                    {text: "Spells"},
+                    {text: "Knows 4 of the following:", subs: [
+                            "Shock Bolt 3: 8 MP; 1d8 Shock; Attack, Overload (+WpB to Damage), Ranged (100m)",
+                            "Fire Bolt 3: 8 MP; 1d8 Fire; Attack, Overload (+WpB to Damage), Ranged (100m)",
+                            "Frost Bolt 3: 8 MP; 1d8 Frost; Attack, Overload (+WpB to Damage), Ranged (100m)",
+                            "Summon Scamp 1: 8 MP; Upkeep, Mindlock(1); See original spell for details",
+                            "Detect Life 3: 16 MP; Upkeep; Can see a faint outline of all living creatures within 30m",
+                            "Absorb Magicka 3: 13 MP; Direct, Attack; Target within 50m makes a Wp test or loses 1d8 magicka. Caster regenerates MP equal to the magicka lost. If this spell is affected by reflect, it has no effect.",
+                        ]},
+                ]},
+            {head: "Encountering Dremora Kynmarchers", kind: "prose", items: [
+                    {text: "Dremora Kynmarchers are the nobles of the Dremora caste system, and command much respect from their inferiors, if begrudgingly or solely out of fear, it makes no difference. Where a Kynmarcher is found, an army is to follow."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a Dremora Kynmarcher\u2019s weapons and armor will be recoverable, otherwise the Dremora\u2019s body and equipment vanish back to Oblivion. Dremora arms and armor have the same enchant value and weight as Daedric."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration Ingredient."},
+                ]},
+        ],
+    },
+    "Dremora Lord": {
+        name: "Dremora Lord",
+        flavour: "The Dremora Valkynaz, also known simply as a Dremora Lord, is the mightiest kind of Dremora to be found. The highest and most esteemed of the Dremora titles, the Valkynaz commands legions and sunders men apart. It is said that their Daedric armor is created by binding their own predecessors\u2019 essence to the new armor, for a Dremora Valkynaz is never promoted: they exclusively usurp.",
+        tags: "Dremora, Daedra; Extreme; White Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "55"], ["Endurance", "52"], ["Agility", "53"], ["Intelligence", "45"], ["Willpower", "70"], ["Perception", "42"], ["Personality", "43"], ["Morale", "100"]]},
+            {group: "Attributes", rows: [["Hit Points", "26"], ["Wound Thr.", "17"], ["Magicka", "45"], ["Stamina", "5"], ["Initiative", "+13"], ["Action Pts.", "4"], ["Speed", "15m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "105"], ["Magic", "70"], ["Evade", "73"], ["Observe", "72"], ["Stealth", "63"], ["Knowledge", "75"], ["Social", "65"], ["Physical", "85"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Daedric Longsword", text: "1d8(1d10)+4; Slashing, Magic; Reach 2m, 1.5H"},
+                    {name: "Daedric Great-Mace", text: "1d12+4; Crushing, Unwieldy, Concussive, Shield Splitter, Magic; Reach 3m, 2H"},
+                    {name: "Pair of Daedric Cleavers", text: "1d8+4; Slashing, Magic; Reach 2m, 1H; Wields one in each hand"},
+                    {text: "Also has:"},
+                    {name: "Enchantment", text: "The chosen weapon has one of the following strike enchantments:", subs: [
+                            "Hungering Fire: Deals 4 bonus Fire damage on Strike and heals the bearer for the Fire damage dealt.",
+                            "Heart Drinker: The bearer heals for the damage the weapon deals to living targets.",
+                            "Soul Eater: Deals 4 bonus Magic damage on Strike and Soul Traps the target for one minute.",
+                        ]},
+                    {text: "Also has:"},
+                    {name: "Daedra Plate Armor", text: "AR 8 / Magic 8; Magic; Super-Heavy, Full"},
+                    {text: "May also have:"},
+                    {name: "Daedric Shield", text: "BR 12 / MR 12; Magic; Heavy"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Killing Blow (1-3 SP)", text: "Before rolling melee damage, the Dremora can spend SP to increase the damage by +3 for each Stamina Point spent, up to a maximum of 3 SP."},
+                    {name: "Power Block (1 SP)", text: "The Dremora can double their shield\u0027s BR against physical damage as part of a block action."},
+                    {name: "Cleave (1 SP)", text: "As part of an All Out Attack, the Dremora can strike up to 3 targets in melee Reach as a single attack. Roll once for the attack, and resolve damage separately against all struck targets."},
+                    {name: "Kynmarch (1 AP + 1 SP)", text: "As a Primary Action, the Dremora Lord can bark an order and command all friendly Dremora within 10m to immediately make a free Attack action that does not count towards the usual attack limit per round."},
+                    {name: "Riposte (1 SP)", text: "Immediately after successfully parrying a melee attack, the Dremora Lord can make a free attack against the target he parried as long as the target is in reach. This does not count towards the total attack limit per round."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Magic Resistant", text: "Re-rolls failed tests to resist magic."},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Resistance (Magic, 3)"},
+                    {name: "Spell Reflect (2)", text: "Whenever the Dremora would be affected by a magic spell, roll a d10. On a 2 or less, the Dremora is unaffected and the caster of the spell is affected instead."},
+                    {name: "Teamwork", text: "When fighting a target in Reach of another Dremora, the Churl gains a bonus +1 DoS on all Combat Style and Evade tests made against the target."},
+                    {name: "Dual Fighter", text: "Raise the maximum number of attacks to 3 per round as long as the character is dual wielding and attacks with each wielded weapon at least once."},
+                ]},
+            {head: "Encountering Dremora Lords", kind: "prose", items: [
+                    {text: "Dremora Lords regularly surround themselves with trusted retainers; proven Kynmarchers and the like. It is difficult to fight a Lord without their backup, for the Dremora are clannish and militaristic. They are not warriors, they are soldiers, an important distinction."},
+                    {text: "Dremora Lords wear the greatest armor and bear the greatest weapons of the infernal legions. It is said that a Valkynaz\u2019 first act upon usurping their predecessor is to cut out their heart and steal their soul, and bind it to a freshly forged piece of armor or weapon. The arms and armor a Dremora Valkynaz bears are a reminder of all that came before, and a warning that he was better than them all."},
+                    {text: "Like Kynmarchers, Dremora Lords are a brutally effective force multiplier, and use their supernatural Kynmarch ability to rouse their soldiers to further and further violence. Killing a Dremora Lord, or their followers, as fast as possible should be the priority of any warband facing the displeasure of fighting one of these Daedric warlords."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a Dremora Lord\u2019s weapons and armor will be recoverable, otherwise the Dremora\u2019s body and equipment vanish back to Oblivion."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Hell Hound": {
+        name: "Hell Hound",
+        flavour: "The Hell Hound is a predatory, wolf-like daedra stalking the Nether Planes of oblivion. Striking from the darkness with fang and jaw, it can easily tear prey apart, though its most horrifying trait is the fiery breath that strikes you from afar.",
+        tags: "Daedra; Average; White Soul (300)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "50"], ["Intelligence", "15"], ["Willpower", "30"], ["Perception", "40"], ["Personality", "5"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "8"], ["Magicka", "15"], ["Stamina", "3"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "-"], ["Evade", "60"], ["Observe", "70"], ["Stealth", "90"], ["Knowledge", "5"], ["Social", "5"], ["Physical", "50"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Infernal Bite", text: "1d8; Slashing, Magic; Reach 1m"},
+                    {name: "Natural Toughness (3)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Latch On (1 SP)", text: "If the creature successfully Bites a target which results in a grapple, it latches on as a free action. As a result, the grappled character receives a -20 penalty to their attempts to break free. Alternatively, the grappled target can instead end the grapple as a free action. In doing so, they suffer the Bleeding (2) Condition and must test for Disease."},
+                    {name: "Shadow Strike (1 SP)", text: "After making a successful melee attack while Hidden, the Hound deals an additional 1d6+3 damage that ignores armor."},
+                    {name: "Fire Breath (1 AP + 1 SP)", text: "The Hell Hound can unleash a 10m cone of flame from its slavering jaws as a Primary Action, dealing 1d10 Fire Damage to all targets in this area."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Immunity (Fire)"},
+                    {name: "Netherbeast", text: "The Hell Hound ignores all movement restrictions from the Hidden condition. If it kills a target with a melee attack while Hidden, it can attempt a Stealth test opposed by the Observe of anyone that could have seen the attack. If successful, it retains the Hidden condition. Additionally, when the Hell Hound successfully rolls Stealth, it scores a minimum of 4 Degrees of Success."},
+                    {name: "Quadruped"},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Strong Jaws", text: "An Infernal Bite attack that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Unrelenting", text: "Characters cannot Disengage while in melee range of a Hell Hound."},
+                ]},
+            {head: "Encountering Hell Hounds", kind: "prose", items: [
+                    {text: "Hell Hounds are not tied to the service of any particular Daedric Prince and, as a result, fall under Peryite\u2019s protection. The Hell Hounds stalk through shadows to chase their quarry. Who sends them, or why the pursue their prey are entirely unknown."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can test Alchemy at -40 to harvest its shadow ichor, which is a Legendary Illusion ingredient, otherwise the Hell Hound will vanish back to Oblivion."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Hunger": {
+        name: "Hunger",
+        flavour: "The Hunger is one of the many servants of the Daedric Prince Boethiah and is known to be capable of quickly destroying its opponent\u2019s armor and weapons. The Hunger uses its long tongue to attack as well as its claws and spells",
+        tags: "Daedra; Major; White Soul (800)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "60"], ["Intelligence", "40"], ["Willpower", "50"], ["Perception", "50"], ["Personality", "5"], ["Morale", "70"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "13"], ["Magicka", "120"], ["Stamina", "4"], ["Initiative", "+15"], ["Action Pts.", "3"], ["Speed", "16m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "80"], ["Evade", "90"], ["Observe", "70"], ["Stealth", "90"], ["Knowledge", "40"], ["Social", "5"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Venomous Tongue", text: "1d12 Poison, Magic, Reach 1m"},
+                    {name: "Raking Talons", text: "1d8 Slashing; Disintegrate 2 on Strike; Magic, Proven; Reach 2m."},
+                    {name: "Hunger Scales", text: "Partial AR 1"},
+                    {name: "Natural Toughness (3)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Daedric Poison (1 SP)", text: "The Hunger can spend a Stamina Point when it successfully damages a target with its tongue attack to envenom the target. An Envenomed target takes 1d4 Poison damage at the end of each round until they pass a +0 Endurance Test, which can be taken once per round as free Action at the start of the character\u0027s turn."},
+                    {name: "Refresh Spells (1 SP)", text: "The Hunger can spend a Stamina Point to either regain magicka points up to half their MP max or refresh all their used spellcasts used with the Spellcaster trait."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Immunity (Fire, Frost, Shock, Poison)"},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Savage"},
+                    {name: "Unrelenting", text: "Characters cannot Disengage while in melee range of a Hunger."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Burden 3", text: "12 MP; Upkeep, Direct; Target within 50m must pass a +0 Str test or raise their encumbrance level by one for one round."},
+                    {name: "Jump 5", text: "6 MP; Caster\u2019s next jump within 1 min increases by 5m in height or distance."},
+                    {name: "Open 5", text: "16 MP; locked door or container within 1m"},
+                    {name: "Disintegrate Weapon 3", text: "14 MP; Ranged(100m), Attack; Apply the Damaged(3) quality to weapons the target is wielding."},
+                    {name: "Fatigue 3", text: "10 MP; Direct, Attack; Target within 50m must pass a +0 End test or lose 1 SP."},
+                    {name: "Paralyze 4", text: "32 MP; Upkeep, Direct, Attack; Target within 50m must pass a -10 Wp test or be Paralyzed for 1 round."},
+                    {name: "Blind 4", text: "16 MP; Upkeep, Direct, Attack; Target within 50m must pass a -10 Wp test or be Blinded for 1 round."},
+                ]},
+            {head: "Encountering Hungers", kind: "prose", items: [
+                    {text: "Hungers can be found throughout Oblivion, but are mostly found in the service of Boethiah. These little monstrosities attack with a ferocity known only to Daedra. They can be seen clawing away armor as it disintegrates at their touch and poisoning their enemies with their lashing tongue. It is not wise to engage one in melee, as you may find your weapon falling to pieces in your hand before you can even strike them."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can test Alchemy at -10 to harvest the Hunger Tongue, which is a Rare Restoration ingredient."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Mazken, the Dark Seducer": {
+        name: "Mazken, the Dark Seducer",
+        flavour: "The Mazken are matriarchal Daedric humanoids with blue, gray, or dark purple skin. Many of them have been known to possess large, retractable bat-like wings. They are the spawn of Sheogorath, but many of the Mazken are notoriously clanless and treacherous, owing allegiance to many Daedric Princes.",
+        tags: "Daedra; Major; White Soul (1000)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "50"], ["Endurance", "50"], ["Agility", "60"], ["Intelligence", "50"], ["Willpower", "60"], ["Perception", "55"], ["Personality", "50"], ["Morale", "90"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "16"], ["Magicka", "100"], ["Stamina", "5"], ["Initiative", "+16"], ["Action Pts.", "4"], ["Speed", "17m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "100"], ["Magic", "90"], ["Evade", "100"], ["Observe", "75"], ["Stealth", "100"], ["Knowledge", "70"], ["Social", "80"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Dark Longsword", text: "1d8(1d10)+4; Slashing, Magic; Reach 2m, 1.5H"},
+                    {name: "Dark Shortblade", text: "1d6+4; Slashing, Exploit Weakness, Magic; Reach 1m, 1H"},
+                    {name: "Dark Mace", text: "1d8+4; Crushing, Unwieldy, Magic;Reach 2m, 1H"},
+                    {name: "Dark War Axe", text: "1d8+4; Splitting, Unwieldy, Magic; Reach 2m, 1H"},
+                    {text: "Also has:"},
+                    {name: "Dark Armor", text: "AR 6 / Type 6; Magic; Light, Partial"},
+                    {text: "May also have:"},
+                    {name: "Dark Shield", text: "BR 10 / MR 7; Magic; Medium"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Blessing of the Madgod (1 AP + 1 SP)", text: "As a Reaction to an attack, the Mazken can spend a Stamina Point to gain the Sanctuary 5 effect for one round."},
+                    {name: "Seducing Touch (1 AP + 2 SP)", text: "As an attack, the Mazken can reach out and touch a target in melee. The target takes an additional 1d4 Magic damage that ignores armor. Then, the target takes 1d4 Magic damage that ignores armor at the end of each round until they pass a +0 Willpower test, which can be taken once per round as a free Action at the start of the character\u0027s turn. Each time this effect does damage the Mazken heals for the damage dealt."},
+                    {name: "Refresh Spells (1 SP)", text: "The Daedra can spend a Stamina Point to either regain magicka points up to half their MP max or refresh their used spellcasts used with the Spellcaster trait."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight", text: "Can see and act normally in areas with no light."},
+                    {name: "From Beyond"},
+                    {name: "Innate Magic", text: "Can cast spells even if hands are occupied."},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Weakness (Frost, 5)"},
+                    {name: "Spell Absorption (3)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {text: "Has one of the following Spell Lists:"},
+                    {name: "List One", subs: [
+                            "Burden 6: 22 MP; Upkeep, Direct; Target within 50m must pass a -30 Str test or raise their encumbrance level by one for one round.",
+                            "Heal 5: 11 MP; Caster regains 10 HP",
+                            "Frost Bite 4: 9 MP; 1d10 Frost; Attack, Overload (+WpB to Damage), Melee (1m)",
+                            "Fire Bolt 3: 8 MP; 1d8 Fire; Attack, Overload (+WpB to Damage), Ranged (100m)",
+                        ]},
+                    {name: "List Two", subs: [
+                            "Shock Shield 6: 6 MP; Upkeep, Defensive Overload; Target character within 50m gains a magical barrier with 3 HP for Shock damage for 1 round. (See original spell for details).",
+                            "Ward 5: 11 MP; Defensive Overload; Does not provoke Attack of Opportunity. Generate shield with 10 Magical and Physical BR. Cannot Power Block.",
+                            "Shock Bolt 4: 10 MP; 1d10 Shock; Attack, Overload (+WpB to Damage), Ranged (100m)",
+                            "Fire Bite 3: 7 MP; 1d8 Frost; Attack, Overload (+WpB to Damage), Melee (1m)",
+                        ]},
+                    {name: "List Three", subs: [
+                            "Shield 6: 15 MP; Upkeep, Defensive Overload; Target character within 50m gains a magical barrier with 6 HP for physical damage for 1 round. (See original spell for details).",
+                            "Heal 5: 11 MP; Caster regains 10 HP",
+                            "Fire Bolt 4: 10 MP; 1d10 Fire; Attack, Overload (+WpB to Damage), Ranged (100m)",
+                            "Shock Ball 3: 12 MP; 1d8 Shock; Attack, Overload (+WpB to Damage), Aoe (2m, Sphere)",
+                        ]},
+                    {name: "List Four", subs: [
+                            "Shield 6: 15 MP; Upkeep, Defensive Overload; Target character within 50m gains a magical barrier with 6 HP for physical damage for 1 round. (See original spell for details).",
+                            "Fire Armor 5: 21 MP; Upkeep, Defensive Overload; Caster gains 5 Magic AR for 1 minute",
+                            "Frost Ball 4: 14 MP; 1d10 Shock; Attack, Overload (+WpB to Damage), Aoe (2m, Sphere)",
+                            "Fire Cone 3: 13 MP; 1d8 Fire; Attack, Overload (+WpB to Damage), AoE (5m, Cone)",
+                        ]},
+                ]},
+            {head: "Encountering Dark Seducers", kind: "prose", items: [
+                    {text: "Mazken are the spawn of the Daedric prince of madness, and can be found in Shivering isles guarding Dementia. These Daedra are known for their cruelty and malice towards mortals, and can sometimes be found with large retractable bat-like wings. Their society, like the Golden Saints, is matriarchal and it is a rare occurrence to see a male Mazken. Unlike the Golden Saints, though, the Mazken are lot less loyal, and tend to be very fond of betrayal. Many Mazken can be seen across Oblivion serving many Daedric Princes."},
+                    {text: "In battle these Daedra are very much like their counterparts the Golden Saints, except their weapons and armor are far more dark and menacing. These daedra use very vampiric magicks that siphon the life out of their foes, healing them in the process. The Mazken are also very adept at preying on mortals by wearing very revealing outfits and seducing them into their death (as their nickname implies)."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a Dark Seducer\u2019s weapons and armor will be recoverable, otherwise the Seducer\u2019s body and equipment vanish back to Oblivion. Dark Seducer arms and armor have the same enchant values and weight as Malachite."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Ogrim": {
+        name: "Ogrim",
+        flavour: "Ogrim are enormous Daedra with very little intellect, but which are chiefly sent into the mortal world to menace living things for the amusement of Daedra Princes. Ogrim are associated with Malacath. They are known for their unnatural toughness.",
+        tags: "Daedra; Major; White Soul (800)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "60"], ["Endurance", "60"], ["Agility", "30"], ["Intelligence", "20"], ["Willpower", "40"], ["Perception", "35"], ["Personality", "5"], ["Morale", "80"]]},
+            {group: "Attributes", rows: [["Hit Points", "68"], ["Wound Thr.", "19"], ["Magicka", "20"], ["Stamina", "6"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Huge"]]},
+            {group: "Skills", rows: [["Combat", "80"], ["Magic", "40"], ["Evade", "10"], ["Observe", "45"], ["Stealth", "10"], ["Knowledge", "20"], ["Social", "5"], ["Physical", "80"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Huge Fists", text: "2d8 Crushing; Concussive, Magic; Reach 2m"},
+                    {name: "Natural Toughness (6)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Hulking Fortitude (1 AP + 2 SP)", text: "As a Reaction to taking damage from a melee attack, the Ogrim can spend 2 Stamina Points to negate all damage taken. If the attacking weapon has the Impaling quality, the damage is only halved instead. When a creature\u0027s melee attack is affected by this, they become Dazed for one round as they stagger back. If the weapon has the Impaling quality, the wielder must immediately pass a +30 Luck test or else the weapon is stuck in the Ogrim\u0027s rolling mounds of fat, and the character is disarmed. Retrieving the stuck weapon requires a Take Weapon special action that the Ogrim does not oppose, but the character must still succeed on their Unarmed or Athletics test."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Regeneration (6 + DoS)", text: "The Ogrim can test Endurance for free at the start of each round to heal for 6 + DoS HP."},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Thick Skull", text: "The Ogrim is immune to being Stunned and Dazed."},
+                ]},
+            {head: "Encountering Ogrims", kind: "prose", items: [
+                    {text: "These lumbering, nipple-pierced Daedra can be found in the service of Malacath mostly, but is sometimes affiliated with other Daedric princes such as Molag Bal. They are very known to harass mortals, and are very hard to kill because of their natural resistance to non-magical weapons. Slow-witted, slow-bodied, and ponderous creatures, they are nonetheless deadly to any foolish enough to wander too closely to the monstrous brutes. They are a perfect front-line force for any seasoned conjurer."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can test Alchemy at -10 to harvest the two Ogrim\u2019s Horns, which are each a Rare Alteration ingredient. If not Bound to Mundus, the Ogrim simply vanishes."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Scamp": {
+        name: "Scamp",
+        flavour: "Scamps are a common Daedric creature, known for their simple-mindedness and cowardliness. Though smaller and weaker than most other Daedra, they can still be a dangerous opponent, especially when found in numbers. They are mischievous and cruel.",
+        tags: "Daedra; Average; White Soul (300)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "35"], ["Agility", "50"], ["Intelligence", "40"], ["Willpower", "35"], ["Perception", "45"], ["Personality", "5"], ["Morale", "55"]]},
+            {group: "Attributes", rows: [["Hit Points", "13"], ["Wound Thr.", "8"], ["Magicka", "30"], ["Stamina", "3"], ["Initiative", "+12"], ["Action Pts.", "3"], ["Speed", "13m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "65"], ["Evade", "50"], ["Observe", "45"], ["Stealth", "60"], ["Knowledge", "40"], ["Social", "5"], ["Physical", "00"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Tooth and Nail", text: "1d8; Slashing, Magic, Small; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Mischief and Mayhem (1 SP)", text: "After making a successful melee attack, the Scamp can spend a Stamina Point to either immediately climb the opponent, pulling their hair, tugging their ears and biting their nose to count as a Grapple, or instead try to steal an item by rolling Stealth against the target\u0027s Perception or Observe. If successful, the Scamp manages to steal something of its choice."},
+                    {name: "Gang Up (1 SP)", text: "When a Scamp makes a melee or spell attack, they can increase the damage by +1 for each Scamp also in reach of the target if making a melee attack, or within 3m of the casting Scamp if making a spell attack. This point must be spent before resolving the attack roll."},
+                    {name: "Refresh Spells (1 SP)", text: "The Scamp can spend a Stamina Point to either regain MP up to half their MP max or refresh all their used spellcasts used with the Spellcaster trait."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Climber (10)", text: "The creature can climb walls and ceilings as if open ground, treating their Speed as 10m."},
+                    {name: "From Beyond"},
+                    {name: "Dark Sight"},
+                    {name: "Resistance (Normal Weapons, Magic, 5)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Fire Bolt 1", text: "4 MP; 1d4 Fire, Attack, Overload (+WpB to Damage), Ranged (100m)"},
+                    {name: "Fire Bolt 2", text: "6 MP; 1d6 Fire, Attack, Overload (+WpB to Damage), Ranged (100m)"},
+                    {name: "Reflect 1", text: "4 MP; Upkeep; If the caster would be hit by a spell, roll a d10. If the result is 1, resolve the spell against the original caster. Lasts 1 round."},
+                ]},
+            {head: "Encountering Scamps", kind: "prose", items: [
+                    {text: "These tiny mischievous Daedra are renowned across Tamriel to be the most annoying and irritating of all the Daedra (barring Daedrats of course). They\u2019re known to harass mortals more than any other Daedra, as they burn down whatever comes in their way with their fire spells. Scamps are mostly associated with Mehrunes Dagon, but can be found doing errands for many of the Daedric Princes in Oblivion."},
+                    {text: "In combat these small devils can be found casting fire spells from a distance and when they get close, they climb on top of their enemies, choking, biting, pulling hair, throwing sand in eyes, and stealing items. One Scamp is no threat, two are a handful, three is utter mayhem."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can test Alchemy at -10 to harvest a dose of Scamp Skin, which is a Rare Destruction ingredient, otherwise the Scamp simply vanishes back to the realms of Oblivion."},
+                    {text: "If slain while permanently bound to Mundus, a character can make a -10 Alchemy test to salvage the Scamp\u2019s Tiny Daedra Heart, which is a Rare Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Spider Daedra": {
+        name: "Spider Daedra",
+        flavour: "These Daedra appear as giant spiders with human torsos, and are associated with Mephala. They are so unruly and irrational that not even Mephala\u2019s worshipers loathe to summon them, for fear that they will disobey orders.",
+        tags: "Daedra; Major; White Soul (1000)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "45"], ["Endurance", "50"], ["Agility", "55"], ["Intelligence", "40"], ["Willpower", "50"], ["Perception", "50"], ["Personality", "15"], ["Morale", "90"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "14"], ["Magicka", "80"], ["Stamina", "5"], ["Initiative", "+14"], ["Action Pts.", "3"], ["Speed", "14m"], ["Size", "Large"]]},
+            {group: "Skills", rows: [["Combat", "85"], ["Magic", "80"], ["Evade", "75"], ["Observe", "80"], ["Stealth", "80"], ["Knowledge", "40"], ["Social", "25"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Venomous Kiss", text: "1d10 Poison; Magic, Small; Reach 1m"},
+                    {name: "Claws", text: "1d6; Slashing, Magic, Exploit Weakness; Reach 2m"},
+                    {name: "Spider Hide", text: "AR 4; Partial"},
+                    {name: "Natural Toughness (1)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Web Blast (1 AP + 1 SP)", text: "As an attack, the Spider Daedra can launch a web up to 10m. If it hits, its target is Entangled."},
+                    {name: "Summon Spiderlings (1 AP + 1 SP)", text: "As a Primary Action, the Spider Daedra can call forth her children from the void, summoning 1d4+1 Spiderlings. Summoned Spider Daedra cannot use this ability."},
+                    {name: "Poison Spit (1 AP + 2 SP)", text: "As a ranged attack, the Spider Daedra can spit a wad of Daedric toxins up to 3m. The spit inflicts 2d8 Poison damage immediately, and Envenoms the target. While Envenomed, the target suffers a -20 on all Agility based tests and halves their movement speed until they pass a -20 Endurance test that can be taken as a free action once per round at the start of their turn, or until a minute has passed."},
+                    {name: "Refresh Spells (1 SP)", text: "The Spider Daedra can, as a free action, refresh MP equal to half their max MP. If they have the optional Spellcaster trait, they refresh all of their spell uses instead."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Climber (14)", text: "The creature can climb walls and ceilings as if open ground, treating their Speed as 14m."},
+                    {name: "Crawler", text: "Not slowed by Difficult Terrain."},
+                    {name: "From Beyond"},
+                    {name: "Dark Sight"},
+                    {name: "Quadruped"},
+                    {name: "Resistance (Normal Weapons, Fire, 5)"},
+                    {name: "Weakness (Frost, Shock, 3)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Shock Bolt 5", text: "12 MP; 2d6 Shock; Ranged (100m), Attack, Overload (+WB to dmg)"},
+                    {name: "Shock Cone 5", text: "17 MP; 2d6 Fire; AoE (5m, cone), Attack, Overload (+WB to Dmg)"},
+                    {name: "Chain Lightning 3", text: "15 MP; 1d8 Shock; Ranged (50m, Attack, Overload (+WB to Dmg); Damages target character within 50m then jumps to an additional target within 10m using the initial attack test, then repeats for a final target."},
+                    {name: "Heal 6", text: "13 MP; Caster regains 12 HP"},
+                ]},
+            {head: "Special Hit Table", kind: "table", items: [],
+                cols: ["Hit Location", "Melee", "Ranged"],
+                rows: [
+                    ["Legs", "1-5", "1-4"],
+                    ["Body", "6-7", "5-7"],
+                    ["Left Arm", "8", "8"],
+                    ["Right Arm", "9", "9"],
+                    ["Head", "10", "10"],
+                ]},
+            {head: "Encountering Spider Daedra", kind: "prose", items: [
+                    {text: "This particular Daedra can be found in the service of Mephala, and are some of the most vile Daedra to be found among her realm. With how unpredictable and irrational they are, it would almost make you think that Sheogorath may have had a hand in making them."},
+                    {text: "They\u2019re among the most powerful and dangerous Daedra to fight as they can easily summon masses of Spiderlings to aid them in battle while in Oblivion. As well as the poison that they spit at their adversaries, which is caustic and causes the target to move slower. This, in addition to their web-shooting abilities, makes them very formidable and not something any summoner should easily conjure up on a whim."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can test Alchemy at -20 to harvest the Spider Daedra\u2019s Silk Gland, which is a Very Rare Mysticism ingredient."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Spiderling": {
+        name: "Spiderling",
+        flavour: "Spawned by the larger and more powerful Spider Daedra, these creatures aid their mother in battle.",
+        tags: "Daedra; Minor; White Soul (50)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "20"], ["Endurance", "20"], ["Agility", "50"], ["Intelligence", "15"], ["Willpower", "20"], ["Perception", "40"], ["Personality", "5"], ["Morale", "20"]]},
+            {group: "Attributes", rows: [["Hit Points", "10"], ["Wound Thr.", "6"], ["Magicka", "15"], ["Stamina", "2"], ["Initiative", "+10"], ["Action Pts.", "1"], ["Speed", "12m"], ["Size", "Tiny"]]},
+            {group: "Skills", rows: [["Combat", "40"], ["Magic", "20"], ["Evade", "70"], ["Observe", "60"], ["Stealth", "80"], ["Knowledge", "15"], ["Social", "5"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Tiny Fangs", text: "1d4, Magic, Small, 1m Reach."},
+                    {name: "Spiderling Hide", text: "AR 3; Partial"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Web Blast (1 AP + 1 SP)", text: "As an attack, the Spiderling can launch a web up to 10m. If it hits, its target is Entangled."},
+                    {name: "Paralyzing Bite (1 SP)", text: "When the Spiderling successfully hits a target with its Tiny Fangs, it can choose to spend a Stamina Point instead of rolling damage in order to induce a temporary paralysis in the target. The target can attempt a +10 Endurance test to resist. Failure results in the target being Paralyzed for one round."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Climber (12)", text: "The creature can climb walls and ceilings as if open ground, treating their Speed as 12m."},
+                    {name: "Crawler", text: "Not slowed by Difficult Terrain."},
+                    {name: "Dark Sight"},
+                    {name: "From Beyond"},
+                    {name: "Immune to the Paralysis and Silenced"},
+                    {name: "Quadruped"},
+                    {name: "Resistance (Fire, 5)"},
+                    {name: "Swarm", text: "A Spiderling causes +1 damage with their Tiny Fangs for every other friendly Spiderling also in reach of the target."},
+                ]},
+            {head: "Encountering Spiderlings", kind: "prose", items: [
+                    {text: "Spiderlings will always be seen under the command of Spider Daedra, serving as minions for their master to distract enemies and provide cover for the greater Daedra. Killing the Spider Daedra that summoned them will banish them in turn."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can make a -10 Alchemy test to salvage the Spiderling\u2019s Tiny Daedra Heart, which is a Rare Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Winged Twilight": {
+        name: "Winged Twilight",
+        flavour: "A Harpy-like, female-form Daedra with bat-like wings. They operate as messengers of Azura.",
+        tags: "Daedra; Major; White Soul (1000)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "50"], ["Agility", "70"], ["Intelligence", "50"], ["Willpower", "60"], ["Perception", "55"], ["Personality", "40"], ["Morale", "80"]]},
+            {group: "Attributes", rows: [["Hit Points", "25"], ["Wound Thr.", "15"], ["Magicka", "100"], ["Stamina", "5"], ["Initiative", "+17"], ["Action Pts.", "4"], ["Speed", "18m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "110"], ["Magic", "90"], ["Evade", "120"], ["Observe", "95"], ["Stealth", "90"], ["Knowledge", "50"], ["Social", "60"], ["Physical", "65"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Talons", text: "1d12; Slashing, Magic, Proven; Reach 1m"},
+                    {name: "Barbed Tail", text: "2d8, Splitting, Magic, Impaling, 2m Reach"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Flyby (1 SP)", text: "The Winged Twilight cannot be targeted by Attacks of Opportunity for one round while Flying."},
+                    {name: "Earth\u0027s Harsh Embrace (2 SP)", text: "After making a successful melee attack with their Talons or Barbed Tail, the Winged Twilight can spend 2 Stamina Points to then grab the target, provided it is sized Medium or Smaller. The Winged Twilight then can test Physical to fly up to 9m upwards. This is treated as a Grapple, and the Winged Twilight can choose to drop the target at any point, causing the usual amount of falling damage to be incurred."},
+                    {name: "Refresh Spells (1 AP)", text: "The twilight can spend a Stamina Point to either regain magicka points up to half their MP max or refresh all their used spellcasts used with the Spellcaster trait."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "From Beyond"},
+                    {name: "Flyer (18)", text: "The Winged Twilight can fly at a Speed of 18m."},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Resistance (Fire, Frost, Shock, Poison, 5)"},
+                    {name: "Spell Reflect (2)", text: "Whenever the Winged Twilight would be affected by a magic spell, roll a d10. On a 2 or less, the Winged Twilight is unaffected and the caster of the spell is affected instead."},
+                    {name: "Special Hit Locations", text: "A roll of 5 on the Hit Location chart instead hits the Winged Twilight\u2019s tail. If wounded, it cannot use its Barbed Tail attack. Additionally, its arms are its wings, and if Wounded, cannot fly."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Shock Bolt 3", text: "8 MP; 1d8 Shock; Ranged (100m), Attack, Overload (+WB to dmg)"},
+                    {name: "Shock Bolt 4", text: "10 MP; 1d10 Shock; Ranged (100m), Attack, Overload (+WB to dmg)"},
+                    {name: "Shock Bolt 5", text: "12 MP; 2d6 Shock; Ranged (100m), Attack, Overload (+WB to dmg)"},
+                    {name: "Chain Lightning 3", text: "15 MP; 1d8 Shock; Ranged (50m, Attack, Overload (+WB to Dmg); Damages target character within 50m then jumps to an additional target within 10m using the initial attack test, then repeats for a final target."},
+                ]},
+            {head: "Encountering Wings", kind: "prose", items: [
+                    {text: "Winged Twilights are associated mostly with the Daedric Prince Azura, as they are her primary messengers, and minions. They have large bat-like wings for arms, and have resistances to most types of magic damage. The tail of this Daedra is probably its most formidable feature, as it is the Winged Twilight\u2019s primary means of attack. If the tail is wounded though, the Winded Twilight must rely on it\u2019s claws and natural spellcasting. This Daedra is another of the few summoned only by seasoned conjurers."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can test Alchemy at -40 to harvest up to 3 doses of Twilight Poison, which are each a Legendary Destruction ingredient. The character salvages up to their DoS on the Alchemy test, maximum of 3."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Xivilai": {
+        name: "Xivilai",
+        flavour: "Xivilai are highly intelligent Daedra that look like tall and muscular gray-skinned warriors. They are similar in many points to the Dremora, but do not have a caste system. This lack of caste system reflects their hatred of subordination and tendency for betrayal. When they do serve a Daedric Prince, it is most often Mehrunes Dagon.",
+        tags: "Daedra; Major; Soul Type (1000)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "60"], ["Endurance", "55"], ["Agility", "40"], ["Intelligence", "40"], ["Willpower", "60"], ["Perception", "35"], ["Personality", "30"], ["Morale", "90"]]},
+            {group: "Attributes", rows: [["Hit Points", "50"], ["Wound Thr.", "23"], ["Magicka", "80"], ["Stamina", "5"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "14m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "100"], ["Magic", "90"], ["Evade", "60"], ["Observe", "55"], ["Stealth", "40"], ["Knowledge", "60"], ["Social", "60"], ["Physical", "85"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Daedric Cleaver", text: "1d12+4; Slashing, Magic, Unwieldy, Proven; Reach 3m, 2H"},
+                    {name: "Daedric Executioner", text: "1d12+4; Splitting, Magic, Unwieldy, Shield Splitter, Proven; Reach 3m, 2H"},
+                    {name: "Daedric Great-Mace", text: "1d12+4; Crushing, Magic, Unwieldy, Concussive, Shield Splitter, Proven; Reach 3m, 2H"},
+                    {name: "Daedric War-Comet", text: "1d12+4; Crushing, Magic, Flail, Unwieldy, Concussive, Shield Splitter, Proven; 3m Reach, 2H"},
+                    {text: "Also has:"},
+                    {name: "Natural Toughness (4)"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Brutal Cleave (1 SP)", text: "As part of an All Out Attack, the Xivilai can strike up to 3 targets in melee reach as a single attack. Any targets struck suffer Damaged (3) on the affected Hit Location. Roll once for the attack, and resolve damage separately against all struck targets."},
+                    {name: "Killing Blow (1-3 SP)", text: "Before rolling melee damage, the Xivilai can spend SP to increase the damage by +3 for each Stamina Point spent, up to a maximum of 3 SP."},
+                    {name: "Refresh Spells (1 SP)", text: "The xivilai can spend a Stamina Point to either regain magicka points up to half their MP max or refresh all their used spellcasts used with the Spellcaster trait."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Innate Magic", text: "Can cast spells even if hands are occupied."},
+                    {name: "From Beyond"},
+                    {name: "Powerful", text: "The Xivilai can wield two handed weapons in one hand, and ignores the Unwieldy trait when parrying."},
+                    {name: "Resistance (Fire, 3)"},
+                    {name: "Weakness (Frost, 3)"},
+                    {name: "Savage", text: "Rolls an additional damage dice and take the highest."},
+                    {name: "Spell Absorption (4)"},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Shock Bolt 5", text: "12 MP; 2d6 Shock; Ranged (100m), Attack, Overload (+WB to dmg)"},
+                    {name: "Shock Bite 7", text: "15 MP; 2d10 Shock; M Attack (1m), Overload (+WB to Dmg)"},
+                    {name: "Fire Bolt 7", text: "16 MP; 2d10 Shock; Ranged (100m), Attack, Overload (+WB to dmg)"},
+                    {name: "Shield 5", text: "13 MP; Upkeep, Defensive Overload; Target character within 50m gains a magical barrier with 5 HP for physical damage for 1 round. (See original spell for details)."},
+                    {name: "Dispel Touch 3", text: "13 MP; Remove magical effects from any source of SL 3 or lower from target within 1m. Constant enchantments reactivate after 1d4 rounds."},
+                    {name: "Summon Clannfear", text: "13 MP; Upkeep, Mindlock(1); See original spell for details"},
+                ]},
+            {head: "Encountering Xivilai", kind: "prose", items: [
+                    {text: "A race of tall, muscular, and grey-skinned daedra, the Xivilai is notable for being a free daedra, not bound to any prince. They may be found under the service of any prince however, as they may be persuaded into joining their ranks."},
+                    {text: "Xivilai society is without castes like that of the Dremora, and it values strength and power above all things. Scheming, backstabbing, and betrayal are extremely common in their ruthless society. They live within their own area of Oblivion, within the sway of Peryite. In battle, they will usually summon a clannfear, and stay back blasting with their powerful spells until they feel the time to charge into melee is right."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a Xivilai\u2019s weapons and armor will be recoverable, otherwise the Xivilai\u2019s body and equipment vanish back to Oblivion."},
+                    {text: "Additionally, if slain while permanently bound to Mundus, a character can make a -40 Alchemy test to salvage the Daedra\u2019s Heart, which is a Legendary Restoration ingredient."},
+                ]},
+        ],
+    },
+    "Daedrat": {
+        name: "Daedrat",
+        flavour: "They\u2019re daedric rats. From Oblivion.",
+        tags: "Daedra; Minor; White Soul (100)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "20"], ["Endurance", "30"], ["Agility", "55"], ["Intelligence", "15"], ["Willpower", "15"], ["Perception", "35"], ["Personality", "5"], ["Morale", "25"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "6"], ["Magicka", "15"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "2"], ["Speed", "12m"], ["Size", "Tiny"]]},
+            {group: "Skills", rows: [["Combat", "55"], ["Magic", "-"], ["Evade", "55"], ["Observe", "35"], ["Stealth", "70"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Claws and Teeth", text: "1d6; Slashing, Magic; Reach 1m"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Daedrat Leap (1 SP)", text: "As part of an attack, the Daedrat can leap up to 3m and attack with its Claws and Teeth. Targets who attempt to Dodge or Parry this attack suffer a -30 penalty."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Dark Sight"},
+                    {name: "Diseased (-10)", text: "When a target is wounded by a Daedrat, the character must pass a -10 Endurance Test or contract a Common Disease."},
+                    {name: "From Beyond"},
+                    {name: "Quadruped"},
+                    {name: "Resistance (Normal Weapons, 5)"},
+                    {name: "Strong Jaws", text: "An attack with Claws and Teeth that deals damage automatically starts a Grapple. The test to contest this Grapple is made against the original test made by the attacker. If the target Counter Attacks a Bite attack, the Counter Attack ignores the creature\u2019s AR and Natural Toughness trait."},
+                    {name: "Weakness (Sunlight, 5)"},
+                ]},
+            {head: "Encountering Daedrats", kind: "prose", items: [
+                    {text: "Daedrats are probably the most lowly of all the daedric creatures known. More of a pest and nuisance than an actual threat in most cases. Not many actually know where they originated from in Oblivion, some believe that they\u2019re associated with Molag Bal or Mehrunes Dagon."},
+                    {text: "In battle, Daedrats like to use pack tactics and surprise their opponents by leaping towards them from a small distance. Other than that, in battle they rely on their bite and claws to rip at their enemies."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "If slain while permanently bound to Mundus, a character can test Alchemy at +0 to harvest the Daedrat Tail, which is an Uncommon Illusion ingredient."},
+                    {text: "If slain while permanently bound to Mundus, a character can make a -10 Alchemy test to salvage the Daedrat\u2019s Tiny Daedra Heart, which is a Rare Restoration ingredient."},
+                ]},
+        ],
+    },
     "Flame Atronach": {
         name: "Flame Atronach",
         flavour: "A powerful fire elemental which can be summoned by mages.",
@@ -7343,10 +8035,12 @@ function App() {
             const lines: string[] = []
 
             // magicka comes back either way, just drop the ones place off the maximum
+            // @ts-ignore
             const mp = topUp(next, "Current MP", "Max MP", Math.floor((Number(next.get("Max MP")) || 0) / 10))
             lines.push(mp > 0 ? "Recovered " + mp + " Magicka Points." : "Magicka Points were already full.")
 
             if (pick === "stamina") {
+                // @ts-ignore
                 const sp = topUp(next, "Current SP", "Max SP", 1)
                 lines.push(sp > 0 ? "Recovered 1 Stamina Point." : "Stamina Points were already full.")
             } else {
@@ -7368,6 +8062,7 @@ function App() {
             if (dropped > 0) lines.push("Removed " + dropped + " level" + (dropped === 1 ? "" : "s") + " of fatigue.")
             const spare = eb - dropped
             if (spare > 0) {
+                // @ts-ignore
                 const sp = topUp(next, "Current SP", "Max SP", spare)
                 lines.push(sp > 0 ? "Recovered " + sp + " Stamina Points." : "Stamina Points were already full.")
             }
@@ -7381,6 +8076,7 @@ function App() {
                 lines.push("No Hit Points healed, the character still has untreated wounds.")
             } else {
                 healed = heal
+                // @ts-ignore
                 const hp = topUp(next, "Current HP", "Max HP", heal)
                 lines.push(hp > 0 ? "Healed " + hp + " Hit Points" + (focused ? " (natural healing doubled)" : "") + (organs ? " (halved by organ damage)" : "") + "." : "Hit Points were already full.")
             }
@@ -7422,6 +8118,7 @@ function App() {
                 }
             }
 
+            // @ts-ignore
             const mp = topUp(next, "Current MP", "Max MP", 9999)
             lines.push(mp > 0 ? "Recovered " + mp + " Magicka Points, back to full." : "Magicka Points were already full.")
             lines.push("Remember that many powers also recharge now.")
@@ -7683,6 +8380,7 @@ function App() {
             </>
         )
 
+        // @ts-ignore
         return (
             <section id='center' className={viewing !== "" ? "viewOnly" : ""}>
                 <div className="nameRow">
