@@ -53,6 +53,305 @@ type Statblock = {
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Dwemer Spiders": {
+        name: "Dwemer Spiders",
+        flavour: "Dwemer Spiders are small, arachnid-like animunculi, that are very common in Dwemer ruins.",
+        tags: "Animunculi, Construct; Minor",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "30"], ["Agility", "40"], ["Intelligence", "20"], ["Willpower", "5"], ["Perception", "30"], ["Personality", "5"], ["Morale", "100"]]},
+            {group: "Attributes", rows: [["Hit Points", "15"], ["Wound Thr.", "9"], ["Magicka", "-"], ["Stamina", "3"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Small"]]},
+            {group: "Skills", rows: [["Combat", "40"], ["Magic", "-"], ["Evade", "40"], ["Observe", "40"], ["Stealth", "50"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Dwemer Spider Claws", text: "1d6+2; Slashing, Magic, Exploit Weakness, Small; Reach 1m"},
+                    {name: "Spark", text: "1d6 Shock; Magic, Range (3/6/12)"},
+                    {name: "Dwemer Plating", text: "AR 5 / Magic 2; Full, Magic"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Static Field (1 AP + 1 SP)", text: "As a Secondary Action, the Dwemer Spider can charge up and create an electrical field around itself, dealing 1d4 shock damage to any character within 1m at the start of their turn. At the start of each of the Dwemer Spider\u0027s turns, they can attempt a +20 Endurance test to refresh the effect for free."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Mechanical"},
+                    {name: "Tonal Reinforcement"},
+                    {name: "Catfall", text: "Reduce the distance that the character falls by 3 meters when calculating fall damage."},
+                    {name: "Climber", text: "The character can climb walls and ceilings as if open ground."},
+                    {name: "Crawler", text: "The character is not slowed by terrain."},
+                    {name: "Dark Sight", text: "The character an see and act normally in areas with no light."},
+                    {name: "Overcharge", text: "The character explodes when destroyed, dealing 1d6 shock damage to all creatures within 1m."},
+                    {name: "Weakness (Shock, 3)"},
+                ]},
+            {head: "Variant: Gas Spider", kind: "list", items: [
+                    {text: "Traits"},
+                    {text: "Remove the Spark weapon and the Overcharge trait."},
+                    {text: "Replace Static Field with;", subs: [
+                            "Release Poison (1 SP + 1 AP): The Dwemer Spider expels the contents of its gas bag, dealing 1d6 poison damage that ignores armor to all creatures within 2m. This ability can only be used once.",
+                        ]},
+                ]},
+            {head: "Encountering Dwemer Spiders", kind: "prose", items: [
+                    {text: "Spiders are the worker class of dwemer constructs and typically found in large numbers all over dwemer ruins."},
+                    {text: "They typically have eight articulated legs and a round central body, which is where the name of Dwemer Spider comes from, beyond that they almost always have a soul gem mounted somewhere on their central body which they can use to their power electrical abilities."},
+                    {text: "As the worker class, these constructs tend to fight in groups rather than taking on foes on their own. In many cases they are not aggressive, being more focused on the maintenance of their domains. However when attacked they are perfectly willing to fight until they are destroyed, many of them are capable of setting off a chain reaction when close to their end, so adventurers should be wary of getting caught between a group of them."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can attempt a +0 Profession (Engineering or Smithing) test over a short rest to recover 1d4 pieces of dwemer scrap metal worth 90 Drakes and 2 ENC each."},
+                    {text: "On a -10 Profession (Engineering or Smithing) or +0 Mysticism test, a character can extract a petty soul gem from the animunculi\u2019s chassis over the course of a short rest."},
+                    {text: "A character can attempt a -20 Alchemy test to extract DoS+1 doses of Dwarven Oil, which is a Very Rare Alteration ingredient."},
+                ]},
+        ],
+    },
+    "Dwemer Constructor": {
+        name: "Dwemer Constructor",
+        flavour: "A strange animunculi with spider-like legs and an armored humanoid shaped torso, it has a a number of strange devices attached to its arms.",
+        tags: "Animunculi, Construct; Minor",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "35"], ["Agility", "35"], ["Intelligence", "30"], ["Willpower", "5"], ["Perception", "20"], ["Personality", "5"], ["Morale", "100"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "-"], ["Stamina", "3"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "9m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "-"], ["Evade", "35"], ["Observe", "40"], ["Stealth", "35"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "50"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Dwemer Constructor Claws", text: "1d6+2; Splitting, Magic; Reach 2m"},
+                    {name: "Dwemer Constructor Drill", text: "1d8+2; Splitting, Magic, Shield Splitter; Reach 1m"},
+                    {name: "Dwemer Constructor Hammer", text: "1d8+2; Crushing, Magic; Reach 1m"},
+                    {text: "Also has:"},
+                    {name: "Dwemer Plating", text: "AR 5 / Magic 2; Full, Magic"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Repair (1 AP)", text: "The Dwemer Constructor repairs a nearby Dwemer Construct within 1m for 1d4+6 hit points as a Secondary Action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Mechanical"},
+                    {name: "Tonal Reinforcement"},
+                    {name: "Catfall", text: "Reduce the distance that the character falls by 3 meters when calculating fall damage."},
+                    {name: "Climber", text: "The character can climb walls and ceilings as if open ground."},
+                    {name: "Crawler", text: "The character is not slowed by terrain."},
+                    {name: "Dark Sight", text: "The character an see and act normally in areas with no light."},
+                    {name: "Weakness (Shock, 3)"},
+                ]},
+            {head: "Encountering Dwemer Constructors", kind: "prose", items: [
+                    {text: "Constructors are a relatively rare form of Dwemer Animunculi, usually only found in especially large Dwemer complexes or in locations that were once dedicated to the construction of the Dwemer constructs themselves."},
+                    {text: "These strange constructs appear to share certain design similarities with both Dwemer Spiders and the larger Dwemer Centurions but they serve an entirely different purpose, whilst most constructs were created as war engines or guards, the Constructor is a builder."},
+                    {text: "They are capable of maintaining other Dwemer Constructs even in the midst of battle and even creating the smaller constructs in a staggeringly short amount of time thanks to reserves of dwemer alloy."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can attempt a +0 Profession (Engineering or Smithing) test over a short rest to recover 2d4 pieces of dwemer scrap metal worth 90 Drakes and 2 ENC each."},
+                    {text: "On a -10 Profession (Engineering or Smithing) or +0 Mysticism test, a character can extract a petty soul gem from the animunculi\u2019s chassis over the course of a short rest."},
+                    {text: "A character can attempt a -20 Alchemy test to extract DoS+2 doses of Dwarven Oil, which is a Very Rare Alteration ingredient."},
+                ]},
+        ],
+    },
+    "Dwemer Ballista": {
+        name: "Dwemer Ballista",
+        flavour: "A four legged animunculi with an oversized crossbow for a body.",
+        tags: "Animunculi, Construct; Average",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "30"], ["Endurance", "35"], ["Agility", "40"], ["Intelligence", "20"], ["Willpower", "5"], ["Perception", "20"], ["Personality", "5"], ["Morale", "100"]]},
+            {group: "Attributes", rows: [["Hit Points", "18"], ["Wound Thr.", "9"], ["Magicka", "-"], ["Stamina", "3"], ["Initiative", "+8"], ["Action Pts.", "3"], ["Speed", "11m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "50"], ["Magic", "-"], ["Evade", "40"], ["Observe", "40"], ["Stealth", "40"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Dwemer Ballista", text: "1d12; Crushing(6), Complex, Magic, Reload (4, min 1); Range (25/155/305)", subs: ["Includes 20 Dwemer Ballista Bolts (+2 dmg)"]},
+                    {name: "Dwemer Plating", text: "AR 5 / Magic 2; Full, Magic"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Infused Ammunition (1 SP)", text: "As part of an attack, the Dwemer Ballista can envelope its bolt with flames, causing its attack to deal an extra 3 fire damage."},
+                    {name: "Sundering Bolt (1 SP)", text: "As part of an All Out Attack, the Dwemer Ballista charges a shot, allowing it to sunder armor. Any targets struck suffer Damaged (1) on the affected Hit Location."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Mechanical"},
+                    {name: "Tonal Reinforcement"},
+                    {name: "Crawler", text: "The character is not slowed by terrain."},
+                    {name: "Dark Sight", text: "The character an see and act normally in areas with no light."},
+                    {name: "Weakness (Shock, 3)"},
+                ]},
+            {head: "Encountering Dwemer Ballista", kind: "prose", items: [
+                    {text: "One of the most dangerous Steam Animunculi is the Dwarven Ballista, which fires a bolt that can penetrate even the thickest Armor."},
+                    {text: "The Dwemer created the ballistae as guardians and ranged support for their homes and armies respectively, and whilst the Dwemer are long since dead, the ballista maintain their vigil over their masters ancient homes. These Animunculi are rarely alone, usually other centurions are close by and quickly alerted when a ballista becomes aware of intruders."},
+                    {text: "The ballista\u2019s bolts are incredibly powerful and capable of firing at ranges that exceed smaller crossbows and bows alike which makes them a daunting foe to face unless the foe can sneak up on them, to be hit by one of their bolts typically spells the end of the target, or at least scars worthy of a story or two. Despite this, they take a long time to reload which can create an opening, assuming whatever support the ballista had has already been dealt with."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can attempt a +0 Profession (Engineering or Smithing) test over a short rest to recover 2d4 pieces of dwemer scrap metal worth 90 Drakes and 2 ENC each."},
+                    {text: "On a -10 Profession (Engineering or Smithing) or +0 Mysticism test, a character can extract a lesser soul gem from the animunculi\u2019s chassis over the course of a short rest."},
+                    {text: "A character can recover 1d10 of the bolts the ballista uses, these are too large to use as bolts, but they can be modified with a +0 Smithing test to be used as Dwemer Javelin instead."},
+                    {text: "A character can attempt a -20 Alchemy test to extract DoS+2 doses of Dwarven Oil, which is a Very Rare Alteration ingredient."},
+                ]},
+        ],
+    },
+    "Dwemer Sphere": {
+        name: "Dwemer Sphere",
+        flavour: "A sphere of Dwemer alloy rolls forward before splitting to reveal a humanoid shaped construct body, it is armed and appears dangerous.",
+        tags: "Animunculi, Construct; Average",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "40"], ["Endurance", "40"], ["Agility", "55"], ["Intelligence", "20"], ["Willpower", "5"], ["Perception", "45"], ["Personality", "5"], ["Morale", "100"]]},
+            {group: "Attributes", rows: [["Hit Points", "20"], ["Wound Thr.", "12"], ["Magicka", "-"], ["Stamina", "4"], ["Initiative", "+11"], ["Action Pts.", "3"], ["Speed", "14m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "60"], ["Magic", "-"], ["Evade", "60"], ["Observe", "55"], ["Stealth", "55"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Dwemer Sphere Blade", text: "1d8+1; Slashing, Magic; Reach 2m"},
+                    {name: "Dwemer Sphere Mace", text: "1d6+1; Crushing, Unwieldy, Magic, Reach 2m"},
+                    {name: "Dwemer Sphere Spear", text: "1d8+1; Impaling, Unwieldy, Magic, Reach 2-3m"},
+                    {text: "May have one of:"},
+                    {name: "Dwemer Crossbow", text: "1d10; Crushing (4), Magic, Complex, Reload (0); Range (25/105/255)", subs: ["Includes 12 Dwemer Bolts (+2 dmg)"]},
+                    {name: "Dwemer Sphere Shield", text: "BR 10 / MR 6; Medium, Magic"},
+                    {text: "Also has:"},
+                    {name: "Dwemer Plating", text: "AR 5 / Magic 2; Full, Magic"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Rapid Fire (1 AP + 1 SP)", text: "As an attack, the Dwemer Sphere can fire at up to 3 targets with it\u2019s Centurion Crossbow as a single attack."},
+                    {name: "Shift Form (1 AP)", text: "As a Secondary Action the Dwemer Sphere shifts to it\u2019s sphere form or shifts back. In sphere form all attacks hit the sphere location, its Speed becomes 16, its Evade becomes 70, and it can only use the Steam Roll special ability."},
+                    {name: "Steamroll (1 AP + 1 SP)", text: "While in sphere form, the Dwemer Sphere moves in a straight line as an attack. Any characters it comes within 1m of must test Evade or take 1d10 damage and be knocked prone."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Mechanical"},
+                    {name: "Tonal Reinforcement"},
+                    {name: "Dark Sight", text: "The character an see and act normally in areas with no light."},
+                    {name: "Nimble", text: "This character can disengage from melee combat as a free action."},
+                    {name: "Sphere", text: "This creature has one Leg hit location."},
+                    {name: "Weakness (Shock, 3)"},
+                ]},
+            {head: "Encountering Dwemer Spheres", kind: "prose", items: [
+                    {text: "Dwemer Spheres are another common form of Dwemer construct. They typically move around in sphere form allowing them to navigate the specially designed pipework most dwemer ruins contain. However when they enter a state of combat readiness, the sphere splits and a mechanical humanoid torso, head and arms emerge, each arm ends in a weapon or shield their heads are typically stylized visages of their dwemeri creators."},
+                    {text: "They are not sentient and thus technically do not have any kind of intelligence, however their creators provided them with the ability to handle complex tactical situations."},
+                    {text: "They remain in the ancient ruins of Dwemer civilization and are typically very aggressive toward anything entering their masters domain despite the disappearance of the dwemer."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can attempt a +0 Profession (Engineering or Smithing) test over a short rest to recover 2d4 pieces of dwemer scrap metal worth 90 Drakes and 2 ENC each."},
+                    {text: "On a -10 Profession (Engineering or Smithing) or +0 Mysticism test, a character can extract a common soul gem from the animunculi\u2019s chassis over the course of a short rest."},
+                    {text: "A character can attempt a -20 Alchemy test to extract DoS+2 doses of Dwarven Oil, which is a Very Rare Alteration ingredient."},
+                ]},
+        ],
+    },
+    "Dwemer Sentry": {
+        name: "Dwemer Sentry",
+        flavour: "A small spherical animunculi that changes form with a small \u201chead\u201d extending above it.",
+        tags: "Animunculi, Construct; Minor",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "20"], ["Endurance", "20"], ["Agility", "30"], ["Intelligence", "20"], ["Willpower", "5"], ["Perception", "40"], ["Personality", "5"], ["Morale", "60"]]},
+            {group: "Attributes", rows: [["Hit Points", "10"], ["Wound Thr.", "6"], ["Magicka", "-"], ["Stamina", "2"], ["Initiative", "+9"], ["Action Pts.", "3"], ["Speed", "8m"], ["Size", "Small"]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "-"], ["Evade", "50"], ["Observe", "60"], ["Stealth", "30"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "20"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Minor Spark", text: "1d4 Shock; Magic, Reach 1m"},
+                    {name: "Shocking Bolt", text: "1d4 Shock; Magic, Range (3/6/12)"},
+                    {name: "Dwemer Plating", text: "AR 5 / Magic 2; Full, Magic"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Shift Form (1 AP)", text: "As a Secondary Action the Dwemer Sentry shifts to it\u2019s sphere form or shifts back. In sphere form all attacks hit the sphere location, its Speed becomes 10, its Evade becomes 60, and it is unable to attack."},
+                    {name: "Lock In (1 AP)", text: "If there is a sentry platform within 1m, the Dwemer Sentry may lock itself into or out of it as a Secondary Action. While locked in, the damage of their Shock attacks increases to 1d10, but they cannot move or perform any defensive reactions."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Mechanical"},
+                    {name: "Tonal Reinforcement"},
+                    {name: "Dark Sight", text: "The character an see and act normally in areas with no light."},
+                    {name: "Nimble", text: "This character can disengage from melee combat as a free action."},
+                    {name: "Sphere", text: "This creature has one Leg hit location."},
+                    {name: "Weakness (Shock, 3)"},
+                ]},
+            {head: "Encountering Dwemer Sentries", kind: "prose", items: [
+                    {text: "Dwemer Sentries are the smallest of the animunculi, similar in appearance to miniature dwemer spheres when in their sphere form, they lack the obvious combat configuration seen on many other Dwemer constructs when in their transformed form. However, when their \u201chead\u201d a small metal device with a single \u201ceye\u201d is extended, they\u2019re quite capable of dealing with unprepared foes with bolts of lightning and static shocks."},
+                    {text: "The purpose of Dwemer Sentries was to patrol their master\u2019s home and alert them to the presence of intruders. Whilst their masters are now long gone, they continue to carry out this task diligently, following intruders and making sure the more combat effective animunculi are alerted and able to deal with them effectively."},
+                    {text: "Some Dwemer ruins even have specific platforms for these small constructs to lock themselves into, at which point they become even more deserving of their name."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can attempt a +0 Profession (Engineering or Smithing) test over a short rest to recover 1d4 pieces of dwemer scrap metal worth 90 Drakes and 2 ENC each."},
+                    {text: "On a -10 Profession (Engineering or Smithing) or +0 Mysticism test, a character can extract a petty soul gem from the animunculi\u2019s chassis over the course of a short rest."},
+                    {text: "A character can attempt a -10 Alchemy test to extract 1 dose of Dwarven Oil, which is a Very Rare Alteration ingredient."},
+                ]},
+        ],
+    },
+    "Dwemer Centurion": {
+        name: "Dwemer Centurion",
+        flavour: "A huge, roughly humanoid shaped Dwemer construct with weapons where its arms should be. As it moves it hisses with the sound of steam and pistons.",
+        tags: "Animunculi, Construct; Major",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "65"], ["Endurance", "60"], ["Agility", "25"], ["Intelligence", "20"], ["Willpower", "5"], ["Perception", "35"], ["Personality", "5"], ["Morale", "90"]]},
+            {group: "Attributes", rows: [["Hit Points", "50"], ["Wound Thr.", "18"], ["Magicka", "-"], ["Stamina", "6"], ["Initiative", "+7"], ["Action Pts.", "3"], ["Speed", "10m"], ["Size", "Huge"]]},
+            {group: "Skills", rows: [["Combat", "85"], ["Magic", "-"], ["Evade", "35"], ["Observe", "55"], ["Stealth", "25"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "75"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has two of:"},
+                    {name: "Dwemer Centurion Great Axe", text: "1d12+2; Splitting, Unwieldy Shield Splitter, Concussive, Magic; Reach 3m"},
+                    {name: "Dwemer Centurion Greatsword", text: "1d12+2; Slashing, Concussive, Magic; Reach 3m"},
+                    {name: "Dwemer Centurion Maul", text: "1d12+2; Crushing, Unwieldy, Shield Splitter, Concussive, Magic; Reach 3m"},
+                    {name: "Dwemer Centurion Lance", text: "1d12+2; Splitting, Crushing (3), Mounted, Unwieldy; Reach 2-3m"},
+                    {name: "Dwemer Ballista", text: "1d12; Complex, Magic, Reload (4, min 1), Crushing (6); Range(25/155/305)", subs: ["Includes 20 Dwemer Ballista Bolts (+2 dmg)"]},
+                    {text: "Also has:"},
+                    {name: "Heavy Dwemer Plating", text: "AR 10 / Magic 5; Full, Magic"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Rapid Spin (2 SP)", text: "As part of an all-out attack, the Dwemer Centurion can strike every target within melee range as a single attack. Roll once for the attack, and resolve damage separately against all struck targets."},
+                    {name: "Static Field (1 AP + 2 SP)", text: "As a Secondary Action, the Dwemer Centurion can charge up and create an electrical field around itself, dealing 1d8 shock damage to any character within 1m at the start of their turn. At the start of each of the Dwemer Centurion\u0027s turns, they can attempt a +20 Endurance test to refresh the effect for free."},
+                    {name: "Steam Breath (1 AP + 1 SP)", text: "As an attack, Dwemer Centurion can quickly cool itself by unleashing a wave of scalding steam, which is a 15m cone that deals 1d12 fire damage to all targets."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Mechanical"},
+                    {name: "Tonal Reinforcement"},
+                    {name: "Dark Sight", text: "The character an see and act normally in areas with no light."},
+                    {name: "Thick Skull", text: "The character is immune to the Stunned and Dazed conditions."},
+                    {name: "Weakness (Shock, 3)"},
+                ]},
+            {head: "Encountering Dwemer Centurions", kind: "prose", items: [
+                    {text: "Dwemer Centurions are incredibly powerful foes due to their sheer size, durability, and strength. They can be outfitted to hit hard both in melee and at range, and their defenses can weather all but the most devastating attacks."},
+                    {text: "In combat Dwemer Centurions are aggressive and single-minded. They will focus on the greatest threat that is easily within their reach, and rarely attempt to defend against opponents other than their selected target, instead relying on their natural defenses. When faced with groups, they tend to utilize their rapidly spinning torsos."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can attempt a +0 Profession (Engineering or Smithing) test over a short rest to recover 4d4 pieces of dwemer scrap metal worth 90 Drakes and 2 ENC each."},
+                    {text: "On a -10 Profession (Engineering or Smithing) or +0 Mysticism test, a character can extract a greater soul gem from the animunculi\u2019s chassis over the course of a short rest."},
+                    {text: "A character can attempt a -20 Profession (Engineering or Smithing) test over a short rest to recover the Dwemer Centurions dynamo core, worth 300 Drakes and 2 ENC."},
+                    {text: "A character can attempt a -20 Alchemy test to extract DoS+3 dose of Dwarven Oil, which is a Very Rare Alteration ingredient."},
+                ]},
+        ],
+    },
+    "Dwemer Colossus": {
+        name: "Dwemer Colossus",
+        flavour: "This enormous Dwemer construct has exaggerated proportions that still resemble that of a humanoid. One arm ends in a strange cylinder that spins and burns with fire, the other is a huge fist.",
+        tags: "Animunculi, Construct; Extreme",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "80"], ["Endurance", "85"], ["Agility", "25"], ["Intelligence", "20"], ["Willpower", "5"], ["Perception", "25"], ["Personality", "5"], ["Morale", "100"]]},
+            {group: "Attributes", rows: [["Hit Points", "170"], ["Wound Thr.", "24"], ["Magicka", "-"], ["Stamina", "8"], ["Initiative", "+6"], ["Action Pts.", "3"], ["Speed", "12m"], ["Size", "Enrms."]]},
+            {group: "Skills", rows: [["Combat", "110"], ["Magic", "-"], ["Evade", "25"], ["Observe", "45"], ["Stealth", "25"], ["Knowledge", "-"], ["Social", "-"], ["Physical", "100"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Dwemer Colossus Fist", text: "2d12+2; Crushing, Unwieldy, Concussive, Shield Splitter, Magic; Reach 2-4m"},
+                    {name: "Enkindling Projector", text: "2d10 Fire; Magic, Range (10/35/55)"},
+                    {name: "Heavy Dwemer Plating", text: "AR 15 / MR 7; Full, Magic"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Quake (2 SP)", text: "Instead of moving, the Dwemer Colossus can instead jump. It\u2019s landing generates a shockwave around it. All creatures within 5m must pass a +0 Acrobatics test or be knocked prone, creatures within 2m attempt the test at -10 and suffer 1d8 damage that ignores armor on a failure."},
+                    {name: "Steam Breath (1 AP + 1 SP)", text: "As an attack, Dwemer Colossus can quickly cool itself by unleashing a wave of scalding steam, which is a 15m cone that deals 1d12 fire damage to all targets."},
+                    {name: "Sweeping Strike (1 SP)", text: "As part of an all-out attack, the Dwemer Colossus can strike up to 5 targets with it\u2019s Dwemer Colossus Fist as a single attack. Roll once for the attack, and resolve damage separately against all struck targets."},
+                    {name: "Volcanic Bombardment (1 AP + 5 SP)", text: "As an attack the Dwemer Colossus charges its Enkindling Projector, launching a huge ball of fire towards a location within 50m, dealing 3d10 fire damage to any characters caught within a 2m wide line. Upon reaching it\u2019s target location, it explodes, dealing 3d10 fire damage to any characters caught with 10m and persists for 10 rounds, dealing 1d10 fire damage to any characters who pass through it or end their turn there."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Mechanical"},
+                    {name: "Tonal Reinforcement"},
+                    {name: "Colossal Strikes", text: "The character cannot be parried, but targets gain a +10 on tests to Evade its melee attacks."},
+                    {name: "Dark Sight", text: "The character can see and act normally in areas with no light."},
+                    {name: "Frightening", text: "At the start of an encounter with this character, all opposed characters must test Panic at +0."},
+                    {name: "Thick Skull", text: "The character is immune to the Stunned and Dazed conditions."},
+                    {name: "Warded (3)", text: "Roll d10 when this character is affected by a magic component. On a roll of 3 or less, ignore it."},
+                    {name: "Weakness (Shock, 3)"},
+                ]},
+            {head: "Encountering Dwemer Colossi", kind: "prose", items: [
+                    {text: "The Colossus is the rarest of the different Dwemer Animunculi, with very few examples ever having been encountered, they are huge engines and represent an incredible feat of engineering. Little is known of them, even their existence is obscure knowledge that only a scholar of dwemer technology would know anything about. Their immense size means they are only found in the largest of Dwemer ruins."},
+                    {text: "They resemble a considerably larger, bulkier version of the Dwemer Centurion. A colossus is a formidable opponent indeed, quite capable of protecting whatever ruin it is found in from almost any threat."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "A character can attempt a +0 Profession (Engineering or Smithing) test over a long rest to recover 4d12 pieces of dwemer scrap metal worth 90 Drakes and 2 ENC each."},
+                    {text: "On a -10 Profession (Engineering or Smithing) or +0 Mysticism test, a character can extract a grand soul gem from the animunculi\u2019s chassis over the course of a short rest."},
+                    {text: "A character can attempt a -20 Profession (Engineering or Smithing) test over a short rest to recover the Dwemer Colossus\u2019 dynamo core, worth 300 Drakes and 2 ENC."},
+                    {text: "A character can attempt a -20 Alchemy test to extract DoS+5 dose of Dwarven Oil, which is a Very Rare Alteration ingredient."},
+                ]},
+        ],
+    },
     "Vampire Fledgling": {
         name: "Vampire Fledgling",
         flavour: "Freshly turned and near-feral, these newly-turned vampires have an uncontrollable thirst for blood.",
@@ -5656,6 +5955,14 @@ const creatureLibrary: {chapter: string, category: string, members: string[]}[] 
 
     {chapter: "The Cursed", category: "Vampires", members: ["Vampire Fledgling", "Vampire", "Master Vampire", "Vampire Lord"]},
     {chapter: "The Cursed", category: "Lycanthropes", members: ["Werewolf", "Werewolf Vargr", "Wereboar", "Wereboar Gore-Tusk", "Werebear", "Werebear Brute"]},
+
+    {chapter: "Dwemer Animunculi", category: "Dwemer Spiders", members: ["Dwemer Spiders"]},
+    {chapter: "Dwemer Animunculi", category: "Dwemer Constructor", members: ["Dwemer Constructor"]},
+    {chapter: "Dwemer Animunculi", category: "Dwemer Ballista", members: ["Dwemer Ballista"]},
+    {chapter: "Dwemer Animunculi", category: "Dwemer Sphere", members: ["Dwemer Sphere"]},
+    {chapter: "Dwemer Animunculi", category: "Dwemer Sentry", members: ["Dwemer Sentry"]},
+    {chapter: "Dwemer Animunculi", category: "Dwemer Centurion", members: ["Dwemer Centurion"]},
+    {chapter: "Dwemer Animunculi", category: "Dwemer Colossus", members: ["Dwemer Colossus"]},
 ]
 
 // a search should find a skeever when you type rat, so the category and the chapter
