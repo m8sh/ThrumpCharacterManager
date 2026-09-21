@@ -53,6 +53,142 @@ type Statblock = {
 }
 
 const statblocks: Record<string, Statblock> = {
+    "Ayleid Mage": {
+        name: "Ayleid Mage",
+        flavour: "Ayleid mages are trained in the arcane arts, making them a more imposing threat than their ungifted brethren.",
+        tags: "Ayleid; Average; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "20"], ["Endurance", "25"], ["Agility", "30"], ["Intelligence", "50"], ["Willpower", "45"], ["Perception", "30"], ["Personality", "35"], ["Morale", "60"]]},
+            {group: "Attributes", rows: [["Hit Points", "13"], ["Wound Thr.", "6"], ["Magicka", "55"], ["Stamina", "2"], ["Initiative", "+6"], ["Action Pts.", "3"], ["Speed", "6m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "30"], ["Magic", "70"], ["Evade", "45"], ["Observe", "50"], ["Stealth", "30"], ["Knowledge", "70"], ["Social", "45"], ["Physical", "30"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Moonstone Dagger", text: "1d4 + 2 (Slashing), 1H, Exploit Weakness, Thrown (15/20/25), Small, Magic, Reach 1m"},
+                    {name: "Partial Moonstone Armor", text: "AR 3 / Magic 1; Magic; Light, Partial"},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Weakness (Magic, 1)"},
+                    {name: "(Racial) Empowered by Starlight", text: "Ayleid characters increase their Willpower bonus for the purpose of spell restraint by 2 while under direct starlight. The Ayleid can choose to forfeit this bonus for the rest of the night in order to absorb some of the power radiating down on it, regaining 15 Magicka instantly."},
+                    {name: "(Racial) Flesh Shaping", text: "When an Ayleid uses any Restoration spell that regenerates a target\u2019s health, it can choose to instead inflict the specified amount as Magic damage. Additionally, an Ayleid can use the Stabilize spell to Treat Wounds."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Frost Bolt 3", text: "8 MP; 1d8 Frost, R Attack (100m), Overload (+WB to Dmg)"},
+                    {name: "Frost Ball 3", text: "12 MP; 1d8 Frost; 100 m Range, AoE (2m, Sphere) Overload (+WB to Dmg)"},
+                    {name: "Ward 4", text: "9 MP; Defensive Overload; Does not provoke Attack of Opportunity. Generate shield with 9 Magical and Physical BR. Cannot Power Block."},
+                    {name: "Healing Touch 5", text: "11 MP; Direct; Target within 1m regains 10 HP."},
+                    {name: "Poisonbloom 4", text: "14 MP; 1d10 Poison; R Attack (100m), AoE (2m, Sphere), Overload (+WB to Dmg)"},
+                    {name: "Reanimate 4", text: "24 MP; Upkeep, Direct, Mindlock (1); Standard-sized corpse is reanimated for one minute. See original spell for details."},
+                    {name: "Summon Wraith 4", text: "18 MP; Upkeep, Mindlock (2); Summon a Wraith for 1 round. If the summoner wins an Opposed Wp test, the Wraith has the Bound trait for the duration."},
+                ]},
+            {head: "Encountering Ayleid Mages", kind: "prose", items: [
+                    {text: "Mages will typically reside in Ayleid structures, maintaining the magics held within by their Elven creators."},
+                ]},
+        ],
+    },
+    "Ayleid Guardian": {
+        name: "Ayleid Guardian",
+        flavour: "Ayleid guardians are the main military force of City-states.They are only a danger in large groups.",
+        tags: "Ayleid; Low; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "30"], ["Agility", "25"], ["Intelligence", "30"], ["Willpower", "30"], ["Perception", "25"], ["Personality", "25"], ["Morale", "50"]]},
+            {group: "Attributes", rows: [["Hit Points", "13"], ["Wound Thr.", "7"], ["Magicka", "35"], ["Stamina", "4"], ["Initiative", "+6"], ["Action Pts.", "3"], ["Speed", "6m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "65"], ["Magic", "-"], ["Evade", "40"], ["Observe", "45"], ["Stealth", "25"], ["Knowledge", "30"], ["Social", "25"], ["Physical", "40"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Moonstone Longsword", text: "1d8(1d10)+2; Slashing, Magic , Reach 2m"},
+                    {name: "Moonstone Longbow", text: "1d8+2, 20/260/360, Reload (2), Unwieldy", subs: ["Includes 12 Moonstone Splitting or Slashing Arrows (+2 dmg)"]},
+                    {text: "Also has up to two of:"},
+                    {name: "Partial Moonstone Armor", text: "AR 3 / Magic 1; Magic; Light, Partial"},
+                    {name: "Moonstone Shield", text: "BR 9 / MR 6; Magic"},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Weakness (Magic, 1)"},
+                    {name: "(Racial) Empowered by Starlight", text: "Ayleid characters increase their Willpower bonus for the purpose of spell restraint by 2 while under direct starlight. The Ayleid can choose to forfeit this bonus for the rest of the night in order to absorb some of the power radiating down on it, regaining 15 Magicka instantly."},
+                    {name: "(Racial) Flesh Shaping", text: "When an Ayleid uses any Restoration spell that regenerates a target\u2019s health, it can choose to instead inflict the specified amount as Magic damage. Additionally, an Ayleid can use the Stabilize spell to Treat Wounds."},
+                ]},
+            {head: "Encountering Ayleid Guardians", kind: "prose", items: [
+                    {text: "Guardians will mostly be seen around the city\u2019s fortifications and ruins of their people, defending them from outsiders. They will also form patrols of their territory and provide escort to the upper class."},
+                ]},
+        ],
+    },
+    "Ayleid Sorcerer-King": {
+        name: "Ayleid Sorcerer-King",
+        flavour: "Ayleid Sorcerer-Kings were the lords of ayleid cities. Their power is one of the greatest seen on Tamriel.",
+        tags: "Ayleid; Major; Black Soul (1500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "55"], ["Endurance", "55"], ["Agility", "55"], ["Intelligence", "70"], ["Willpower", "65"], ["Perception", "50"], ["Personality", "50"], ["Morale", "85"]]},
+            {group: "Attributes", rows: [["Hit Points", "28"], ["Wound Thr.", "16"], ["Magicka", "75"], ["Stamina", "5"], ["Initiative", "+17"], ["Action Pts.", "4"], ["Speed", "15m"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "70"], ["Magic", "85"], ["Evade", "55"], ["Observe", "50"], ["Stealth", "15"], ["Knowledge", "70"], ["Social", "60"], ["Physical", "55"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {text: "Has one of:"},
+                    {name: "Varlastone Dagger", text: "1d4+3; Slashing, Exploit Weakness, Thrown (20/25/30), Small, Magic, Focus, Varla; Reach 1m, 1H"},
+                    {name: "Varlastone Longsword", text: "1d8(1d10)+3; Slashing, Magic, Focus, Varla; Reach 2m, 1.5H"},
+                    {text: "Also has:"},
+                    {name: "Full Varlastone Armor", text: "AR 7 / Magic 3; Magic; Light, Full, Varla"},
+                    {name: "Varlastone Shield", text: "BR 11 / MR 8; Magic, Varla"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Rally of Starlight (1 AP + 1 SP)", text: "The Ayleid Sorcerer-King activates nearby welkynd stones to shine a bright light, invigorating his allies with newfound strength. As a Secondary Action, the Sorcerer-King can spend a stamina point to call upon his ayleid allies to fight harder. All Ayleids within 10m can immediately make an Attack action for free."},
+                    {name: "Starlight (2 Charges)", text: "The Ayleid Sorcerer-King\u2019s Weapon is imbued with starlight, they can spend a charge to gain a +30 bonus on a casting test when the weapon is used as a Focus. This ability gained from their Varlastone weapon."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Weakness (Magic, 1)"},
+                    {name: "Telekinesis (6)"},
+                    {name: "(Racial) Empowered by Starlight", text: "Ayleid characters increase their Willpower bonus for the purpose of spell restraint by 2 while under direct starlight. The Ayleid can choose to forfeit this bonus for the rest of the night in order to absorb some of the power radiating down on it, regaining 15 Magicka instantly."},
+                    {name: "(Racial) Flesh Shaping", text: "When an Ayleid uses any Restoration spell that regenerates a target\u2019s health, it can choose to instead inflict the specified amount as Magic damage. Additionally, an Ayleid can use the Stabilize spell to Treat Wounds."},
+                    {name: "Bend Reality", text: "The Ayleid Sorcerer-King can test Magic in place of Physical."},
+                    {name: "Varla Barrier", text: "The Ayleid Sorcerer-King has Spell Absorption(3), but needs to use Absorb Barrier to regain the MP of the spells absorbed. Gained from Varlastone Armor."},
+                ]},
+            {head: "Spells", kind: "list", items: [
+                    {name: "Frost Bolt 5", text: "12 MP; 2d6 Frost; R Attack (100m), Overload (+WB to Dmg)"},
+                    {name: "Frost Ball 4", text: "14 MP;1d10 Frost; R Attack (100m), AoE (2m, Sphere), Overload (+WB to Dmg)"},
+                    {name: "Ward 4", text: "9 MP; Defensive Overload; Does not provoke Attack of Opportunity. Generate shield with 9 Magical and Physical BR. Cannot Power Block."},
+                    {name: "Healing Touch 5", text: "11 MP; Direct; Target within 1m regains 10 HP."},
+                    {name: "Poisonbloom 4", text: "14 MP; 1d10 Poison; R Attack (100m), AoE (2m, Sphere), Overload (+WB to Dmg)"},
+                    {name: "Reanimate 4", text: "24 MP; Upkeep, Direct, Mindlock (1); Standard-sized corpse is reanimated for one minute. See original spell for details."},
+                    {name: "Summon Wraith 4", text: "18 MP; Upkeep, Mindlock (2); Summon a Wraith for 1 round. If the summoner wins an Opposed Wp test, the Wraith has the Bound trait for the duration."},
+                    {name: "Heal 7", text: "15 MP; Caster regains 14 HP."},
+                    {name: "Heal Ally 5", text: "14 MP; Direct; Target within 50m regains 10 HP"},
+                ]},
+            {head: "Encountering Ayleid Sorcerer-Kings", kind: "prose", items: [
+                    {text: "Sorcerer Kings rule over the ancient ruins that formed as the heart of their domains, typically residing within the deepest, most secure part of the complex."},
+                ]},
+            {head: "Loot", kind: "list", items: [
+                    {text: "Upon defeat, player characters may take 3-5 rolls on the Treasure Table."},
+                ]},
+        ],
+    },
+    "Flesh Garden": {
+        name: "Flesh Garden",
+        flavour: "Flesh Gardens can summon undead to help their allies.",
+        tags: "Bestial; Average; White Soul (500)",
+        stats: [
+            {group: "Characteristics", rows: [["Strength", "35"], ["Endurance", "45"], ["Agility", "25"], ["Intelligence", "50"], ["Willpower", "50"], ["Perception", "35"], ["Personality", "25"], ["Morale", "100"]]},
+            {group: "Attributes", rows: [["Hit Points", "23"], ["Wound Thr.", "12"], ["Magicka", "70"], ["Stamina", "4"], ["Initiative", "+10"], ["Action Pts.", "3"], ["Speed", "-"], ["Size", "Std."]]},
+            {group: "Skills", rows: [["Combat", "-"], ["Magic", "80"], ["Evade", "30"], ["Observe", "45"], ["Stealth", "10"], ["Knowledge", "35"], ["Social", "15"], ["Physical", "45"]]},
+        ],
+        sections: [
+            {head: "Weapons and Armor", kind: "list", items: [
+                    {name: "Natural Armor", text: "AR 3"},
+                ]},
+            {head: "Special Abilities", kind: "list", items: [
+                    {name: "Absorb Corpse (1 AP)", text: "As a Primary Action the Flesh Garden begins with 2 Flesh Charges. The Flesh Garden can absorb any corpse within 1m of itself to gain an additional Flesh Charge."},
+                    {name: "Rapinous Reanimation [Zombie] (1 AP, 1 Flesh Charge)", text: "The Flesh Garden may summon a Zombie as a Primary Action. For one minute, the creature and caster make an opposed Willpower test to see if the creature is bound or not. If the creature dies or exceeds the duration, the creature is killed and is considered a corpse for the purposes of the Absorb Corpse special action."},
+                    {name: "Rapinous Reanimation [Flesh Atronach] (1 AP, 2 Flesh Charges)", text: "The Flesh Garden may summon a Flesh Atronach as a Primary Action for one minute. the creature and caster make an opposed Willpower test to see if the creature is bound or not. If the creature dies or exceeds the duration, the creature is killed and is considered a corpse for the purposes of the Absorb Corpse special action."},
+                ]},
+            {head: "Traits", kind: "list", items: [
+                    {name: "Stationary", text: "The Flesh Garden is incapable of movement."},
+                ]},
+            {head: "Encountering Flesh Gardens", kind: "prose", items: [
+                    {text: "Flesh Gardens are stationary structures similar to Dunmeri ghostfences. However, the bones and tissues are of Ayleid Enemies, and it is Ayleid magic that allows them to summon creatures to protect them and their allies. The only challenge is the minions they can summon and then also absorb upon death."},
+                ]},
+        ],
+    },
     "Dovah": {
         name: "Dovah",
         flavour: "Massive, flying beasts, Dovah are extremely rare and beyond dangerous. They are the preeminent masters of Thu\u0027um on the Mundus and view the world\u2019s lordship as their birthright.",
@@ -6244,6 +6380,11 @@ const creatureLibrary: {chapter: string, category: string, members: string[]}[] 
 
     {chapter: "Dragons", category: "Dovah", members: ["Dovah", "Lesser Dovah", "Elder Dovah", "Ancient Dovah"]},
     {chapter: "Dragons", category: "Skeletal Dragon", members: ["Skeletal Dragon"]},
+
+    {chapter: "Ayleids", category: "Ayleid Mage", members: ["Ayleid Mage"]},
+    {chapter: "Ayleids", category: "Ayleid Guardian", members: ["Ayleid Guardian"]},
+    {chapter: "Ayleids", category: "Ayleid Sorcerer-King", members: ["Ayleid Sorcerer-King"]},
+    {chapter: "Ayleids", category: "Flesh Garden", members: ["Flesh Garden"]},
 ]
 
 // a search should find a skeever when you type rat, so the category and the chapter
