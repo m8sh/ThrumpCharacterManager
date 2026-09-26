@@ -9,6 +9,5 @@ For example: Wound rules and how they interact with the healing mechanics are ve
 TODO:
 - Create a way to make custom statblocks that are kept permanently
 - Add all of the combat rules to the bottom of statblocks for easy GM reference
-- Create a way to directly message the GM
 
 
