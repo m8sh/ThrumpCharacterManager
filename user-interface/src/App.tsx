@@ -6705,7 +6705,6 @@ const conditionTypes: Record<string, {
         note: "X damage a round, then X drops by 1",
         ownClock: true,
         wtMod: () => -1,
-        detail: (c) => c.fresh ? "starts next round" : "",
     },
     "Blinded": {
         kind: "flag",
@@ -9160,7 +9159,7 @@ function App() {
                 setPopout("shrugged")
                 return
             }
-            const fresh: Cond = {name: name, value: 1, fresh: name === "Bleeding"}
+            const fresh: Cond = {name: name, value: 1}
             if (rounds !== undefined) fresh.rounds = rounds
             setConditions(prev => [...prev, fresh])
             // being stunned costs whatever action points are left the moment it lands
@@ -10552,12 +10551,7 @@ function App() {
                                     lines.push(nameOf(c) + " has run its course and is gone.")
                                     return
                                 }
-                                // bleeding does nothing the round it lands, it starts at the end of the next one
-                                if (c.name === "Bleeding" && c.fresh) {
-                                    kept.push({...c, fresh: false})
-                                    lines.push("Bleeding (" + c.value + ") \u2014 the wound has not opened up yet, it starts at the end of your next round.")
-                                    return
-                                }
+                                // the wound opens at the end of the next turn to end, which is this one
                                 if (c.name === "Bleeding") {
                                     const dmg = c.value ?? 0
                                     hp = hp - dmg
