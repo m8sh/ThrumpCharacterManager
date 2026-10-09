@@ -7114,6 +7114,24 @@ const healingRules: RuleBlock[] = [
     {head: "Curing Wounds", text: "Once a wound has been treated it can be properly healed. After treatment if a character regenerates HP (by magical or natural means) equal to or in excess of the damage that caused the wound, then the wound and all of its effects are removed. The one exception is that characters cannot heal lost limbs in this fashion."},
 ]
 
+const staminaRules: RuleBlock[] = [
+    {text: "Stamina is a unique attribute compared to HP or MP in that it represents the character\u2019s ability to push their physical limits and can be spent for a variety of effects. Stamina is what allows characters to trek for multiple kilometers through difficult terrain, land killing blows, and push themselves to new heights of physical strength and endurance. A character\u2019s Stamina is represented primarily by their Stamina Points, which measure how often they can push their limits in this fashion."},
+    {head: "Stamina Points", text: "A character\u2019s Stamina Point (SP) maximum is equal to their Endurance bonus, though it may be modified in other ways. When a character is below zero SP they have a level of fatigue for each point of Stamina below zero."},
+    {text: "A character may still spend or lose SP even if they have none remaining, but each time they do so they gain a level of fatigue. This can cause them to eventually exhaust themself and fall unconscious."},
+    {head: "Regaining SP", text: "A character regains an amount of SP equal to their Endurance bonus after a long rest and regains only 1 SP after a short rest (or removes a level of fatigue)."},
+    {head: "Spending Stamina", text: "A character can choose to spend SP in exchange for a number of effects, though going below 0 SP causes the character to gain a level of fatigue. Characters may spend Stamina for the following effects, but they cannot spend it for more than one effect per character Turn. A character cannot use both Luck and SP to modify the result of a single test:"},
+]
+
+// the six things stamina buys, kept apart from the prose so the name can be bold
+const staminaCosts: {name: string, text: string}[] = [
+    {name: "Physical Exertion (1 SP, spend before test)", text: "Gain a +20 bonus on the next Strength or Endurance based skill or characteristic test (except for Combat Style skill tests)."},
+    {name: "Sprint (1 SP, spend before moving)", text: "Modify the character\u2019s Dash action to allow them to move up to twice their speed."},
+    {name: "Power Draw (1 SP)", text: "The character reduces the reload time for the next shot with their current weapon by 1. Reload 0 means the reload is free unless the weapon has a minimum."},
+    {name: "Power Attack (1-3 SP, spend before damage roll)", text: "Increase the damage of a melee or ranged damage roll by twice the stamina points spent to a maximum of 3 for +6 damage."},
+    {name: "Power Block (1 SP, spend after damage roll)", text: "The character doubles the BR of their shield for the purposes of resolving a block. This only modifies the BR of the shield against physical damage, not magical damage types."},
+    {name: "Heroic Action (1 SP)", text: "The character regains a spent AP. This may only be done once per round."},
+]
+
 const fearIntro: RuleBlock[] = [
     {text: "When a character is confronted by an excessively frightening event or adversary, they must make a Fear Test. There are two types of fear tests: panic and horror tests. If the character fails the test, they succumb to the effects of fear."},
     {text: "Your GM may call on you to make a Panic Test when you are confronted by mundane shock or horror. This is represented by the Panic (+/- X) notation, which is simply a Willpower test with a +/- X modifier."},
@@ -10758,6 +10776,27 @@ function App() {
                                                         {block.text && <p>{block.text}</p>}
                                                     </div>
                                                 ))}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="act">
+                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Stamina") ? openActions.filter(n => n !== "group Stamina") : [...openActions, "group Stamina"])}>
+                                            <span>Stamina</span>
+                                        </div>
+                                        {openActions.includes("group Stamina") && (
+                                            <div className="actBody">
+                                                {staminaRules.map((block, i) => (
+                                                    <div key={i}>
+                                                        {block.head && <div className="subHead">{block.head}</div>}
+                                                        {block.text && <p>{block.text}</p>}
+                                                    </div>
+                                                ))}
+                                                <ul>
+                                                    {staminaCosts.map(c => (
+                                                        <li key={c.name}><b>{c.name}:</b> {c.text}</li>
+                                                    ))}
+                                                </ul>
                                             </div>
                                         )}
                                     </div>
