@@ -6421,7 +6421,9 @@ function startingPools(name: string) {
     const hp = statOf(sb, "Hit Points", 10)
     const ap = statOf(sb, "Action Pts.", 3)
     const sp = statOf(sb, "Stamina", 4)
-    return {hp: [hp, hp] as [number, number], ap: [ap, ap] as [number, number], sp: [sp, sp] as [number, number]}
+    const mp = statOf(sb, "Magicka", 0)
+    return {hp: [hp, hp] as [number, number], ap: [ap, ap] as [number, number],
+        sp: [sp, sp] as [number, number], mp: [mp, mp] as [number, number]}
 }
 
 // bear, then bear 2, then bear 3, the way a folder names a repeated file. the first
@@ -6442,6 +6444,7 @@ type Creature = {
     hp: [number, number],
     ap: [number, number],
     sp: [number, number],
+    mp: [number, number],
 }
 
 // pulls the pools out of a published sheet so the tracker can show them
@@ -6451,9 +6454,11 @@ function poolsOf(snapshot: string) {
         const info = new Map<string, string | boolean | undefined>(s.charInfo)
         const pair = (cur: string, max: string): [number, number] =>
             [Number(info.get(cur)) || 0, Number(info.get(max)) || 0]
-        return {hp: pair("Current HP", "Max HP"), ap: pair("Current AP", "Max AP"), sp: pair("Current SP", "Max SP")}
+        return {hp: pair("Current HP", "Max HP"), ap: pair("Current AP", "Max AP"),
+            sp: pair("Current SP", "Max SP"), mp: pair("Current MP", "Max MP")}
     } catch {
-        return {hp: [0, 0] as [number, number], ap: [0, 0] as [number, number], sp: [0, 0] as [number, number]}
+        return {hp: [0, 0] as [number, number], ap: [0, 0] as [number, number],
+            sp: [0, 0] as [number, number], mp: [0, 0] as [number, number]}
     }
 }
 
@@ -7799,6 +7804,9 @@ function App() {
     const [creatureSearch, setCreatureSearch] = useState("")
     // which statblock the gm is reading, empty when they are on the tracker
     const [statblock, setStatblock] = useState("")
+    // numbers the dm has typed over, kept per creature so going back and in again
+    // still shows them. nothing is written to storage, so a reload is the book again
+    const [sbEdits, setSbEdits] = useState<Record<string, Record<string, string>>>({})
     // which creature name is being typed over, empty when none is
     const [renaming, setRenaming] = useState("")
     const [tieLines, setTieLines] = useState<string[]>([])
@@ -8415,6 +8423,14 @@ function App() {
                 <div className="nameRow">
                     <div className="upload">
                         <button type="button" className="backToList" onClick={() => setStatblock("")}>Go Back</button>
+                        {/* only worth offering once something has actually been typed over */}
+                        {sbEdits[statblock] !== undefined && (
+                            <button type="button" className="backToList" onClick={() => {
+                                const rest = {...sbEdits}
+                                delete rest[statblock]
+                                setSbEdits(rest)
+                            }}>Reset Numbers</button>
+                        )}
                     </div>
                     <h1>{sb.name}</h1>
                 </div>
@@ -8426,13 +8442,25 @@ function App() {
                     {sb.stats.map(group => (
                         <div className="sblock" key={group.group}>
                             <div className="shead">{group.group}</div>
-                            {group.rows.map(row => (
-                                <div className="srow" key={row[0]}>
-                                    <span>{row[0]}</span>
-                                    {/* a dash means the creature simply does not have that one */}
-                                    <b className={row[1] === "-" ? "none" : ""}>{row[1]}</b>
-                                </div>
-                            ))}
+                            {group.rows.map(row => {
+                                // the group goes in the key so two rows with one name stay apart
+                                const slot = group.group + " " + row[0]
+                                const shown = sbEdits[statblock]?.[slot] ?? row[1]
+                                const retype = (v: string) => setSbEdits({...sbEdits, [statblock]: {...sbEdits[statblock], [slot]: v}})
+                                return (
+                                    <div className="srow" key={row[0]}>
+                                        <span>{row[0]}</span>
+                                        {/* a dash means the creature simply does not have that one */}
+                                        <input
+                                            type="text"
+                                            className={shown === "-" ? "sbNum none" : "sbNum"}
+                                            value={shown}
+                                            onChange={e => retype(e.target.value)}
+                                            onKeyDown={numberArrows(shown, retype)}
+                                        />
+                                    </div>
+                                )
+                            })}
                         </div>
                     ))}
                 </div>
@@ -8518,7 +8546,8 @@ function App() {
                             // both sit in one list ordered by whatever the gm has arranged
                             type Line = {key: string, name: string, npc: boolean, from?: string,
                                 ir: number, luck: number,
-                                hp: [number, number], ap: [number, number], sp: [number, number], sheet?: string}
+                                hp: [number, number], ap: [number, number], sp: [number, number],
+                                mp: [number, number], sheet?: string}
 
                             const lines: Line[] = []
                             roster.forEach(entry => {
@@ -8534,13 +8563,15 @@ function App() {
                                 }
                                 lines.push({key: entry.player_id, name: entry.name, npc: false,
                                     ir: ir, luck: luck,
-                                    hp: pools.hp, ap: pools.ap, sp: pools.sp, sheet: entry.sheet})
+                                    hp: pools.hp, ap: pools.ap, sp: pools.sp, mp: pools.mp, sheet: entry.sheet})
                             })
                             creatures.forEach(c => {
                                 const sb = statblocks[c.from]
+                                // a tracker saved before magicka was tracked has no mp, so fill it from the book
+                                const magicka = statOf(sb, "Magicka", 0)
                                 lines.push({key: c.id, name: c.name, npc: true, from: c.from,
                                     ir: statOf(sb, "Initiative", 0), luck: 0,
-                                    hp: c.hp, ap: c.ap, sp: c.sp})
+                                    hp: c.hp, ap: c.ap, sp: c.sp, mp: c.mp ?? [magicka, magicka]})
                             })
 
                             // anyone the gm has not placed yet goes on the end
@@ -8566,7 +8597,7 @@ function App() {
                                 setOrderKeys(keys)
                             }
 
-                            const pool = (which: "hp" | "ap" | "sp", label: string, line: Line) => {
+                            const pool = (which: "hp" | "ap" | "sp" | "mp", label: string, line: Line) => {
                                 const p = line[which]
                                 const width = Math.max(0, Math.min(100, 100 * p[0] / (p[1] || 1)))
                                 return (
@@ -8582,7 +8613,15 @@ function App() {
                                                         onKeyDown={numberArrows(String(p[0]),
                                                             v => setCreature(line.key, c => ({...c, [which]: [Number(v), p[1]]})), p[1])}
                                                     />
-                                                    <span className="of">/{p[1]}</span>
+                                                    <span className="of">/</span>
+                                                    {/* the maximum moves too, since the dm may want a tougher one of these */}
+                                                    <input
+                                                        type="text"
+                                                        value={String(p[1])}
+                                                        onChange={e => setCreature(line.key, c => ({...c, [which]: [p[0], Number(e.target.value) || 0]}))}
+                                                        onKeyDown={numberArrows(String(p[1]),
+                                                            v => setCreature(line.key, c => ({...c, [which]: [p[0], Number(v)]})))}
+                                                    />
                                                 </span>
                                             ) : (
                                                 <span className="fixed">{p[0]}/{p[1]}</span>
@@ -8651,7 +8690,7 @@ function App() {
                                             <span className="tinit"><span className="lbl">Initiative</span></span>
                                             <div className="tname"><span className="dot"></span><span className="lbl">Name</span></div>
                                             <div className="tbars">
-                                                <span className="lbl">Health</span><span className="lbl">Action</span><span className="lbl">Stamina</span>
+                                                <span className="lbl">Health</span><span className="lbl">Action</span><span className="lbl">Stamina</span><span className="lbl">Magicka</span>
                                             </div>
                                             <div className="tatk"><span className="lbl">Attacks</span></div>
                                             <div className="tdel"></div>
@@ -8714,6 +8753,7 @@ function App() {
                                                     {pool("hp", "HP", line)}
                                                     {pool("ap", "AP", line)}
                                                     {pool("sp", "SP", line)}
+                                                    {pool("mp", "MP", line)}
                                                 </div>
 
                                                 <div className="tatk">
@@ -8892,7 +8932,7 @@ function App() {
                                                     id: id,
                                                     name: nextCreatureName(name, taken),
                                                     from: name,
-                                                    hp: pools.hp, ap: pools.ap, sp: pools.sp,
+                                                    hp: pools.hp, ap: pools.ap, sp: pools.sp, mp: pools.mp,
                                                 }])
                                                 setOrderKeys([...orderKeys, id])
                                             }
