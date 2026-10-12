@@ -6416,12 +6416,22 @@ function statOf(sb: Statblock | undefined, label: string, fallback: number) {
     return fallback
 }
 
-function startingPools(name: string) {
-    const sb = statblocks[name]
-    const hp = statOf(sb, "Hit Points", 10)
-    const ap = statOf(sb, "Action Pts.", 3)
-    const sp = statOf(sb, "Stamina", 4)
-    const mp = statOf(sb, "Magicka", 0)
+// whatever the dm typed over on the statblock is the number the tracker reads, so
+// bumping hit points there raises the maximum beside every one of those in the fight
+function statNow(from: string, label: string, fallback: number, edits?: Record<string, string>) {
+    const typed = edits?.["Attributes " + label]
+    if (typed !== undefined) {
+        const found = typed.match(/-?\d+/)
+        if (found) return Number(found[0])
+    }
+    return statOf(statblocks[from], label, fallback)
+}
+
+function startingPools(name: string, edits?: Record<string, string>) {
+    const hp = statNow(name, "Hit Points", 10, edits)
+    const ap = statNow(name, "Action Pts.", 3, edits)
+    const sp = statNow(name, "Stamina", 4, edits)
+    const mp = statNow(name, "Magicka", 0, edits)
     return {hp: [hp, hp] as [number, number], ap: [ap, ap] as [number, number],
         sp: [sp, sp] as [number, number], mp: [mp, mp] as [number, number]}
 }
@@ -8566,12 +8576,17 @@ function App() {
                                     hp: pools.hp, ap: pools.ap, sp: pools.sp, mp: pools.mp, sheet: entry.sheet})
                             })
                             creatures.forEach(c => {
-                                const sb = statblocks[c.from]
-                                // a tracker saved before magicka was tracked has no mp, so fill it from the book
-                                const magicka = statOf(sb, "Magicka", 0)
+                                const edits = sbEdits[c.from]
+                                // the maximums come off the statblock every render, so editing it there
+                                // moves them here too. only the current value belongs to the creature
+                                const mpMax = statNow(c.from, "Magicka", 0, edits)
                                 lines.push({key: c.id, name: c.name, npc: true, from: c.from,
-                                    ir: statOf(sb, "Initiative", 0), luck: 0,
-                                    hp: c.hp, ap: c.ap, sp: c.sp, mp: c.mp ?? [magicka, magicka]})
+                                    ir: statNow(c.from, "Initiative", 0, edits), luck: 0,
+                                    hp: [c.hp[0], statNow(c.from, "Hit Points", 10, edits)],
+                                    ap: [c.ap[0], statNow(c.from, "Action Pts.", 3, edits)],
+                                    sp: [c.sp[0], statNow(c.from, "Stamina", 4, edits)],
+                                    // a tracker saved before magicka was tracked has no mp at all
+                                    mp: [c.mp ? c.mp[0] : mpMax, mpMax]})
                             })
 
                             // anyone the gm has not placed yet goes on the end
@@ -8613,21 +8628,15 @@ function App() {
                                                         onKeyDown={numberArrows(String(p[0]),
                                                             v => setCreature(line.key, c => ({...c, [which]: [Number(v), p[1]]})), p[1])}
                                                     />
-                                                    <span className="of">/</span>
-                                                    {/* the maximum moves too, since the dm may want a tougher one of these */}
-                                                    <input
-                                                        type="text"
-                                                        value={String(p[1])}
-                                                        onChange={e => setCreature(line.key, c => ({...c, [which]: [p[0], Number(e.target.value) || 0]}))}
-                                                        onKeyDown={numberArrows(String(p[1]),
-                                                            v => setCreature(line.key, c => ({...c, [which]: [p[0], Number(v)]})))}
-                                                    />
+                                                    {/* the maximum is the statblock's, so it is changed over there */}
+                                                    <span className="of">/{p[1]}</span>
                                                 </span>
                                             ) : (
                                                 <span className="fixed">{p[0]}/{p[1]}</span>
                                             )}
                                         </div>
-                                        <div className="track"><span style={{width: width + "%"}}></span></div>
+                                        {/* the other three take their colour from the css, magicka is blue */}
+                                        <div className="track"><span style={which === "mp" ? {width: width + "%", background: "#3a6ea5"} : {width: width + "%"}}></span></div>
                                     </div>
                                 )
                             }
@@ -8676,7 +8685,7 @@ function App() {
                                             // a d8 each, plus whatever initiative rating their write up gives
                                             const rolled = {...initBy}
                                             creatures.forEach(c => {
-                                                const rating = statOf(statblocks[c.from], "Initiative", 0)
+                                                const rating = statNow(c.from, "Initiative", 0, sbEdits[c.from])
                                                 rolled[c.id] = Math.floor(Math.random() * 8) + 1 + rating
                                             })
                                             setInitBy(rolled)
@@ -8927,7 +8936,8 @@ function App() {
                                             const add = (name: string) => {
                                                 const id = "c" + Math.random().toString(36).slice(2, 8)
                                                 const taken = creatures.map(c => c.name)
-                                                const pools = startingPools(name)
+                                                // a new one walks in at full of whatever the statblock says now
+                                                const pools = startingPools(name, sbEdits[name])
                                                 setCreatures([...creatures, {
                                                     id: id,
                                                     name: nextCreatureName(name, taken),
