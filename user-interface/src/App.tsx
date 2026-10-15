@@ -8296,6 +8296,275 @@ function App() {
         return null
     }
 
+    // the same rules reference both the player panel and the gm tracker show
+    const rulesPanel = (
+        <div className="actList">
+            {/* one fold out per rules section, the same way the actions read */}
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Combat") ? openActions.filter(n => n !== "group Combat") : [...openActions, "group Combat"])}>
+                    <span>Attacking &amp; Defending</span>
+                </div>
+                {openActions.includes("group Combat") && (
+                    <div className="actBody">
+                        {combatIntro.map((block, i) => <p key={i}>{block.text}</p>)}
+
+                        {/* the four steps read straight through rather than folding away */}
+                        {combatSteps.map(step => (
+                            <div key={step.name}>
+                                <div className="stepHead">{step.name}</div>
+                                {step.blocks.map((block, i) => (
+                                    <div key={i}>
+                                        {block.head && <div className="subHead">{block.head}</div>}
+                                        {block.text && <p>{block.text}</p>}
+                                        {block.table && (
+                                            <div className="dtable wide">
+                                                <div className="dh">Result</div><div className="dh">Location Hit</div>
+                                                {hitLocations.map(row => (
+                                                    <Fragment key={row.roll}>
+                                                        <div>{row.roll}</div>
+                                                        <div>{row.where}</div>
+                                                    </Fragment>
+                                                ))}
+                                            </div>
+                                        )}
+                                        {block.bullets && (
+                                            <ul>
+                                                {block.bullets.map((b, j) => (
+                                                    <li key={j}>
+                                                        {b.text}
+                                                        {b.subs && (
+                                                            <ul>
+                                                                {b.subs.map((s, k) => <li key={k}>{s}</li>)}
+                                                            </ul>
+                                                        )}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Weight") ? openActions.filter(n => n !== "group Weight") : [...openActions, "group Weight"])}>
+                    <span>Weight Classes</span>
+                </div>
+                {openActions.includes("group Weight") && (
+                    <div className="actBody">
+                        <p>{weightIntro}</p>
+                        {weightClasses.map(w => (
+                            <div key={w.name}>
+                                <div className="subHead">{w.name === "No listed class" ? "(No listed class)" : w.name === "Crippling" ? "(Crippling)" : w.name}</div>
+                                <p>{w.rules}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Wounds") ? openActions.filter(n => n !== "group Wounds") : [...openActions, "group Wounds"])}>
+                    <span>Wounds</span>
+                </div>
+                {openActions.includes("group Wounds") && (
+                    <div className="actBody">
+                        {woundRules.map((block, i) => (
+                            <div key={i}>
+                                {block.head && <div className="subHead">{block.head}</div>}
+                                {block.text && <p>{block.text}</p>}
+                                {block.bullets && (
+                                    <ul>
+                                        {block.bullets.map((b, j) => <li key={j}>{b}</li>)}
+                                    </ul>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Healing") ? openActions.filter(n => n !== "group Healing") : [...openActions, "group Healing"])}>
+                    <span>Healing</span>
+                </div>
+                {openActions.includes("group Healing") && (
+                    <div className="actBody">
+                        {healingRules.map((block, i) => (
+                            <div key={i}>
+                                {block.head && <div className="subHead">{block.head}</div>}
+                                {block.text && <p>{block.text}</p>}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Stamina") ? openActions.filter(n => n !== "group Stamina") : [...openActions, "group Stamina"])}>
+                    <span>Stamina</span>
+                </div>
+                {openActions.includes("group Stamina") && (
+                    <div className="actBody">
+                        {staminaRules.map((block, i) => (
+                            <div key={i}>
+                                {block.head && <div className="subHead">{block.head}</div>}
+                                {block.text && <p>{block.text}</p>}
+                            </div>
+                        ))}
+                        <ul>
+                            {staminaCosts.map(c => (
+                                <li key={c.name}><b>{c.name}:</b> {c.text}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
+
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Fear") ? openActions.filter(n => n !== "group Fear") : [...openActions, "group Fear"])}>
+                    <span>Fear and Horror</span>
+                </div>
+                {openActions.includes("group Fear") && (
+                    <div className="actBody">
+                        {fearIntro.map((block, i) => (
+                            <div key={i}>
+                                {block.head && <div className="subHead">{block.head}</div>}
+                                {block.text && <p>{block.text}</p>}
+                            </div>
+                        ))}
+
+                        <div className="subHead">Combat Horror Test Results</div>
+                        <div className="dtable roll">
+                            <div className="dh">Roll</div><div className="dh">Effect</div>
+                            {horrorTable.map(row => (
+                                <Fragment key={row.range}>
+                                    <div>{row.range}</div>
+                                    <div><b>{row.name}:</b> {row.text}</div>
+                                </Fragment>
+                            ))}
+                        </div>
+
+                        <div className="subHead">Combat Panic Test Results</div>
+                        <div className="dtable roll">
+                            <div className="dh">Roll</div><div className="dh">Effect</div>
+                            {panicTable.map(row => (
+                                <Fragment key={row.range}>
+                                    <div>{row.range}</div>
+                                    <div><b>{row.name}:</b> {row.text}</div>
+                                </Fragment>
+                            ))}
+                        </div>
+
+                        {/* this one writes to a sheet, so the gm copy of the rules leaves it out */}
+                        {role === "player" && (
+                            <button type="button" className="takeAction" onClick={() => {
+                                setFearRow(null)
+                                setFearNum("")
+                                setFearNum2("")
+                                setPopout("fear1")
+                            }}>I Failed My Fear/Horror Test</button>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Traits") ? openActions.filter(n => n !== "group Traits") : [...openActions, "group Traits"])}>
+                    <span>Traits</span>
+                </div>
+                {openActions.includes("group Traits") && (
+                    <>
+                        {/* the chapter opening belongs to the whole section, not to any one trait */}
+                        <div className="actBody">
+                            {traitIntro.map((block, i) => (
+                                <p key={i}>{block.text}</p>
+                            ))}
+                        </div>
+                        <div className="actGroup">
+                            {traitList.map(trait => (
+                                <div className="act" key={trait.name}>
+                                    <div className="actHead" onClick={() => setOpenActions(openActions.includes("trait " + trait.name) ? openActions.filter(n => n !== "trait " + trait.name) : [...openActions, "trait " + trait.name])}>
+                                        <span>{trait.name}</span>
+                                    </div>
+                                    {openActions.includes("trait " + trait.name) && (
+                                        <div className="actBody">
+                                            {trait.text.map((para, k) => <p key={k}>{para}</p>)}
+                                            {trait.table && (
+                                                <>
+                                                    <div className="subHead">{trait.table.head}</div>
+                                                    <div className="dtable wide">
+                                                        <div className="dh">{trait.table.cols[0]}</div>
+                                                        <div className="dh">{trait.table.cols[1]}</div>
+                                                        {trait.table.rows.map(row => (
+                                                            <Fragment key={row[0]}>
+                                                                <div>{row[0]}</div>
+                                                                <div>{row[1]}</div>
+                                                            </Fragment>
+                                                        ))}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
+
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Conditions") ? openActions.filter(n => n !== "group Conditions") : [...openActions, "group Conditions"])}>
+                    <span>Conditions</span>
+                </div>
+                {openActions.includes("group Conditions") && (
+                    <div className="actGroup">
+                        {conditionRules.slice().sort((a, b) => a.name.localeCompare(b.name)).map(rule => (
+                            <div className="act" key={rule.name}>
+                                <div className="actHead" onClick={() => setOpenActions(openActions.includes("cond " + rule.name) ? openActions.filter(n => n !== "cond " + rule.name) : [...openActions, "cond " + rule.name])}>
+                                    <span>{rule.name}</span>
+                                </div>
+                                {openActions.includes("cond " + rule.name) && (
+                                    <div className="actBody">
+                                        {rule.blocks.map((block, i) => (
+                                            <div key={i}>
+                                                {block.head && <div className="subHead">{block.head}</div>}
+                                                {block.text && <p>{block.text}</p>}
+                                                {block.bullets && (
+                                                    <ul>
+                                                        {block.bullets.map((b, j) => <li key={j}>{b}</li>)}
+                                                    </ul>
+                                                )}
+                                            </div>
+                                        ))}
+                                        {rule.name === "Fatigued" && (
+                                            <>
+                                                <div className="subHead">Fatigue Effects</div>
+                                                <div className="dtable wide">
+                                                    <div className="dh">Levels</div><div className="dh">Effects</div>
+                                                    {fatigueSteps.map(step => (
+                                                        <Fragment key={step.label}>
+                                                            <div>{step.level}</div>
+                                                            <div>{step.effect}</div>
+                                                        </Fragment>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+
     // the dice tray, sitting over whatever is on screen in the corner
     const diceTray = (
         <>
@@ -8888,6 +9157,14 @@ function App() {
                                                     </div>
                                                 </>
                                             )}
+                                        </div>
+                                        {/* the whole rules reference, so the gm can look something up
+                                            without having to open somebody else's sheet */}
+                                        <div className="act">
+                                            <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("ref rules") ? openActions.filter(n => n !== "ref rules") : [...openActions, "ref rules"])}>
+                                                <span>Conditions &amp; Rules</span>
+                                            </div>
+                                            {openActions.includes("ref rules") && rulesPanel}
                                         </div>
                                     </div>
                                 </>
@@ -10719,268 +10996,7 @@ function App() {
                             <>
                                 <h2>Conditions &amp; Rules</h2>
 
-                                <div className="actList">
-                                    {/* one fold out per rules section, the same way the actions read */}
-                                    <div className="act">
-                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Combat") ? openActions.filter(n => n !== "group Combat") : [...openActions, "group Combat"])}>
-                                            <span>Attacking &amp; Defending</span>
-                                        </div>
-                                        {openActions.includes("group Combat") && (
-                                            <div className="actBody">
-                                                {combatIntro.map((block, i) => <p key={i}>{block.text}</p>)}
-
-                                                {/* the four steps read straight through rather than folding away */}
-                                                {combatSteps.map(step => (
-                                                    <div key={step.name}>
-                                                        <div className="stepHead">{step.name}</div>
-                                                        {step.blocks.map((block, i) => (
-                                                            <div key={i}>
-                                                                {block.head && <div className="subHead">{block.head}</div>}
-                                                                {block.text && <p>{block.text}</p>}
-                                                                {block.table && (
-                                                                    <div className="dtable wide">
-                                                                        <div className="dh">Result</div><div className="dh">Location Hit</div>
-                                                                        {hitLocations.map(row => (
-                                                                            <Fragment key={row.roll}>
-                                                                                <div>{row.roll}</div>
-                                                                                <div>{row.where}</div>
-                                                                            </Fragment>
-                                                                        ))}
-                                                                    </div>
-                                                                )}
-                                                                {block.bullets && (
-                                                                    <ul>
-                                                                        {block.bullets.map((b, j) => (
-                                                                            <li key={j}>
-                                                                                {b.text}
-                                                                                {b.subs && (
-                                                                                    <ul>
-                                                                                        {b.subs.map((s, k) => <li key={k}>{s}</li>)}
-                                                                                    </ul>
-                                                                                )}
-                                                                            </li>
-                                                                        ))}
-                                                                    </ul>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="act">
-                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Weight") ? openActions.filter(n => n !== "group Weight") : [...openActions, "group Weight"])}>
-                                            <span>Weight Classes</span>
-                                        </div>
-                                        {openActions.includes("group Weight") && (
-                                            <div className="actBody">
-                                                <p>{weightIntro}</p>
-                                                {weightClasses.map(w => (
-                                                    <div key={w.name}>
-                                                        <div className="subHead">{w.name === "No listed class" ? "(No listed class)" : w.name === "Crippling" ? "(Crippling)" : w.name}</div>
-                                                        <p>{w.rules}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="act">
-                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Wounds") ? openActions.filter(n => n !== "group Wounds") : [...openActions, "group Wounds"])}>
-                                            <span>Wounds</span>
-                                        </div>
-                                        {openActions.includes("group Wounds") && (
-                                            <div className="actBody">
-                                                {woundRules.map((block, i) => (
-                                                    <div key={i}>
-                                                        {block.head && <div className="subHead">{block.head}</div>}
-                                                        {block.text && <p>{block.text}</p>}
-                                                        {block.bullets && (
-                                                            <ul>
-                                                                {block.bullets.map((b, j) => <li key={j}>{b}</li>)}
-                                                            </ul>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="act">
-                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Healing") ? openActions.filter(n => n !== "group Healing") : [...openActions, "group Healing"])}>
-                                            <span>Healing</span>
-                                        </div>
-                                        {openActions.includes("group Healing") && (
-                                            <div className="actBody">
-                                                {healingRules.map((block, i) => (
-                                                    <div key={i}>
-                                                        {block.head && <div className="subHead">{block.head}</div>}
-                                                        {block.text && <p>{block.text}</p>}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="act">
-                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Stamina") ? openActions.filter(n => n !== "group Stamina") : [...openActions, "group Stamina"])}>
-                                            <span>Stamina</span>
-                                        </div>
-                                        {openActions.includes("group Stamina") && (
-                                            <div className="actBody">
-                                                {staminaRules.map((block, i) => (
-                                                    <div key={i}>
-                                                        {block.head && <div className="subHead">{block.head}</div>}
-                                                        {block.text && <p>{block.text}</p>}
-                                                    </div>
-                                                ))}
-                                                <ul>
-                                                    {staminaCosts.map(c => (
-                                                        <li key={c.name}><b>{c.name}:</b> {c.text}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="act">
-                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Fear") ? openActions.filter(n => n !== "group Fear") : [...openActions, "group Fear"])}>
-                                            <span>Fear and Horror</span>
-                                        </div>
-                                        {openActions.includes("group Fear") && (
-                                            <div className="actBody">
-                                                {fearIntro.map((block, i) => (
-                                                    <div key={i}>
-                                                        {block.head && <div className="subHead">{block.head}</div>}
-                                                        {block.text && <p>{block.text}</p>}
-                                                    </div>
-                                                ))}
-
-                                                <div className="subHead">Combat Horror Test Results</div>
-                                                <div className="dtable roll">
-                                                    <div className="dh">Roll</div><div className="dh">Effect</div>
-                                                    {horrorTable.map(row => (
-                                                        <Fragment key={row.range}>
-                                                            <div>{row.range}</div>
-                                                            <div><b>{row.name}:</b> {row.text}</div>
-                                                        </Fragment>
-                                                    ))}
-                                                </div>
-
-                                                <div className="subHead">Combat Panic Test Results</div>
-                                                <div className="dtable roll">
-                                                    <div className="dh">Roll</div><div className="dh">Effect</div>
-                                                    {panicTable.map(row => (
-                                                        <Fragment key={row.range}>
-                                                            <div>{row.range}</div>
-                                                            <div><b>{row.name}:</b> {row.text}</div>
-                                                        </Fragment>
-                                                    ))}
-                                                </div>
-
-                                                <button type="button" className="takeAction" onClick={() => {
-                                                    setFearRow(null)
-                                                    setFearNum("")
-                                                    setFearNum2("")
-                                                    setPopout("fear1")
-                                                }}>I Failed My Fear/Horror Test</button>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="act">
-                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Traits") ? openActions.filter(n => n !== "group Traits") : [...openActions, "group Traits"])}>
-                                            <span>Traits</span>
-                                        </div>
-                                        {openActions.includes("group Traits") && (
-                                            <>
-                                                {/* the chapter opening belongs to the whole section, not to any one trait */}
-                                                <div className="actBody">
-                                                    {traitIntro.map((block, i) => (
-                                                        <p key={i}>{block.text}</p>
-                                                    ))}
-                                                </div>
-                                                <div className="actGroup">
-                                                    {traitList.map(trait => (
-                                                        <div className="act" key={trait.name}>
-                                                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("trait " + trait.name) ? openActions.filter(n => n !== "trait " + trait.name) : [...openActions, "trait " + trait.name])}>
-                                                                <span>{trait.name}</span>
-                                                            </div>
-                                                            {openActions.includes("trait " + trait.name) && (
-                                                                <div className="actBody">
-                                                                    {trait.text.map((para, k) => <p key={k}>{para}</p>)}
-                                                                    {trait.table && (
-                                                                        <>
-                                                                            <div className="subHead">{trait.table.head}</div>
-                                                                            <div className="dtable wide">
-                                                                                <div className="dh">{trait.table.cols[0]}</div>
-                                                                                <div className="dh">{trait.table.cols[1]}</div>
-                                                                                {trait.table.rows.map(row => (
-                                                                                    <Fragment key={row[0]}>
-                                                                                        <div>{row[0]}</div>
-                                                                                        <div>{row[1]}</div>
-                                                                                    </Fragment>
-                                                                                ))}
-                                                                            </div>
-                                                                        </>
-                                                                    )}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </>
-                                        )}
-                                    </div>
-
-                                    <div className="act">
-                                        <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Conditions") ? openActions.filter(n => n !== "group Conditions") : [...openActions, "group Conditions"])}>
-                                            <span>Conditions</span>
-                                        </div>
-                                        {openActions.includes("group Conditions") && (
-                                            <div className="actGroup">
-                                                {conditionRules.slice().sort((a, b) => a.name.localeCompare(b.name)).map(rule => (
-                                                    <div className="act" key={rule.name}>
-                                                        <div className="actHead" onClick={() => setOpenActions(openActions.includes("cond " + rule.name) ? openActions.filter(n => n !== "cond " + rule.name) : [...openActions, "cond " + rule.name])}>
-                                                            <span>{rule.name}</span>
-                                                        </div>
-                                                        {openActions.includes("cond " + rule.name) && (
-                                                            <div className="actBody">
-                                                                {rule.blocks.map((block, i) => (
-                                                                    <div key={i}>
-                                                                        {block.head && <div className="subHead">{block.head}</div>}
-                                                                        {block.text && <p>{block.text}</p>}
-                                                                        {block.bullets && (
-                                                                            <ul>
-                                                                                {block.bullets.map((b, j) => <li key={j}>{b}</li>)}
-                                                                            </ul>
-                                                                        )}
-                                                                    </div>
-                                                                ))}
-                                                                {rule.name === "Fatigued" && (
-                                                                    <>
-                                                                        <div className="subHead">Fatigue Effects</div>
-                                                                        <div className="dtable wide">
-                                                                            <div className="dh">Levels</div><div className="dh">Effects</div>
-                                                                            {fatigueSteps.map(step => (
-                                                                                <Fragment key={step.label}>
-                                                                                    <div>{step.level}</div>
-                                                                                    <div>{step.effect}</div>
-                                                                                </Fragment>
-                                                                            ))}
-                                                                        </div>
-                                                                    </>
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                                {rulesPanel}
                             </>
                         )}
 
