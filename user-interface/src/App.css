@@ -1905,3 +1905,42 @@ body:has(#center.gmRoom){display:block}
   #center .crow > *{padding:.28em .2em}
   #center .crow > .rl{padding-left:.45em}
 }
+/* alchemy */
+
+/* three bands under the one heading, prose beside its tables the way smithing reads */
+#center .alchBand{display:flex;gap:var(--gap);align-items:start}
+#center .alchBand .rules{flex:1.6;min-width:0}
+#center .alchCol{display:flex;flex-direction:column;gap:var(--gap);flex:0 0 auto;min-width:0}
+
+/* potions carries no table of its own so it reads across the whole width */
+#center .alchFull{width:100%}
+
+/* subHead is only dressed inside a fold out, so give it a look inside a rules tile too */
+#center .rules .subHead{
+  margin:.9em 0 .25em;
+  padding-bottom:.15em;
+  border-bottom:1px solid var(--line);
+  font-weight:700;
+  letter-spacing:.04em;
+}
+#center .rules > .subHead:first-child{margin-top:0}
+#center .alchCol .subHead{margin:0 0 .2em;border-bottom:0;opacity:.7;font-size:.9em}
+#center .alchCol .subHead + .dtable{margin-bottom:.5em}
+
+/* the plain table is two columns, so the wider ones say how many they carry */
+#center .dtable.alchQual{grid-template-columns:repeat(4,max-content)}
+#center .dtable.alchQual > *{border-left:1px solid var(--line)}
+#center .dtable.alchQual > *:nth-child(4n+1){border-left:0}
+#center .dtable.alchPois{grid-template-columns:repeat(3,max-content)}
+#center .dtable.alchPois > *{border-left:1px solid var(--line)}
+#center .dtable.alchPois > *:nth-child(3n+1){border-left:0}
+
+@media (max-width:1100px){
+  #center .alchBand{flex-wrap:wrap}
+  #center .alchBand .rules,
+  #center .alchCol{flex:1 1 100%}
+}
+
+/* magicka joins the pools, so the row carries four bars instead of three */
+#center .tbars{flex:0 0 25em;grid-template-columns:repeat(4,1fr)}
+#center .tbar.mp .track > span{background:#5c86c9}

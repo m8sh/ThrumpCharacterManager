@@ -8904,8 +8904,7 @@ function App() {
                                                 <span className="fixed">{p[0]}/{p[1]}</span>
                                             )}
                                         </div>
-                                        {/* the other three take their colour from the css, magicka is blue */}
-                                        <div className="track"><span style={which === "mp" ? {width: width + "%", background: "#3a6ea5"} : {width: width + "%"}}></span></div>
+                                        <div className="track"><span style={{width: width + "%"}}></span></div>
                                     </div>
                                 )
                             }
@@ -10590,7 +10589,7 @@ function App() {
 
                                 <h3>Alchemy</h3>
 
-                                <div className="craftBand">
+                                <div className="alchBand">
                                     <div className="rules">
                                         <div className="subHead">Alchemical Ingredients</div>
                                         <p>The potential power of any potion is limited by the strength of the ingredients used to create it. Alchemical Ingredients have three primary attributes: their school, strength, and depth.</p>
@@ -10606,9 +10605,9 @@ function App() {
                                         <p>A character may also choose to &ldquo;downgrade&rdquo; a result to a lower roll. If a character rolls a critical success when gathering ingredients, they count as having rolled the highest possible degrees of success for their target number plus one (for example, 8 DoS for a TN 74).</p>
                                     </div>
 
-                                    <div className="craftTables">
+                                    <div className="alchCol">
                                         <div className="subHead">Alchemical Ingredients (any school)</div>
-                                        <div className="dtable wide">
+                                        <div className="dtable alchQual">
                                             <div className="dh">Type</div><div className="dh">Strength</div><div className="dh">Depth</div><div className="dh">Price</div>
                                             <div>Ubiquitous</div><div>2</div><div>1</div><div>1</div>
                                             <div>Plentiful</div><div>5</div><div>2</div><div>5</div>
@@ -10639,48 +10638,46 @@ function App() {
                                     </div>
                                 </div>
 
-                                <div className="craftBand">
-                                    <div className="rules">
-                                        <div className="subHead">Creating Potions</div>
-                                        <p>This section contains the rules for creating potions. Alchemy can only be performed if one has an Alchemy Lab, which can be found in Tools (page 181).</p>
-                                        <div className="subHead">The Basics</div>
-                                        <p>Unlike spells, potions do not have forms. Creating a potion is simply a matter of choosing the desired effects, setting the parameters of that effect to determine a final cost, and then writing down the effects of the potion for reference.</p>
-                                        <div className="subHead">Multi Effect Potions</div>
-                                        <p>Characters can create potions that impart multiple effects when consumed. Creating these sorts of potions can prove more difficult for the character but is not much more complicated than creating a normal potion.</p>
-                                        <div className="subHead">Learning Effects</div>
-                                        <p>A character can use any effect from any school when creating potions, but attempting to use effects of a higher level than the character&rsquo;s rank in the Alchemy skill can be difficult.</p>
-                                        <div className="subHead">Reference Materials</div>
-                                        <p>A complete list of effects can be found in the Appendix.</p>
+                                {/* potions has no table of its own, so it reads full width in the order the book has it */}
+                                <div className="rules alchFull">
+                                    <div className="subHead">Creating Potions</div>
+                                    <p>This section contains the rules for creating potions. Alchemy can only be performed if one has an Alchemy Lab, which can be found in Tools (page 181).</p>
 
-                                        <div className="subHead">Important Note:</div>
-                                        <p>It&rsquo;s easy to miss, but calculating penalties for an Alchemy test is distinct from that of a Spellcasting test. Here, there is no concept of a Spellcasting Level; so, for example, a Novice (0) level alchemist attempting to create a potion with a level 1 spell effect will suffer a -10 penalty to their Alchemy test.</p>
-                                    </div>
+                                    <div className="subHead">The Basics</div>
+                                    <p>Unlike spells, potions do not have forms. Creating a potion is simply a matter of choosing the desired effects, setting the parameters of that effect to determine a final cost, and then writing down the effects of the potion for reference.</p>
 
-                                    <div className="craftTables">
-                                        <div className="rules">
-                                            <div className="subHead">Step 1: Choose Ingredients</div>
-                                            <p>First, decide on which ingredients you will use for the potion. Each ingredient included allows for a single effect to be added to the potion, and no more than three ingredients (and thus three effects, which must be unique) can be used in a single potion.</p>
+                                    <div className="subHead">Multi Effect Potions</div>
+                                    <p>Characters can create potions that impart multiple effects when consumed. Creating these sorts of potions can prove more difficult for the character but is not much more complicated than creating a normal potion.</p>
 
-                                            <div className="subHead">Step 2: Pick Effects &amp; Determine Parameters</div>
-                                            <p>Next, pick the effect(s) (maximum 3) that the potion will produce, and decide on their parameters. Only effects with the potion attribute may be used.</p>
-                                            <p>The school(s) from which effects are chosen are limited to the school and number of ingredients used in the potion (for example, one destruction and one alteration ingredient would allow for one destruction and one alteration effect). Each effect has an associated value, called spell level, that determines its strength. The chosen spell level may not be higher than the depth of the chosen ingredient.</p>
+                                    <div className="subHead">Learning Effects</div>
+                                    <p>A character can use any effect from any school when creating potions, but attempting to use effects of a higher level than the character&rsquo;s rank in the Alchemy skill can be difficult.</p>
 
-                                            <div className="subHead">Step 3: Determine Spell Cost</div>
-                                            <p>Next, simply &ldquo;plug in&rdquo; your chosen spell level values to the effect cost formula provided for your chosen effect(s). If the cost of an effect is higher than the strength of the corresponding ingredient, then you must reduce the spell level of that effect or use a stronger ingredient.</p>
+                                    <div className="subHead">Reference Materials</div>
+                                    <p>A complete list of effects can be found in the Appendix.</p>
 
-                                            <div className="subHead">Step 4: Create Potion</div>
-                                            <p>To create a potion a character must pass an Alchemy skill test. This test suffers a -10 penalty for each level by which the potion&rsquo;s highest spell level effect exceeds the Alchemy skill rank of the character and an additional -10 for potions with more than one effect. Creating a potion takes a number of hours equal to the total of the spell levels of its effects, and requires a set of alchemical tools. Ingredients are lost on failure.</p>
-                                            <p>If a character critically fails this test, or fails normally when creating a potion that either includes multiple effects or an effect with a level above their Alchemy skill rank, the potion backfires. Roll a d4 on the creation backfire table and add the highest spell level included in the potion to the result.</p>
+                                    <div className="subHead">Step 1: Choose Ingredients</div>
+                                    <p>First, decide on which ingredients you will use for the potion. Each ingredient included allows for a single effect to be added to the potion, and no more than three ingredients (and thus three effects, which must be unique) can be used in a single potion.</p>
 
-                                            <div className="subHead">Step 5: Finalize Potion</div>
-                                            <p>Write down the details of the new potion&rsquo;s effects somewhere you can reference it, and then add it to your character&rsquo;s gear list!</p>
-                                            <p><b>Duration:</b> If you choose an effect with the upkeep attribute, then the base duration of that effect is multiplied by an amount equal to the strength of the effect&rsquo;s ingredient divided by the cost of the effect (rounded down to the nearest whole number).</p>
-                                            <p><b>Example:</b> If the duration of an effect is normally 1 round, and the effect costs 3 magicka at the chosen spell level, then that effect would last for 3 rounds if created using an ingredient with a strength of 10.</p>
-                                        </div>
-                                    </div>
+                                    <div className="subHead">Step 2: Pick Effects &amp; Determine Parameters</div>
+                                    <p>Next, pick the effect(s) (maximum 3) that the potion will produce, and decide on their parameters. Only effects with the potion attribute may be used.</p>
+                                    <p>The school(s) from which effects are chosen are limited to the school and number of ingredients used in the potion (for example, one destruction and one alteration ingredient would allow for one destruction and one alteration effect). Each effect has an associated value, called spell level, that determines its strength. The chosen spell level may not be higher than the depth of the chosen ingredient.</p>
+
+                                    <div className="subHead">Step 3: Determine Spell Cost</div>
+                                    <p>Next, simply &ldquo;plug in&rdquo; your chosen spell level values to the effect cost formula provided for your chosen effect(s). If the cost of an effect is higher than the strength of the corresponding ingredient, then you must reduce the spell level of that effect or use a stronger ingredient.</p>
+
+                                    <div className="subHead">Step 4: Create Potion</div>
+                                    <p>To create a potion a character must pass an Alchemy skill test. This test suffers a -10 penalty for each level by which the potion&rsquo;s highest spell level effect exceeds the Alchemy skill rank of the character and an additional -10 for potions with more than one effect. Creating a potion takes a number of hours equal to the total of the spell levels of its effects, and requires a set of alchemical tools. Ingredients are lost on failure.</p>
+                                    <div className="subHead">Important Note:</div>
+                                    <p>It&rsquo;s easy to miss, but calculating penalties for an Alchemy test is distinct from that of a Spellcasting test. Here, there is no concept of a Spellcasting Level; so, for example, a Novice (0) level alchemist attempting to create a potion with a level 1 spell effect will suffer a -10 penalty to their Alchemy test.</p>
+                                    <p>If a character critically fails this test, or fails normally when creating a potion that either includes multiple effects or an effect with a level above their Alchemy skill rank, the potion backfires. Roll a d4 on the creation backfire table and add the highest spell level included in the potion to the result.</p>
+
+                                    <div className="subHead">Step 5: Finalize Potion</div>
+                                    <p>Write down the details of the new potion&rsquo;s effects somewhere you can reference it, and then add it to your character&rsquo;s gear list!</p>
+                                    <p><b>Duration:</b> If you choose an effect with the upkeep attribute, then the base duration of that effect is multiplied by an amount equal to the strength of the effect&rsquo;s ingredient divided by the cost of the effect (rounded down to the nearest whole number).</p>
+                                    <p><b>Example:</b> If the duration of an effect is normally 1 round, and the effect costs 3 magicka at the chosen spell level, then that effect would last for 3 rounds if created using an ingredient with a strength of 10.</p>
                                 </div>
 
-                                <div className="craftBand">
+                                <div className="alchBand">
                                     <div className="rules">
                                         <div className="subHead">Creating Poisons</div>
                                         <p>Alchemists can also create poisons which can be applied to weapons in order to give one&rsquo;s weapon an extra bite. This requires a single unit of destruction ingredients, 1 hour, and an Alchemy test to create. This test suffers a -10 penalty for each level by which the poison exceeds the character&rsquo;s Alchemy skill rank.</p>
@@ -10691,9 +10688,9 @@ function App() {
                                         <p>Characters that take damage from a weapon poisoned with a toxin use Endurance for any characteristic tests required by the toxin&rsquo;s magical effects.</p>
                                     </div>
 
-                                    <div className="craftTables">
+                                    <div className="alchCol">
                                         <div className="subHead">Poisons</div>
-                                        <div className="dtable">
+                                        <div className="dtable alchPois">
                                             <div className="dh">Level</div><div className="dh">Ingredients Used</div><div className="dh">Damage</div>
                                             <div>1</div><div>Ubiquitous</div><div>1d4</div>
                                             <div>2</div><div>Plentiful</div><div>1d6</div>
@@ -10706,6 +10703,7 @@ function App() {
                                         </div>
                                     </div>
                                 </div>
+
 
                                 <h3>Enchanting</h3>
                                 <div className="rules"><p>WIP</p></div>
