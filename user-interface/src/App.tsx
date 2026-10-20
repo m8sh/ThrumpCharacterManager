@@ -8420,7 +8420,7 @@ function App() {
                             <p>{otherQualityIntro}</p>
                         </div>
                         <div className="actGroup">
-                            {weaponQualities.map(quality => (
+                            {weaponQualities.slice().sort((a, b) => a.name.localeCompare(b.name)).map(quality => (
                                 <div className="act" key={quality.name}>
                                     <div className="actHead" onClick={() => setOpenActions(openActions.includes("wq " + quality.name) ? openActions.filter(n => n !== "wq " + quality.name) : [...openActions, "wq " + quality.name])}>
                                         <span>{quality.name}</span>
