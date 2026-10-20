@@ -7304,6 +7304,46 @@ const npcSpecialTraits: {name: string, text: string[]}[] = [
 ]
 
 // the opening of the traits chapter, which sits above the list rather than inside it
+// the weapon qualities chapter, its opening line and the lead in to each half
+const weaponQualityIntro = "Many weapons possess special rules, known as Weapon Qualities, that represent factors that set them apart from other weapons in some fashion."
+const bigThreeIntro = "Below are the three most important weapon qualities. Most weapons posses one of these qualities, which are critical to their identity. Their effects can stack on instances of themselves or with one another."
+const otherQualityIntro = "Listed below are many of the other qualities weapons may have. It is important to be familiar with the qualities your weapons possess and how they interact with one another!"
+
+// the three that give a weapon its identity, kept apart the way the book has them
+const bigThree: {name: string, text: string[]}[] = [
+    {name: "Crushing (X)", text: ["Weapons with this quality can crush metal and bone alike. They deal bonus damage equal to the wielder\u2019s Strength bonus (or X, if another value is given), capped at the AR of the hit location or BR of a shield used to block it."]},
+    {name: "Splitting (X)", text: ["Weapons with this quality can deal savage wounds when properly brought to bear. They deal bonus damage equal to the wielder\u2019s Strength bonus (or X, if another value is given), but only if the initial damage result causes the target to lose 1 or more HP."]},
+    {name: "Slashing (X)", text: ["Weapons with this quality tear flesh with ease, dealing bonus damage equal to the wielder\u2019s Strength bonus (or X, if another value is given) against unarmored hit locations."]},
+]
+
+const weaponQualities: {name: string, text: string[]}[] = [
+    {name: "Complex", text: ["A character cannot move on a Turn that they are reloading this weapon."]},
+    {name: "Concussive", text: ["The weapon causes heavy impacts and can send opponents sprawling. When a character triggers the bash Special Action after gaining advantage with this weapon, they gain a +20 bonus to the opposed test."]},
+    {name: "Damaged (X)", text: ["Weapons with this quality deal X less damage. If this would ever render a character incapable of dealing damage with the weapon, even with the maximum possible roll, then the weapon is destroyed. Natural Weapons cannot receive this Quality. All instances of this quality stack."]},
+    {name: "Dueling Weapon", text: ["Weapons with this quality add an additional degree of success to successful tests made to parry or Counter-Attack with them."]},
+    {name: "Entangling", text: [
+            "Attacks with this weapon cannot be parried or blocked. Instead of dealing damage, a successful attack with this weapon forces the opponent to make a Strength or Agility test. If they fail, they gain the Entangled (page 111) condition. They can spend 1 AP as a Secondary Action to repeat the test, freeing themselves and removing the condition on a success.",
+            "If this effect was applied by a melee attack, then should the target character leave the melee range of the Entangling weapon, the character wielding the weapon must choose to either let go of their weapon (maintaining the effect on the target) or keep their weapon (removing the effect from the target).",
+        ]},
+    {name: "Focus", text: ["Character treats the hand holding the weapon as a free hand for the purposes of casting spells. The weapon does not increase the range of any spell as a result of its reach."]},
+    {name: "Exploit Weakness", text: ["These weapons are small and able to slip into gaps in a target\u2019s defenses. Attacks with this weapon treat full armor as partial armor and partial armor as unarmored (but do not actually reduce the location\u2019s AR). This can be used to trigger effects, such as Slashing, that interact with the level of armor the target is wearing."]},
+    {name: "Flail", text: ["Weapons of this type are able to strike unpredictably. These weapons cannot be parried or countered, but cannot be used to parry or Counter-Attack either. If an attacker with this weapon and a defender blocking with a shield both pass their respective tests and the attacker\u2019s degrees of success exceed those of the defender, then the defender does not block the attack as they normally would, and the attack is resolved as if the attacker had won. If a character critically fails an attack with a flail they hit themselves."]},
+    {name: "Impaling", text: ["If this weapon is used to make an attack of opportunity against a character who is approaching the wielder, and that attack causes the target to lose HP, the target does not advance and instead halts their movement for the Turn."]},
+    {name: "Hand to Hand", text: ["This weapon can be used with Unarmed Combat Style and counts as Unarmed for the purposes of resolving damage. Additionally, the wielder can perform actions that require an open hand while wielding these weapons at a -10 penalty."]},
+    {name: "Hooked", text: ["This weapon has a hook that can be used to trip and yank opponents and their weapons. Attempts to defend against the character\u2019s Disarm, Take Weapon & Trip Special Actions is done at a -10 penalty."]},
+    {name: "Magic", text: ["Weapons with this quality are able to harm targets that would otherwise resist or be impervious to damage from normal weapons, such as ghosts."]},
+    {name: "Mounted", text: ["Weapons with this quality can only be used while mounted due to their weight and balance and only if the character moves."]},
+    {name: "Primitive", text: ["Roll twice and use the lower value for this weapon\u2019s damage."]},
+    {name: "Proven", text: ["Roll twice and use the higher value for this weapon\u2019s damage."]},
+    {name: "Reload (X)", text: ["After attacking with this weapon, characters must spend X AP using a Ready Secondary Action in order to reload this weapon before they can attack with it again."]},
+    {name: "Shield Splitter", text: ["Attacks from this weapon halve the BR of shields used to block them (round up)."]},
+    {name: "Sling", text: ["This weapon does not use conventional ammunition; instead, it uses small rocks and other similarly-sized and shaped objects. Ammunition can be specifically purchased or crafted for this weapon but the material\u2019s damage bonus is not applied."]},
+    {name: "Small", text: ["This weapon cannot be used to Parry or Counter attacks from 2 handed weapons. Readying it does not cost an AP. The wielder may make a Subterfuge skill test to conceal the weapon. Enemies with normal weapons can make opportunity attacks against characters with this weapon who enter their range."]},
+    {name: "Snare", text: ["This weapon can be used to perform the Bash and Trip Special Actions while ignoring the 2 meter range limitation. Doing so always uses the attacker\u2019s Combat Style skill against the defender\u2019s Athletics or Evade skill."]},
+    {name: "Thrown (X/Y/Z)", text: ["This weapon can be thrown as a ranged attack against a target within X/Y/Z meters. Resolve this like a normal ranged attack (though Strength can be a base for the test), dealing the weapon\u2019s normal damage and ignoring Slashing/Crushing/Splitting."]},
+    {name: "Unwieldy", text: ["Attempts to parry or Counter-Attack using this weapon suffer a -20 penalty."]},
+]
+
 const traitIntro: RuleBlock[] = [
     {text: "Traits are rules that reflect various natural facts about the character or certain abilities they possess. They include things such as the ability to fly, inherent physical weaknesses, personality traits, and so forth. They are typically the result of birth, upbringing, or racial circumstance but may be gained through other means later in life, though rarely by choice or without the use of magic."},
     {text: "Traits do not stack unless otherwise specified. If traits with an X value are applied to a target with an already existing instance of that trait, apply the highest value of X unless otherwise specified."},
@@ -8346,6 +8386,54 @@ function App() {
                             </div>
                         ))}
                     </div>
+                )}
+            </div>
+
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Weapon Qualities") ? openActions.filter(n => n !== "group Weapon Qualities") : [...openActions, "group Weapon Qualities"])}>
+                    <span>Weapon Qualities</span>
+                </div>
+                {openActions.includes("group Weapon Qualities") && (
+                    <>
+                        {/* the chapter opening, then the three that matter most before all the rest */}
+                        <div className="actBody">
+                            <p>{weaponQualityIntro}</p>
+                            <div className="subHead">&ldquo;The Big Three&rdquo;</div>
+                            <p>{bigThreeIntro}</p>
+                        </div>
+                        <div className="actGroup">
+                            {bigThree.map(quality => (
+                                <div className="act" key={quality.name}>
+                                    <div className="actHead" onClick={() => setOpenActions(openActions.includes("wq " + quality.name) ? openActions.filter(n => n !== "wq " + quality.name) : [...openActions, "wq " + quality.name])}>
+                                        <span>{quality.name}</span>
+                                    </div>
+                                    {openActions.includes("wq " + quality.name) && (
+                                        <div className="actBody">
+                                            {quality.text.map((para, k) => <p key={k}>{para}</p>)}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="actBody">
+                            <div className="subHead">Other Weapon Qualities</div>
+                            <p>{otherQualityIntro}</p>
+                        </div>
+                        <div className="actGroup">
+                            {weaponQualities.map(quality => (
+                                <div className="act" key={quality.name}>
+                                    <div className="actHead" onClick={() => setOpenActions(openActions.includes("wq " + quality.name) ? openActions.filter(n => n !== "wq " + quality.name) : [...openActions, "wq " + quality.name])}>
+                                        <span>{quality.name}</span>
+                                    </div>
+                                    {openActions.includes("wq " + quality.name) && (
+                                        <div className="actBody">
+                                            {quality.text.map((para, k) => <p key={k}>{para}</p>)}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 )}
             </div>
 
