@@ -1944,3 +1944,9 @@ body:has(#center.gmRoom){display:block}
 /* magicka joins the pools, so the row carries four bars instead of three */
 #center .tbars{flex:0 0 25em;grid-template-columns:repeat(4,1fr)}
 #center .tbar.mp .track > span{background:#5c86c9}
+/* the dazed box, sitting just before the pools on a creature's row */
+#center .tdaze{flex:0 0 4.5em;display:flex;align-items:center;justify-content:center}
+#center .tdaze .check{width:1.3em;height:1.3em;display:flex;align-items:center;justify-content:center;background:var(--band);border:1px solid var(--line)}
+#center .tdaze .check:hover{border-color:var(--accent)}
+/* the tick must not swallow the click meant for the box behind it */
+#center .tdaze .check span{font-weight:700;line-height:1;pointer-events:none}

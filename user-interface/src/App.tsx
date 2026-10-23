@@ -6455,6 +6455,7 @@ type Creature = {
     ap: [number, number],
     sp: [number, number],
     mp: [number, number],
+    dazed?: boolean,
 }
 
 // pulls the pools out of a published sheet so the tracker can show them
@@ -8914,7 +8915,7 @@ function App() {
                             type Line = {key: string, name: string, npc: boolean, from?: string,
                                 ir: number, luck: number,
                                 hp: [number, number], ap: [number, number], sp: [number, number],
-                                mp: [number, number], sheet?: string}
+                                mp: [number, number], dazed: boolean, sheet?: string}
 
                             const lines: Line[] = []
                             roster.forEach(entry => {
@@ -8930,20 +8931,24 @@ function App() {
                                 }
                                 lines.push({key: entry.player_id, name: entry.name, npc: false,
                                     ir: ir, luck: luck,
-                                    hp: pools.hp, ap: pools.ap, sp: pools.sp, mp: pools.mp, sheet: entry.sheet})
+                                    hp: pools.hp, ap: pools.ap, sp: pools.sp, mp: pools.mp,
+                                    dazed: false, sheet: entry.sheet})
                             })
                             creatures.forEach(c => {
                                 const edits = sbEdits[c.from]
                                 // the maximums come off the statblock every render, so editing it there
                                 // moves them here too. only the current value belongs to the creature
                                 const mpMax = statNow(c.from, "Magicka", 0, edits)
+                                // being dazed costs one action point a round, down to a floor of one
+                                const apBase = statNow(c.from, "Action Pts.", 3, edits)
+                                const apMax = c.dazed ? Math.max(1, apBase - 1) : apBase
                                 lines.push({key: c.id, name: c.name, npc: true, from: c.from,
                                     ir: statNow(c.from, "Initiative", 0, edits), luck: 0,
                                     hp: [c.hp[0], statNow(c.from, "Hit Points", 10, edits)],
-                                    ap: [c.ap[0], statNow(c.from, "Action Pts.", 3, edits)],
+                                    ap: [Math.min(c.ap[0], apMax), apMax],
                                     sp: [c.sp[0], statNow(c.from, "Stamina", 4, edits)],
                                     // a tracker saved before magicka was tracked has no mp at all
-                                    mp: [c.mp ? c.mp[0] : mpMax, mpMax]})
+                                    mp: [c.mp ? c.mp[0] : mpMax, mpMax], dazed: c.dazed === true})
                             })
 
                             // anyone the gm has not placed yet goes on the end
@@ -9054,6 +9059,7 @@ function App() {
                                             <span className="grip">&#8942;&#8942;</span>
                                             <span className="tinit"><span className="lbl">Initiative</span></span>
                                             <div className="tname"><span className="dot"></span><span className="lbl">Name</span></div>
+                                            <div className="tdaze"><span className="lbl">Dazed</span></div>
                                             <div className="tbars">
                                                 <span className="lbl">Health</span><span className="lbl">Action</span><span className="lbl">Stamina</span><span className="lbl">Magicka</span>
                                             </div>
@@ -9111,6 +9117,20 @@ function App() {
                                                             setViewing(line.name)
                                                             if (line.sheet) loadSnapshot(line.sheet)
                                                         }}>{line.name}</span>
+                                                    )}
+                                                </div>
+
+                                                <div className="tdaze">
+                                                    {/* only a creature, since a player's own sheet handles their conditions */}
+                                                    {line.npc && (
+                                                        <label className="check">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={line.dazed}
+                                                                onChange={e => setCreature(line.key, c => ({...c, dazed: e.target.checked}))}
+                                                            />
+                                                            <span>&#10003;</span>
+                                                        </label>
                                                     )}
                                                 </div>
 
