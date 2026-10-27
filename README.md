@@ -10,5 +10,6 @@ TODO:
 - Add a way to apply the conditions other to NPCs for the GM
 - "More than combat rukes if there a way i can quickly check item prices"
 - Keep custom statblock permanently permanently
+- Add a backfire list/button for leon
 
 
