@@ -7,8 +7,7 @@ For example: Wound rules and how they interact with the healing mechanics are ve
 
 
 TODO:
-- Add a way to apply the conditions to NPCs for the GM
-- Add all of the combat rules to the bottom of statblocks for easy GM reference
+- Add a way to apply the conditions other to NPCs for the GM
 - "More than combat rukes if there a way i can quickly check item prices"
 - Keep custom statblock permanently permanently
 
