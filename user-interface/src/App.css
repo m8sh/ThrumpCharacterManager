@@ -1950,3 +1950,13 @@ body:has(#center.gmRoom){display:block}
 #center .tdaze .check:hover{border-color:var(--accent)}
 /* the tick must not swallow the click meant for the box behind it */
 #center .tdaze .check span{font-weight:700;line-height:1;pointer-events:none}
+
+/* the goods tables carry seven columns, and qualities takes whatever room is left */
+#center .dtable.wep{
+  grid-template-columns:max-content max-content max-content max-content minmax(0,1fr) max-content max-content;
+  width:100%;
+}
+#center .dtable.wep > *{border-left:1px solid var(--line);white-space:nowrap}
+#center .dtable.wep > *:nth-child(7n+1){border-left:0}
+/* only the qualities column is allowed to wrap, since it is the long one */
+#center .dtable.wep > *:nth-child(7n+5){white-space:normal}

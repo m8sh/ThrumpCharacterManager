@@ -7306,6 +7306,46 @@ const npcSpecialTraits: {name: string, text: string[]}[] = [
 
 // the opening of the traits chapter, which sits above the list rather than inside it
 // the weapon qualities chapter, its opening line and the lead in to each half
+// the goods and services chapter, the melee weapon tables as the book prints them
+const meleeWeapons: string[][] = [
+    ["Great Sword", "1d12", "2H", "3m", "Slashing, Concussive", "4", "300"],
+    ["Longsword", "1d8 (1d10)", "1.5H", "2m", "Slashing", "2", "175"],
+    ["Broadsword", "1d8", "1H", "2m", "Slashing", "1", "100"],
+    ["Sabre", "1d8", "1H", "2m", "Slashing, Dueling Weapon", "1", "125"],
+    ["Scimitar", "1d8", "1H", "2m", "Slashing, Concussive, Unwieldy", "3", "135"],
+    ["Shortsword", "1d6", "1H", "1m", "Slashing, Exploit Weakness", "1", "75"],
+    ["Rapier", "1d6", "1H", "2m", "Slashing, Dueling Weapon, Exploit Weakness", "1", "105"],
+    ["Dagger", "1d4", "1H", "1m", "Slashing, Exploit Weakness, Thrown (5/10/15), Small", "1", "45"],
+    ["Great Axe", "1d12", "2H", "3m", "Splitting, Unwieldy, Shield Splitter, Concussive", "4", "300"],
+    ["Battle Axe", "1d8 (1d10)", "1.5H", "2m", "Splitting, Unwieldy", "2", "175"],
+    ["War Axe", "1d8", "1H", "2m", "Splitting, Unwieldy", "1", "120"],
+    ["Hand Axe", "1d6", "1H", "1m", "Splitting, Thrown (5/10/15), Small", "1", "75"],
+    ["Great Flail", "1d12", "2H", "3m", "Crushing, Flail, Shield Splitter, Concussive", "3", "300"],
+    ["Maul", "1d12", "2H", "2m", "Crushing, Unwieldy, Shield Splitter, Concussive", "4", "250"],
+    ["Warhammer", "1d8 (1d10)", "1.5H", "2m", "Crushing, Unwieldy", "2", "175"],
+    ["Mace", "1d8", "1H", "2m", "Crushing, Unwieldy", "1", "120"],
+    ["Flail", "1d8", "1H", "2m", "Crushing, Flail", "1", "180"],
+    ["Halberd", "1d12", "2H", "2-3m", "Splitting, Impaling, Unwieldy", "3", "175"],
+    ["Pike", "1d12", "2H", "2-4m", "Impaling, Unwieldy", "4", "80"],
+    ["Lance", "1d12", "1H", "2-3m", "Splitting, Crushing (3), Mounted, Unwieldy", "3", "140"],
+    ["Spear", "1d8 (1d10)", "1.5H", "2-3m", "Impaling, Unwieldy", "2", "40"],
+    ["Trident", "1d6 (1d8)", "1.5H", "2m", "Impaling, Unwieldy", "3", "75"],
+    ["Quarterstaff", "1d6 (1d8)", "1.5H", "2m", "Concussive", "2", "35"],
+    ["Javelin", "1d8", "1H", "2m", "Thrown (5/15/25), Unwieldy", "2", "40"],
+    ["Parrying Dagger", "1d4", "1H", "1m", "Slashing (2), Exploit Weakness, Dueling Weapon, Small", "1", "50"],
+]
+
+const exoticWeapons: string[][] = [
+    ["Dai-Katana", "1d12", "2H", "3m", "Slashing, Shield-Splitter", "4", "350"],
+    ["Tanto", "1d4", "1H", "1m", "Slashing, Exploit Weakness, Dueling Weapon, Small", "1", "75"],
+    ["Katana", "1d6 (1d8)", "1.5H", "2m", "Slashing, Exploit Weakness", "2", "200"],
+    ["Wakizashi", "1d4 (1d6)", "1.5H", "1m", "Slashing, Exploit Weakness", "1", "90"],
+    ["Punch Dagger/War Talons", "Uses Nat. Weapon", "1H", "1m", "Slashing(1), Exploit Weakness, Hand to Hand, Small", "1", "45"],
+    ["Cestus", "Uses Nat. Weapon", "1H", "1m", "Crushing(1), Hand to Hand, Small", "1", "45"],
+    ["Hook Sword", "1d6", "1H", "1m", "Slashing(1), Dueling Weapon, Hooked", "1", "85"],
+    ["Bill Hook", "1d10", "2H", "2-3m", "Splitting, Hooked, Unwieldy", "3", "120"],
+]
+
 const weaponQualityIntro = "Many weapons possess special rules, known as Weapon Qualities, that represent factors that set them apart from other weapons in some fashion."
 const bigThreeIntro = "Below are the three most important weapon qualities. Most weapons posses one of these qualities, which are critical to their identity. Their effects can stack on instances of themselves or with one another."
 const otherQualityIntro = "Listed below are many of the other qualities weapons may have. It is important to be familiar with the qualities your weapons possess and how they interact with one another!"
@@ -8651,6 +8691,43 @@ function App() {
                     </div>
                 )}
             </div>
+            <div className="act">
+                <div className="actHead groupHead" onClick={() => setOpenActions(openActions.includes("group Goods") ? openActions.filter(n => n !== "group Goods") : [...openActions, "group Goods"])}>
+                    <span>Goods and Services</span>
+                </div>
+                {openActions.includes("group Goods") && (
+                    <div className="actGroup">
+                        <div className="act">
+                            <div className="actHead" onClick={() => setOpenActions(openActions.includes("goods Melee") ? openActions.filter(n => n !== "goods Melee") : [...openActions, "goods Melee"])}>
+                                <span>Melee Weapons</span>
+                            </div>
+                            {openActions.includes("goods Melee") && (
+                                <div className="actBody">
+                                    <div className="dtable wep">
+                                        <div className="dh">Type</div><div className="dh">Dam</div><div className="dh">H</div><div className="dh">Reach</div><div className="dh">Qualities</div><div className="dh">ENC</div><div className="dh">Price</div>
+                                        {meleeWeapons.map(row => (
+                                            <Fragment key={row[0]}>
+                                                {row.map((cell, i) => <div key={i}>{cell}</div>)}
+                                            </Fragment>
+                                        ))}
+                                    </div>
+
+                                    <div className="subHead">Exotic Weapons</div>
+                                    <div className="dtable wep">
+                                        <div className="dh">Type</div><div className="dh">Dam</div><div className="dh">H</div><div className="dh">Reach</div><div className="dh">Qualities</div><div className="dh">ENC</div><div className="dh">Price</div>
+                                        {exoticWeapons.map(row => (
+                                            <Fragment key={row[0]}>
+                                                {row.map((cell, i) => <div key={i}>{cell}</div>)}
+                                            </Fragment>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+
         </div>
     )
 
