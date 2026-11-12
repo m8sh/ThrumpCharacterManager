@@ -7307,6 +7307,43 @@ const npcSpecialTraits: {name: string, text: string[]}[] = [
 // the opening of the traits chapter, which sits above the list rather than inside it
 // the weapon qualities chapter, its opening line and the lead in to each half
 // the goods and services chapter, the melee weapon tables as the book prints them
+// expanded crafting, the modification tables for the smithing section
+const weaponMods: {name: string, diff: string, effect: string[]}[] = [
+    {name: "Serrated Edge (All weapons & Ammo with a sharp edge)", diff: "-20", effect: ["Gains the Serrated Quality"]},
+    {name: "Parrying Hooks (Longsword and Great Sword)", diff: "-15", effect: ["Gains the Dueling Weapon Quality when held in both hands."]},
+    {name: "Basket Hilt (All 1-handed swords)", diff: "-15", effect: ["+20 to resist Disarm attempts, +5 to Parrying, -5 to Offensive Combat Style Tests"]},
+    {name: "Reinforced Point (Melee weapons with the Splitting Quality)", diff: "-10 per X (max 3)", effect: ["Count damage as being X higher for the purpose of triggering Splitting quality does not increase damage"]},
+    {name: "Spiked head (Mace, Warhammer & Maul)", diff: "-20", effect: ["Increase the Damaged Quality when using Forceful Impact by +1"]},
+    {name: "Fitted Grip (All melee weapons)", diff: "-25", effect: ["+5 to Combat Style rolls for the character, -5 to anyone else wielding it."]},
+    {name: "Wavy Blade (restricted to sword and dagger type weapons)", diff: "-20", effect: ["+5 to Counter Attacks, -5 to Parry. Increase bonus to +10 against Polearms."]},
+]
+
+const shieldMods: {name: string, diff: string, effect: string[]}[] = [
+    {name: "Shield Spike", diff: "-5", effect: ["Adds +1d4 damage with the Crushing (2) Quality when using the Bash special action"]},
+    {name: "Shield Bumps", diff: "-10 pr X", effect: ["Grants a +5 bonus per X to block bladed weapons (including arrows, but not bolts)"]},
+    // the book leaves this one's difficulty blank
+    {name: "Fastening Straps", diff: "", effect: ["The shield has extra straps that can be fastened as a Secondary action.", "When the shield is strapped, it is impossible disarm, but likewise Requires a Secondary action to undo the straps keeping it in place"]},
+]
+
+const armorMods: {name: string, diff: string, effect: string[]}[] = [
+    {name: "Spiked Armor", diff: "-10", effect: [
+            "Restriction: Can only be installed on Full armor Chest with 4 AR or above, adds +1 ENC",
+            "Inflicts 1d4 damage when grapple is initiated by either side, with the Crushing quality using the characters StB if grappling, and the grapplers StB if grappled."]},
+    {name: "Environmental Seal", diff: "-5 pr X (max 3)", effect: ["+10 per X to resist particle storms (ash/sand)."]},
+    {name: "Fur Lined", diff: "-5 pr X (max 3)", effect: ["+10 per X to resist effects of cold."]},
+    {name: "Reinforced Knuckles", diff: "Special*", effect: [
+            "Restriction: Can only be applied to Arm location armor, adds +1 ENC.",
+            "This location counts as being a Cestus (See Rules Compendium p. 173)",
+            "The Smith must choose which weapon material to make the cestus from as when creating any other weapon. This weapon is part of the armor and cannot be disarmed.",
+            "It has the durability of the armor rather than the weapon."]},
+    {name: "Locked Gauntlet", diff: "-10", effect: [
+            "Restriction: Can only be installed on Full armor Arm with 4 AR or above.",
+            "As a secondary action, a one-handed weapon can be locked in place within the gauntlet, preventing it from being disarmed. However, while so locked in place, the user takes a -10 penalty to parrying, and cannot use the hand for anything unless unlocked with a Secondary Action."]},
+    {name: "Ridged Shoulder Guard", diff: "-15", effect: [
+            "Restriction: Can only be installed on Full armor Chest with 4 AR or above, adds +1 ENC",
+            "Whenever the Head hit-location is struck, roll 1d10. On a result of 9 or 10, the blow is deflected to the body instead of the head."]},
+]
+
 const meleeWeapons: string[][] = [
     ["Great Sword", "1d12", "2H", "3m", "Slashing, Concussive", "4", "300"],
     ["Longsword", "1d8 (1d10)", "1.5H", "2m", "Slashing", "2", "175"],
@@ -10771,6 +10808,101 @@ function App() {
                                         </div>
                                     </div>
                                 </div>
+                                {/* the expanded crafting supplement, folded away so smithing still reads first */}
+                                <div className="actList">
+                                    <div className="act">
+                                        <div className="actHead" onClick={() => setOpenActions(openActions.includes("craft Expanded") ? openActions.filter(n => n !== "craft Expanded") : [...openActions, "craft Expanded"])}>
+                                            <span>Expanded Crafting</span>
+                                        </div>
+                                        {openActions.includes("craft Expanded") && (
+                                            <div className="actBody">
+                                                <p>Similarly to Part 1, which is mostly a reprint of the Survival Crafting rules from Scroll of Beasts with updated references to the modern Rules Compendium, this too is mostly a reprint 0f the Expanded Crafting rules from Book of Circles. However, some further updates and modifications have been made to account for rules changes between v3 and v4 of the 3rd edition ruleset.</p>
+                                                <p>Not all Equipment is made equal, some for cultural, and other for very pragmatic reasons.</p>
+                                                <p>A weapon or piece of armor cannot be upgraded in the traditional sense, although it is possible to implement one or more modifications during its creation.</p>
+                                                <p>This section contains rules for characters wishing to futher personalize the gear created using the Crafting rules as listed in the Rules Compendium.</p>
+                                                <p>Creating modified gear follows all the normal rules for Crafting as listed in the Rules Compendium, but adds the following optional steps to the process that all take place after respective numbers (step 1a after step 1, step 2a after 2 etc):</p>
+
+                                                <div className="subHead">Step 1a: Determine Modification</div>
+                                                <p>When an item has been chosen, pick one or more modifications from the Weapon, Armor or Shield table below, which specifies the effect and difficulty of each. The number of upgrades that can be applied to the item (every level of scaled upgrades counts toward this level) is equal to half the characters Profession Smith rank rounded up (1 for rank 1, 3 for rank 5)</p>
+
+                                                <div className="subHead">Step 2a: Gather Modification Materials</div>
+                                                <p>The character must also gather the necessary materials for the modification, following the same guidelines as above. The general rule of thumb is that if the character wishes to purchase all the raw materials for the upgrades, it will cost roughly one fifth of the item&rsquo;s base price as calculated in the last step for each modification (including levels) applied.</p>
+
+                                                <div className="subHead">Step 3a: Modify Test Difficulty</div>
+                                                <p>After determining the initial test difficulty, add the relevant modifiers from any applied modifications to determine the final test difficulty that will be used in Step 4.</p>
+
+                                                <div className="subHead">Reforging</div>
+                                                <p>A smith can choose to reuse any existing weapon or armor when creating something new, regardless of how damaged it has become.</p>
+                                                <p>To do so, find the price for an unmodified item of its type and mark down 1/3rd of its price (100 drakes for a Full Chest plate of steel worth 300 for example).</p>
+                                                <p>You now have materials worth that much that can be spent on creating any item made from the same material, and multiple items can be broken down to provide enough materials for the crafting roll.</p>
+                                                <p>Daedric items cannot be reforged this way, and will simply turn to dust if attempted. Materials gathered from Enchanted items do not retain their magical properties, but the new piece of gear can be enchanted anew if so desired.</p>
+
+                                                <div className="subHead">Smithing Services</div>
+                                                <p>Custom crafted arms and armor can be extremely versatile, and extremely expensive. Characters can hire smiths to create items with upgrades of all types. Their cost is determined by the following formula:</p>
+                                                <p><b>Customized Item Price: Item + Upgrades + Fee</b></p>
+                                                <p>The cost for Upgrades is determined by the combined number of upgrades / upgrade levels wished for, 1 increases the cost of the base item by 20%, 2 by 50% and 3 by 100%.</p>
+                                                <p>Lastly, the table below provides a guideline for the flat fee charged by the smith based on the final difficulty modifier of the chosen upgrades combined.</p>
+                                                <div className="subHead">Smith&rsquo;s Fee:</div>
+                                                <div className="dtable">
+                                                    <div className="dh">Upgrades total difficulty</div><div className="dh">Cost</div>
+                                                    <div>-(1 - 10)</div><div>100</div>
+                                                    <div>-(11 - 20)</div><div>200</div>
+                                                    <div>-(21 - 30)</div><div>400</div>
+                                                    <div>-(31 - 40)</div><div>800</div>
+                                                    <div>-(41 - 50)</div><div>1500</div>
+                                                    <div>-(51 - 60)</div><div>3000</div>
+                                                </div>
+
+                                                <div className="subHead">New Weapon Quality: Serrated</div>
+                                                <p>Damage inflicted by this weapon inflicts the Ripped Flesh (1) condition upon the target. Further applications stack.</p>
+
+                                                <div className="subHead">New Condition: Ripped Flesh (X)</div>
+                                                <p>Whenever healing of any kind affects this character, reduce the amount healed by X. Removing the condition requires a -(5*X) Profession (Medicine) test.</p>
+
+                                                <div className="subHead">Weapons, Shield and Armor Modifications</div>
+
+                                                <div className="subHead">Weapon Modifications</div>
+                                                <div className="dtable mod">
+                                                    <div className="dh">Upgrades (Weapon Types)</div><div className="dh">Difficulty</div><div className="dh">Effect</div>
+                                                    {weaponMods.map(m => (
+                                                        <Fragment key={m.name}>
+                                                            <div>{m.name}</div>
+                                                            <div>{m.diff}</div>
+                                                            <div>{m.effect.map((line, i) => <p key={i}>{line}</p>)}</div>
+                                                        </Fragment>
+                                                    ))}
+                                                </div>
+
+                                                <div className="subHead">Shield Modifications</div>
+                                                <div className="dtable mod">
+                                                    <div className="dh">Upgrade</div><div className="dh">Difficulty</div><div className="dh">Effect</div>
+                                                    {shieldMods.map(m => (
+                                                        <Fragment key={m.name}>
+                                                            <div>{m.name}</div>
+                                                            <div>{m.diff}</div>
+                                                            <div>{m.effect.map((line, i) => <p key={i}>{line}</p>)}</div>
+                                                        </Fragment>
+                                                    ))}
+                                                </div>
+
+                                                <div className="subHead">Armor Modifications</div>
+                                                <div className="dtable mod">
+                                                    <div className="dh">Upgrades (Weapon Types)</div><div className="dh">Difficulty</div><div className="dh">Effect</div>
+                                                    {armorMods.map(m => (
+                                                        <Fragment key={m.name}>
+                                                            <div>{m.name}</div>
+                                                            <div>{m.diff}</div>
+                                                            <div>{m.effect.map((line, i) => <p key={i}>{line}</p>)}</div>
+                                                        </Fragment>
+                                                    ))}
+                                                </div>
+                                                <p>* The Difficulty of this upgrade is the same as the chosen weapon material for the cestus, but retains the quality of the armor upgrade</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+
 
                                 <h3>Alchemy</h3>
 
